@@ -1,0 +1,15 @@
+{
+	"name": "clancats/container",
+	"description": "ClanCats IoC Container.",
+	"license": "MIT",
+	"require": {
+		"php": ">=7.1"
+	},
+	"autoload": {
+        "psr-4": {
+        	"ClanCats\\Container\\": "src/"
+        }
+    },
+	"minimum-stability": "dev"
+}
+
