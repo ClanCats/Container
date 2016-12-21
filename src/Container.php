@@ -88,7 +88,19 @@ class Container
 	 */
 	public function getParameter(string $name, $default = null)
 	{
-		return $this->hasParameter($name) 
+		return $this->hasParameter($name) ? $this->parameters[$name] : $default;
+	}
+
+	/**
+	 * Set the given parameter with value
+	 * 
+	 * @param string 			$name
+	 * @param mixed 			$value
+	 * @return bool
+	 */
+	public function setParameter(string $name, $value)
+	{
+		return $this->parameters[$name] = $value;
 	}
 
 	/**
