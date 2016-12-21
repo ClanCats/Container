@@ -27,7 +27,7 @@ class ServiceLoader
 	 * @param string 				$cacheDirectory
 	 * @return void
 	 */
-	public function __construct($cacheDirectory)
+	public function __construct(string $cacheDirectory)
 	{
 		$this->cacheDirectory = $cacheDirectory;
 	}

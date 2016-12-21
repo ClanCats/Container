@@ -10,6 +10,11 @@
         	"ClanCats\\Container\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+        	"ClanCats\\Container\\Tests\\": "tests/"
+        }
+    },
 	"minimum-stability": "dev"
 }
 

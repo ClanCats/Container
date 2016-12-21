@@ -4,6 +4,9 @@ namespace ClanCats\Container\Tests;
 use ClanCats\Container\{
     Container
 };
+use ClanCats\Container\Tests\TestServices\{
+    Car, Engine, Producer
+};
 
 class ContainerTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,5 +43,22 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $container->bind('test2', function($c) {});
         $this->assertEquals(Container::RESOLVE_SHARED, $container->getServiceResolverType('test2'));
+    }
+
+    public function testBindFactory()
+    {
+        $container = new Container();
+        $container->bindFactory('engine', function($c) 
+        {
+            return new Engine();   
+        });
+
+        $this->assertInstanceOf(Engine::class, $container->get('engine'));
+
+        // check if they are not the same
+        $engine = $container->get('engine'); 
+        $engine->power = 120;
+        $this->assertNotEquals($engine, $container->get('engine'));
+        $this->assertNotEquals(120, $container->get('engine'));
     }
 }
