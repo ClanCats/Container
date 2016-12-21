@@ -1,13 +1,12 @@
 <?php 
 namespace ClanCats\Container;
 
+use Closure;
 use ClanCats\Container\{
 
 	// exceptions
 	Exceptions\UnknownServiceException,
-
-	// service
-	ServiceLoaderService as Service,
+	Exceptions\InvalidServiceException
 };
 
 class Container 
@@ -51,6 +50,13 @@ class Container
 	 * @var array[ServiceFactoryInterface|Closure]
 	 */
 	protected $resolverFactoriesShared = [];
+
+	/**
+	 * Array of already resolved shared factories
+	 * 
+	 * @var array
+	 */
+	protected $resolvedSharedServices = [];
 
 	/**
 	 * Construct a new service loader with a given cache directory
@@ -100,17 +106,18 @@ class Container
 
 		switch ($this->serviceResolverType[$serviceName]) 
 		{
+			// Default resolver for all services that are defined 
+	 		// directly in the container. We can skip here an unnecessary method call.
 			case static::RESOLVE_METHOD:
-				return $this->resolveServiceFromMethod($serviceName);
+				return $this->{$this->resolverMethods[$serviceName]}();
 			break;
 
 			case static::RESOLVE_FACTORY:
-				return $this->resolveServiceFromFactory($serviceName);
+				return $this->resolveServiceFactory($serviceName);
 			break;
 
 			case static::RESOLVE_SHARED:
-				// the shared resolver has no 
-				return $this->resolveServiceFromShared($serviceName);
+				return $this->resolveServiceShared($serviceName);
 			break;
 			
 			default:
@@ -120,14 +127,24 @@ class Container
 	}
 
 	/**
-	 * Default resolver for all services that are defined 
-	 * directly in the container.
+	 * Resolve a service from the given factory
 	 * 
-	 * @param name 				$name
+	 * @param ServiceFactoryInterface|Closure 			$factory
+	 * @return mixed
 	 */
-	protected function resolveServiceFromMethod(string $name)
-	{
-		return $this->{$name}();
+	private function resolveServiceFromFactory($factory)
+	{	
+		if ($factory instanceof ServiceFactoryInterface)
+		{
+			return $factory->create($this);
+		}
+		elseif ($factory instanceof Closure)
+		{
+			return $factory($this);
+		}
+
+		// otherwise throw an exception 
+		throw new InvalidServiceException('The service factory for the service named "'. $name .'" is invalid.');
 	}
 
 	/**
@@ -136,9 +153,16 @@ class Container
 	 * 
 	 * @param string 			$method
 	 */
-	protected function resolveServiceFromShared(string $name)
+	protected function resolveServiceShared(string $name)
 	{
+		// already resolved?
+		if (!isset($this->resolvedSharedServices[$name]))
+		{
+			$this->resolvedSharedServices[$name] = $this->resolveServiceFromFactory($this->resolverFactoriesShared[$name]);
+		}
 
+		// get the factory
+		return $this->resolvedSharedServices[$name];
 	}
 
 	/**
@@ -146,8 +170,8 @@ class Container
 	 * 
 	 * @param string 			$method
 	 */
-	protected function resolveServiceFromFactory(string $name)
+	protected function resolveServiceFactory(string $name)
 	{
-
+		return $this->resolveServiceFromFactory($this->resolverFactories[$name]);
 	}
 }	
