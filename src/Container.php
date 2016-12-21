@@ -186,4 +186,71 @@ class Container
 	{
 		return $this->resolveServiceFromFactory($this->resolverFactories[$name]);
 	}
+
+	/**
+	 * Binds a service factory to the container
+	 * 
+	 * @param
+	 */
+	public function bind(string $name, $factory, bool $shared = true) : void
+	{
+		if ($shared) {
+			$this->bindSharedFactory($name, $factory);
+		} else {
+			$this->bindFactory($name, $factory);
+		}
+	}
+
+	/**
+	 * Binds a normal unshared factory to the service container
+	 * 
+	 * @param ServiceFactoryInterface|Closure 			$factory
+	 * @return void
+	 */
+	public function bindFactory(string $name, $factory) : void
+	{
+		$this->addServiceResolverType($name, static::RESOLVE_FACTORY);
+		$this->resolverFactories[$name] = $factory;
+	}
+
+	/**
+	 * Binds a default shared factory to the service container
+	 * 
+	 * @param ServiceFactoryInterface|Closure 			$factory
+	 * @return void
+	 */
+	public function bindSharedFactory(string $name, $factory) : void
+	{
+		$this->addServiceResolverType($name, static::RESOLVE_SHARED);
+		$this->resolverFactoriesShared[$name] = $factory;
+	}
+
+	/**
+	 * Add a service resolver type to the container. 
+	 * The service resolver type tells the container where to look for the correct resolver.
+	 * 
+	 * @param string 			$serviceName
+	 * @param int 				$serviceType
+	 * @return void
+	 */
+	protected function addServiceResolverType(string $serviceName, int $serviceType) : void
+	{
+		$this->serviceResolverType[$serviceName] = $serviceType;
+	}
+
+	/**
+	 * Get the resolver type of the given name
+	 * 
+	 * @param string 				$serviceName
+	 * @return int
+	 */
+	public function getServiceResolverType(string $serviceName) : int
+	{
+		if (!isset($this->serviceResolverType[$serviceName]))
+		{
+			throw new UnknownServiceException('There is no type for the service named "' . $serviceName . '" specified.');
+		}
+
+		return $this->serviceResolverType[$serviceName];
+	}
 }	
