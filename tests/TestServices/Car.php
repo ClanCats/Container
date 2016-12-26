@@ -6,7 +6,7 @@ class Car
 	public $engine;
 	public $producer;
 
-	public function __construct(Engine $engine, Producer $producer)
+	public function __construct(Engine $engine, Producer $producer = null)
 	{
 		$this->engine = $engine;
 		$this->producer = $producer;

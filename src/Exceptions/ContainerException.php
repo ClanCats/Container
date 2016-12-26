@@ -1,4 +1,4 @@
 <?php 
 namespace ClanCats\Container\Exceptions;
 
-class ContainerException extends \Exception {}
+class ContainerException extends \Exception {}
