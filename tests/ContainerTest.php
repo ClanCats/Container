@@ -5,7 +5,9 @@ use ClanCats\Container\{
     Container
 };
 use ClanCats\Container\Tests\TestServices\{
-    Car, Engine, Producer
+    Car, Engine, Producer,
+
+    CustomContainer
 };
 
 class ContainerTest extends \PHPUnit_Framework_TestCase
@@ -53,6 +55,14 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $container = new Container();
         $container->bind('test', 42);
         $container->get('test');
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\UnknownServiceException
+     */
+    public function testUnknownService()
+    {
+        (new Container())->get('unknown');
     }
 
     /**
@@ -129,5 +139,13 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($container->get('engine.d8'), $container->get('volvo.s90')->engine);
         $this->assertEquals(300, $container->get('volvo.s90')->engine->ps);
-    } 
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\UnknownServiceException
+     */
+    public function testBrokenCustomContainerFactoryType()
+    {
+        (new CustomContainer())->get('broken');
+    }
 }

@@ -26,6 +26,7 @@ class Container
 	const RESOLVE_METHOD = 0;
 	const RESOLVE_FACTORY = 1;
 	const RESOLVE_SHARED = 2;
+	const RESOLVE_MANUEL = 3;
 	protected $serviceResolverType = [];
 
 	/**
@@ -116,7 +117,13 @@ class Container
 			throw new UnknownServiceException('Could not find service named "' . $serviceName . '" registered in the container.');
 		}
 
-		switch ($this->serviceResolverType[$serviceName]) 
+		$serviceResolverType = $this->serviceResolverType[$serviceName];
+		if (isset($this->resolvedSharedServices[$serviceName]) && $serviceResolverType !== static::RESOLVE_FACTORY)
+		{
+			return $this->resolvedSharedServices[$serviceName];
+		}
+
+		switch ($serviceResolverType) 
 		{
 			// Default resolver for all services that are defined 
 	 		// directly in the container. We can skip here an unnecessary method call.
@@ -131,7 +138,7 @@ class Container
 			case static::RESOLVE_SHARED:
 				return $this->resolveServiceShared($serviceName);
 			break;
-			
+
 			default:
 				throw new UnknownServiceException('Could not resolve service named "' . $serviceName . '", the resolver type is unkown.');
 			break;
@@ -165,16 +172,9 @@ class Container
 	 * 
 	 * @param string 			$method
 	 */
-	protected function resolveServiceShared(string $name)
+	private function resolveServiceShared(string $name)
 	{
-		// already resolved?
-		if (!isset($this->resolvedSharedServices[$name]))
-		{
-			$this->resolvedSharedServices[$name] = $this->resolveServiceFromFactory($this->resolverFactoriesShared[$name]);
-		}
-
-		// get the factory
-		return $this->resolvedSharedServices[$name];
+		return $this->resolvedSharedServices[$name] = $this->resolveServiceFromFactory($this->resolverFactoriesShared[$name]);
 	}
 
 	/**
@@ -182,7 +182,7 @@ class Container
 	 * 
 	 * @param string 			$method
 	 */
-	protected function resolveServiceFactory(string $name)
+	private function resolveServiceFactory(string $name)
 	{
 		return $this->resolveServiceFromFactory($this->resolverFactories[$name]);
 	}
