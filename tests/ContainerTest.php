@@ -116,12 +116,12 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $container->bindSharedFactory('engine.d8', function($c) 
         {
-            $engine = new Engine(); $engine->ps = 300; return $engine;
+            $engine = new Engine(); $engine->power = 300; return $engine;
         });
 
         $container->bindSharedFactory('engine.t8', function($c) 
         {
-            $engine = new Engine(); $engine->ps = 325; return $engine; 
+            $engine = new Engine(); $engine->power = 325; return $engine; 
         });
 
         $this->assertInstanceOf(Engine::class, $container->get('engine.custom'));
@@ -138,7 +138,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->assertSame($container->get('engine.d8'), $container->get('volvo.s90')->engine);
-        $this->assertEquals(300, $container->get('volvo.s90')->engine->ps);
+        $this->assertEquals(300, $container->get('volvo.s90')->engine->power);
     }
 
     /**
@@ -147,5 +147,12 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     public function testBrokenCustomContainerFactoryType()
     {
         (new CustomContainer())->get('broken');
+    }
+
+    public function testResolveFromMethod()
+    {
+        $container = new CustomContainer();
+
+        var_dump($container->get('car'));
     }
 }

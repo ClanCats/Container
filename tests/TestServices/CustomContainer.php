@@ -12,6 +12,10 @@ class CustomContainer extends Container
 		'car' => 'resolveCar',
 	];
 
+	protected $serviceResolverType = [
+		'engine' => 0, 'car' => 0
+	];
+
 	public function __construct(array $initalParameters = [])
 	{
 		parent::__construct();
@@ -20,6 +24,11 @@ class CustomContainer extends Container
 
 	protected function resolveEngine()
 	{
-		//return 
+		return $this->resolvedSharedServices['engine'] = new Engine();
+	}
+
+	protected function resolveCar()
+	{
+		return $this->resolvedSharedServices['car'] = new Car($this->get('engine'));
 	}
 }	

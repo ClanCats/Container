@@ -43,14 +43,14 @@ class Container
 	 * 
 	 * @var array[ServiceFactoryInterface|Closure]
 	 */
-	protected $resolverFactories = [];
+	private $resolverFactories = [];
 
 	/**
 	 * An array of factory callbacks that will be shared across the container.
 	 * 
 	 * @var array[ServiceFactoryInterface|Closure]
 	 */
-	protected $resolverFactoriesShared = [];
+	private $resolverFactoriesShared = [];
 
 	/**
 	 * Array of already resolved shared factories
