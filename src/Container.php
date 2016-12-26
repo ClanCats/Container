@@ -112,18 +112,25 @@ class Container
 	 */
 	public function get(string $serviceName)
 	{
+		// if the service container itself is requested
+		if ($serviceName === 'container') { return $this; }
+
+		// check if the service name has a registered service type
 		if (!isset($this->serviceResolverType[$serviceName]))
 		{
 			throw new UnknownServiceException('Could not find service named "' . $serviceName . '" registered in the container.');
 		}
-
 		$serviceResolverType = $this->serviceResolverType[$serviceName];
-		if (isset($this->resolvedSharedServices[$serviceName]) && $serviceResolverType !== static::RESOLVE_FACTORY)
-		{
+
+		// check if a service instance already exists
+		if (
+			isset($this->resolvedSharedServices[$serviceName]) && 
+			$serviceResolverType !== static::RESOLVE_FACTORY
+		) {
 			return $this->resolvedSharedServices[$serviceName];
 		}
 
-		switch ($serviceResolverType) 
+		switch ($serviceResolverType)
 		{
 			// Default resolver for all services that are defined 
 	 		// directly in the container. We can skip here an unnecessary method call.
