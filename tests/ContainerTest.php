@@ -45,6 +45,24 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(Container::RESOLVE_SHARED, $container->getServiceResolverType('test2'));
     }
 
+    /**
+     * @expectedException ClanCats\Container\Exceptions\InvalidServiceException
+     */
+    public function testInvalidServiceFactoryBinding()
+    {
+        $container = new Container();
+        $container->bind('test', 42);
+        $container->get('test');
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\UnknownServiceException
+     */
+    public function testServiceTypeUnknown()
+    {
+        (new Container())->getServiceResolverType('unknown');
+    }
+
     public function testBindFactory()
     {
         $container = new Container();

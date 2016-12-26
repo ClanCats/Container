@@ -156,7 +156,7 @@ class Container
 		}
 
 		// otherwise throw an exception 
-		throw new InvalidServiceException('The service factory for the service named "'. $name .'" is invalid.');
+		throw new InvalidServiceException('Service could not be resolved, the registered factory is invalid.');
 	}
 
 	/**
