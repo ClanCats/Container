@@ -156,6 +156,22 @@ class Container
 	}
 
 	/**
+	 * Release a shared resolved service 
+	 * 
+	 * @param string 				$serviceName
+	 * @return bool
+	 */
+	public function release(string $serviceName) : bool
+	{
+		if (isset($this->resolvedSharedServices[$serviceName]))
+		{
+			unset($this->resolvedSharedServices[$serviceName]); return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get a service by the given name
 	 * 
 	 * @param string 			$serviceName

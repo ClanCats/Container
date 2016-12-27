@@ -239,4 +239,22 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertNotSame($container->get('car'), $container->get('car'));
         $this->assertFalse($container->isResolved('car'));
     }
+
+    public function testReleaseService()
+    {
+        $container = new Container();
+
+        $this->assertFalse($container->release('car'));
+
+        $container->bind('car', function($c) 
+        {
+            return new Car(new Engine());
+        });
+
+        $referenceCar = $container->get('car');
+        $this->assertSame($referenceCar, $container->get('car'));
+
+        $this->assertTrue($container->release('car'));
+        $this->assertNotSame($referenceCar, $container->get('car'));
+    }
 }
