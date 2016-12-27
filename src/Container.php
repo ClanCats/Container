@@ -25,9 +25,10 @@ class Container
 	 * @var array
 	 */
 	const RESOLVE_METHOD = 0;
-	const RESOLVE_FACTORY = 1;
-	const RESOLVE_SHARED = 2;
-	const RESOLVE_SETTER = 3;
+	const RESOLVE_PROVIDER = 1;
+	const RESOLVE_FACTORY = 2;
+	const RESOLVE_SHARED = 3;
+	const RESOLVE_SETTER = 4;
 	protected $serviceResolverType = [];
 
 	/**
@@ -45,13 +46,6 @@ class Container
 	 * @var array[ServiceFactoryInterface|Closure]
 	 */
 	private $resolverFactories = [];
-
-	/**
-	 * An array of factory callbacks that will be shared across the container.
-	 * 
-	 * @var array[ServiceFactoryInterface|Closure]
-	 */
-	private $resolverFactoriesShared = [];
 
 	/**
 	 * Array of already resolved shared factories
@@ -130,6 +124,22 @@ class Container
 
 		$this->resolvedSharedServices[$serviceName] = $serviceValue;
 		$this->setServiceResolverType($serviceName, static::RESOLVE_SETTER);
+	}
+
+	/**
+	 * Removes a service from the container 
+	 */
+	public function remove(string $serviceName) : bool
+	{
+		if (!$this->has($serviceName)) {
+			return false; // can only remove services that exist
+		}
+
+		if ($serviceName === 'container') {
+			return false; // the container itself cannot be removed
+		}
+
+
 	}
 
 	/**
@@ -250,7 +260,7 @@ class Container
 	 */
 	private function resolveServiceShared(string $name)
 	{
-		return $this->resolvedSharedServices[$name] = $this->resolveServiceFromFactory($this->resolverFactoriesShared[$name]);
+		return $this->resolvedSharedServices[$name] = $this->resolveServiceFactory($name);
 	}
 
 	/**
@@ -298,7 +308,7 @@ class Container
 	public function bindSharedFactory(string $name, $factory) : void
 	{
 		$this->setServiceResolverType($name, static::RESOLVE_SHARED);
-		$this->resolverFactoriesShared[$name] = $factory;
+		$this->resolverFactories[$name] = $factory;
 	}
 
 	/**
