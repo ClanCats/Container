@@ -208,4 +208,35 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     {
         (new Container())->set('container', 'shouldNotWork');
     }
+
+    public function testServiceIsResolved()
+    {
+        $container = new Container();
+
+        // check if self is resolved
+        $this->assertTrue($container->isResolved('container'));
+
+        // check unknown
+        $this->assertFalse($container->isResolved('car'));
+
+        // check factory binding
+        $container->bind('car', function($c) 
+        {
+            return new Car(new Engine());
+        });
+
+        $this->assertInstanceOf(Car::class, $container->get('car'));
+        $this->assertSame($container->get('car'), $container->get('car'));
+        $this->assertTrue($container->isResolved('car'));
+
+        // check that factory method can never be resolved
+        // even if it already has been resolved
+        $container->bind('car', function($c) 
+        {
+            return new Car(new Engine());
+        }, false);
+
+        $this->assertNotSame($container->get('car'), $container->get('car'));
+        $this->assertFalse($container->isResolved('car'));
+    }
 }

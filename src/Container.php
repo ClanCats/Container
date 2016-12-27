@@ -133,6 +133,29 @@ class Container
 	}
 
 	/**
+	 * Check if the given service has already been resolved
+	 * 
+	 * @param string 			$serviceName
+	 * @return bool
+	 */
+	public function isResolved(string $serviceName) : bool
+	{
+		if ($serviceName === 'container') {
+			return true; // the container itself is always resolved
+		}
+
+		if (!isset($this->serviceResolverType[$serviceName])) {
+			return false; 
+		}
+
+		if ($this->serviceResolverType[$serviceName] === static::RESOLVE_FACTORY) {
+			return false;
+		}
+
+		return isset($this->resolvedSharedServices[$serviceName]);
+	}
+
+	/**
 	 * Get a service by the given name
 	 * 
 	 * @param string 			$serviceName
