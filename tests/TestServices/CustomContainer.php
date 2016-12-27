@@ -29,6 +29,6 @@ class CustomContainer extends Container
 
 	protected function resolveCar()
 	{
-		return $this->resolvedSharedServices['car'] = new Car($this->get('engine'));
+		return new Car($this->get('engine'));
 	}
 }	

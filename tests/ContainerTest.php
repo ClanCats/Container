@@ -153,6 +153,14 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     {
         $container = new CustomContainer();
 
-        var_dump($container->get('car'));
+        $this->assertInstanceOf(Engine::class, $container->get('engine'));
+        $this->assertInstanceOf(Engine::class, $container->get('car')->engine);
+        $this->assertInstanceOf(Car::class, $container->get('car'));
+
+        $this->assertSame($container->get('engine'), $container->get('engine'));
+        $this->assertNotSame($container->get('car'), $container->get('car'));
+
+        $this->assertEquals(Container::RESOLVE_METHOD, $container->getServiceResolverType('engine'));
+        $this->assertEquals(Container::RESOLVE_METHOD, $container->getServiceResolverType('car'));
     }
 }
