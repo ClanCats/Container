@@ -19,7 +19,7 @@ class CustomContainer extends Container
 	public function __construct(array $initalParameters = [])
 	{
 		parent::__construct();
-		$this->addServiceResolverType('broken', 42);
+		$this->setServiceResolverType('broken', 42);
 	}
 
 	protected function resolveEngine()

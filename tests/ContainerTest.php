@@ -182,5 +182,30 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         // the container always has itself
         $this->assertTrue($container->has('container'));
+        $this->assertFalse($container->has('foo'));
+
+        $container->bind('foo', function($c) {});
+
+        $this->assertTrue($container->has('foo'));
+    }
+
+    public function testContainerSet()
+    {
+        $container = new Container();
+
+        $this->assertFalse($container->has('foo'));
+
+        $container->set('foo', 'bar');
+
+        $this->assertTrue($container->has('foo'));
+        $this->assertEquals('bar', $container->get('foo'));
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerException
+     */
+    public function testContainerSetSelfError()
+    {
+        (new Container())->set('container', 'shouldNotWork');
     }
 }

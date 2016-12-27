@@ -6,7 +6,8 @@ use ClanCats\Container\{
 
 	// exceptions
 	Exceptions\UnknownServiceException,
-	Exceptions\InvalidServiceException
+	Exceptions\InvalidServiceException,
+	Exceptions\ContainerException
 };
 
 class Container 
@@ -26,7 +27,7 @@ class Container
 	const RESOLVE_METHOD = 0;
 	const RESOLVE_FACTORY = 1;
 	const RESOLVE_SHARED = 2;
-	const RESOLVE_MANUEL = 3;
+	const RESOLVE_SETTER = 3;
 	protected $serviceResolverType = [];
 
 	/**
@@ -112,6 +113,23 @@ class Container
 	public function has(string $serviceName) : bool
 	{
 		return $serviceName === 'container' || isset($this->serviceResolverType[$serviceName]);
+	}
+
+	/**
+	 * Simply sets a service on the shared container
+	 * 
+	 * @param string 			$serviceName
+	 * @param mixed 			$serviceValue
+	 */
+	public function set(string $serviceName, $serviceValue) : void
+	{
+		if ($serviceName === 'container')
+		{
+			throw new ContainerException('Cannot overwrite self container reference!');
+		}
+
+		$this->resolvedSharedServices[$serviceName] = $serviceValue;
+		$this->setServiceResolverType($serviceName, static::RESOLVE_SETTER);
 	}
 
 	/**
@@ -228,7 +246,7 @@ class Container
 	 */
 	public function bindFactory(string $name, $factory) : void
 	{
-		$this->addServiceResolverType($name, static::RESOLVE_FACTORY);
+		$this->setServiceResolverType($name, static::RESOLVE_FACTORY);
 		$this->resolverFactories[$name] = $factory;
 	}
 
@@ -240,7 +258,7 @@ class Container
 	 */
 	public function bindSharedFactory(string $name, $factory) : void
 	{
-		$this->addServiceResolverType($name, static::RESOLVE_SHARED);
+		$this->setServiceResolverType($name, static::RESOLVE_SHARED);
 		$this->resolverFactoriesShared[$name] = $factory;
 	}
 
@@ -252,7 +270,7 @@ class Container
 	 * @param int 				$serviceType
 	 * @return void
 	 */
-	protected function addServiceResolverType(string $serviceName, int $serviceType) : void
+	protected function setServiceResolverType(string $serviceName, int $serviceType) : void
 	{
 		$this->serviceResolverType[$serviceName] = $serviceType;
 	}
