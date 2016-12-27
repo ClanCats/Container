@@ -163,4 +163,24 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(Container::RESOLVE_METHOD, $container->getServiceResolverType('engine'));
         $this->assertEquals(Container::RESOLVE_METHOD, $container->getServiceResolverType('car'));
     }
+
+    public function testContainerResolveSelf()
+    {
+        $containerA = new Container();
+        $containerB = new Container();
+
+        $this->assertInstanceOf(Container::class, $containerA);
+        $this->assertInstanceOf(Container::class, $containerB);
+
+        $this->assertSame($containerA, $containerA->get('container'));
+        $this->assertNotSame($containerA, $containerB->get('container'));
+    }
+
+    public function testContainerHas()
+    {
+        $container = new Container();
+
+        // the container always has itself
+        $this->assertTrue($container->has('container'));
+    }
 }

@@ -85,7 +85,7 @@ class Container
 	 * Get the given parameter with default
 	 * 
 	 * @param string 			$name
-	 * @return bool
+	 * @return mixed
 	 */
 	public function getParameter(string $name, $default = null)
 	{
@@ -97,11 +97,21 @@ class Container
 	 * 
 	 * @param string 			$name
 	 * @param mixed 			$value
-	 * @return bool
+	 * @return void
 	 */
-	public function setParameter(string $name, $value)
+	public function setParameter(string $name, $value) : void
 	{
-		return $this->parameters[$name] = $value;
+		$this->parameters[$name] = $value;
+	}
+
+	/**
+	 * Does the container have the given service
+	 * 
+	 * @param string 			$serviceName
+	 */
+	public function has(string $serviceName) : bool
+	{
+		return $serviceName === 'container' || isset($this->serviceResolverType[$serviceName]);
 	}
 
 	/**
@@ -113,7 +123,9 @@ class Container
 	public function get(string $serviceName)
 	{
 		// if the service container itself is requested
-		if ($serviceName === 'container') { return $this; }
+		if ($serviceName === 'container') { 
+			return $this;
+		}
 
 		// check if the service name has a registered service type
 		if (!isset($this->serviceResolverType[$serviceName]))
