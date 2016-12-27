@@ -217,6 +217,10 @@ class Container
 				return $this->{$this->resolverMethods[$serviceName]}();
 			break;
 
+			case static::RESOLVE_PROVIDER:
+				return $this->resolveServiceProvider($serviceName);
+			break;
+
 			case static::RESOLVE_FACTORY:
 				return $this->resolveServiceFactory($serviceName);
 			break;
@@ -237,7 +241,7 @@ class Container
 	 * @param ServiceFactoryInterface|Closure 			$factory
 	 * @return mixed
 	 */
-	private function resolveServiceFromFactory($factory)
+	private function createInstanceFromFactory($factory)
 	{	
 		if ($factory instanceof ServiceFactoryInterface)
 		{
@@ -250,6 +254,16 @@ class Container
 
 		// otherwise throw an exception 
 		throw new InvalidServiceException('Service could not be resolved, the registered factory is invalid.');
+	}
+
+	/**
+	 * Resolves the service from a service provider
+	 * 
+	 * @param string 			$method
+	 */
+	private function resolveServiceProvider(string $name)
+	{
+		return $this->createInstanceFromFactory($this->resolverFactories[$name]);
 	}
 
 	/**
@@ -270,7 +284,7 @@ class Container
 	 */
 	private function resolveServiceFactory(string $name)
 	{
-		return $this->resolveServiceFromFactory($this->resolverFactories[$name]);
+		return $this->createInstanceFromFactory($this->resolverFactories[$name]);
 	}
 
 	/**
@@ -319,7 +333,7 @@ class Container
 	 * @param int 				$serviceType
 	 * @return void
 	 */
-	protected function setServiceResolverType(string $serviceName, int $serviceType) : void
+	private function setServiceResolverType(string $serviceName, int $serviceType) : void
 	{
 		$this->serviceResolverType[$serviceName] = $serviceType;
 	}

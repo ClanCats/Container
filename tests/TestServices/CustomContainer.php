@@ -13,13 +13,12 @@ class CustomContainer extends Container
 	];
 
 	protected $serviceResolverType = [
-		'engine' => 0, 'car' => 0
+		'engine' => 0, 'car' => 0, 'broken' => 42,
 	];
 
 	public function __construct(array $initalParameters = [])
 	{
 		parent::__construct();
-		$this->setServiceResolverType('broken', 42);
 	}
 
 	protected function resolveEngine()
