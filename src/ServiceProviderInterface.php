@@ -6,9 +6,7 @@ interface ServiceProviderInterface
 	/**
 	 * What services are provided by the service provider
 	 * 
-	 * @return array[string]
+	 * @return array[string => string]
 	 */
 	public function provides() : array;
-
-	
 }	

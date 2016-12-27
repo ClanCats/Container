@@ -100,6 +100,16 @@ class Container
 	}
 
 	/**
+	 * Returns an array of all available services
+	 * 
+	 * @return array
+	 */
+	public function available() : array
+	{
+		return array_push(array_keys($this->serviceResolverType), 'container');
+	}
+
+	/**
 	 * Does the container have the given service
 	 * 
 	 * @param string 			$serviceName
