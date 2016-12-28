@@ -6,17 +6,15 @@ class ServiceFactoryArguments
     /**
      * Static instance constructor from array for eye candy
      * 
-     *     ServiceFactoryArguments::fromArray([
+     *     ServiceFactoryArguments::from([
      *         '@session.storage.redis',
      *         ':session_token',
      *         600, // session lifetime
      *     ])
      */
-    public static function fromArray(array $arguments) : ServiceFactoryArguments
+    public static function from(array $arguments) : ServiceFactoryArguments
     {
-        $instance = new static;
-        $instance->addArgumentsFromArray($arguments);
-        return $instance;
+        return new static($arguments);
     }
 
     /**
@@ -36,13 +34,24 @@ class ServiceFactoryArguments
     protected $arguments = [];
 
     /**
+     * Construct new arguments object with array
+     * 
+     * @param array             $arguments
+     * @return void
+     */
+    public function __construct(array $arguments = [])
+    {
+        $this->addArgumentsFromArray($arguments);
+    }
+
+    /**
      * Add a service argument of type
      * 
      * @param mixed             $argumentValue
      * @param int               $argumentType
      * @return self
      */
-    public function addArgument($argumentValue, int $argumentType) : ServiceFactoryArguments
+    private function addArgument($argumentValue, int $argumentType) : ServiceFactoryArguments
     {
         $this->arguments[] = [$argumentValue, $argumentType]; return $this;
     }

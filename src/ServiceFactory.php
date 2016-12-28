@@ -48,7 +48,7 @@ class ServiceFactory implements ServiceFactoryInterface
 	public function __construct(string $className, array $arguments = [])
 	{
 		$this->className = $className;
-		$this->constructorArguments = ServiceFactoryArguments::fromArray($arguments);
+		$this->constructorArguments = ServiceFactoryArguments::from($arguments);
 	}
 
 	/**
