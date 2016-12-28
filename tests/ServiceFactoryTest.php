@@ -6,7 +6,7 @@ use ClanCats\Container\{
     ServiceFactory
 };
 use ClanCats\Container\Tests\TestServices\{
-    Car, CarFactory, Engine
+    Car, CarFactory, Engine, Producer
 };
 
 class ServiceFactoryTest extends \PHPUnit_Framework_TestCase
@@ -53,6 +53,23 @@ class ServiceFactoryTest extends \PHPUnit_Framework_TestCase
         
         $this->assertInstanceOf(Car::class, $car);
         $this->assertInstanceOf(Engine::class, $car->engine);
+    }
+
+    public function testBindServiceFactory()
+    {
+        $container = new Container();
+        $container->setParameter('producer.name', 'Lexus');
+
+        $container->bind('engine', ServiceFactory::for(Engine::class));
+        $container->bind('producer', ServiceFactory::for(Producer::class, [':producer.name']));
+        $container->bind('car', ServiceFactory::for(Car::class, ['@engine', '@producer']));
+        
+        $car = $container->get('car');
+        
+        $this->assertInstanceOf(Car::class, $car);
+        $this->assertInstanceOf(Engine::class, $car->engine);
+        $this->assertInstanceOf(Producer::class, $car->producer);
+        $this->assertEquals('Lexus', $car->producer->name);
     }
 
     public function testBindCustomServiceFactoryClass()

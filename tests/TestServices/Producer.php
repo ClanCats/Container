@@ -7,6 +7,6 @@ class Producer
 
 	public function __construct(string $name)
 	{
-		$this->name;
+		$this->name = $name;
 	}
 }
