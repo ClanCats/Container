@@ -52,6 +52,16 @@ class ServiceFactory implements ServiceFactoryInterface
 	}
 
 	/**
+	 * Returns the service class name
+	 * 
+	 * @return string
+	 */
+	public function getClassName() : string
+	{
+		return $this->className;
+	}
+
+	/**
      * Add a simply raw argument,
      * 
      * @param mixed             $argumentValue
@@ -84,13 +94,15 @@ class ServiceFactory implements ServiceFactoryInterface
         $this->constructorArguments->addParameter($argumentValue); return $this;
     }
 
-	/**
-	 * Generates an array of arguments 
-	 */
-	private function generateConstructorArguments(Container $container) : array
-	{
-
-	}
+    /**
+     * Returns the constructor arguments object
+     * 
+     * @return ServiceFactoryArguments
+     */
+    public function getArguments() : ServiceFactoryArguments
+    {
+    	return $this->constructorArguments;
+    }
 
 	/**
 	 * Construct your object, or value based on the given container.
@@ -100,6 +112,6 @@ class ServiceFactory implements ServiceFactoryInterface
 	 */
 	public function create(Container $container)
 	{
-		return new $this->className(...$this->generateConstructorArguments($container)); 
+		return new $this->className(...$this->constructorArguments->resolve($container)); 
 	}
 }	

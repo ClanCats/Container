@@ -14,9 +14,9 @@ class ServiceFactoryArguments
      */
     public static function fromArray(array $arguments) : ServiceFactoryArguments
     {
-        $arguments = new static;
-        $arguments->addArgumentsFromArray($arguments);
-        return $arguments;
+        $instance = new static;
+        $instance->addArgumentsFromArray($arguments);
+        return $instance;
     }
 
     /**
@@ -98,11 +98,50 @@ class ServiceFactoryArguments
                 if ($argument[0] === '@') {
                     $this->addDependency(substr($argument, 1));
                 } elseif ($argument[0] === ':') {
-                    $this->addParameterArgument(substr($argument, 1));
+                    $this->addParameter(substr($argument, 1));
                 }
             } else  {
-                $this->addRawArgument($argument);
+                $this->addRaw($argument);
             }
         }
+    }
+
+    /**
+     * Resolve the current arguments from the given container instance and
+     * return them as array
+     * 
+     * @param Container             $container
+     * @return array
+     */
+    public function resolve(Container $container) : array
+    {
+        $resolvedArguments = [];
+        foreach($this->arguments as list($argumentValue, $argumentType))
+        {
+            switch ($argumentType) 
+            {
+                case static::RAW:
+                    $resolvedArguments[] = $argumentValue;
+                break;
+                case static::DEPENDENCY:
+                    $resolvedArguments[] = $container->get($argumentValue);
+                break;
+                case static::PARAMETER:
+                    $resolvedArguments[] = $container->getParameter($argumentValue);
+                break;
+            }
+        }
+
+        return $resolvedArguments;
+    }
+
+    /**
+     * Return all arguments
+     * 
+     * @return array[[string => int]]
+     */
+    public function getAll() : array
+    {
+        return $this->arguments;
     }
 }   

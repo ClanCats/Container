@@ -2,7 +2,8 @@
 namespace ClanCats\Container\Tests;
 
 use ClanCats\Container\{
-    Container
+    Container,
+    ServiceFactory
 };
 use ClanCats\Container\Tests\TestServices\{
     Car, CarFactory, Engine
@@ -10,7 +11,51 @@ use ClanCats\Container\Tests\TestServices\{
 
 class ServiceFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testBindServiceFactoryClass()
+    public function testConsturct()
+    {
+        $factory = new ServiceFactory('\\Acme\\Demo', ['@foo', ':bar', true, 12, 'helo']);
+
+        $this->assertEquals('\\Acme\\Demo', $factory->getClassName());
+        $this->assertCount(5, $factory->getArguments()->getAll());
+
+        $factory = ServiceFactory::for('\\Acme\\Demo', ['@foo', ':bar', true, 12, 'helo']);
+
+        $this->assertEquals('\\Acme\\Demo', $factory->getClassName());
+        $this->assertCount(5, $factory->getArguments()->getAll());
+    }
+
+    public function testArguments()
+    {
+        $factory = new ServiceFactory('\\Acme\\Demo', ['foo']);
+
+        $factory->addRawArgument('bar');
+        $factory->addDependencyArgument('lorem');
+        $factory->addParameterArgument('ipsum');
+
+        $this->assertCount(4, $factory->getArguments()->getAll());
+        $this->assertEquals('foo', $factory->getArguments()->getAll()[0][0]);
+        $this->assertEquals('bar', $factory->getArguments()->getAll()[1][0]);
+        $this->assertEquals('lorem', $factory->getArguments()->getAll()[2][0]);
+        $this->assertEquals('ipsum', $factory->getArguments()->getAll()[3][0]);
+    }
+
+    public function testCreate()
+    {
+        $container = new Container();
+
+        $container->bind('engine', function() 
+        {
+            return new Engine();
+        });
+
+        $factory = new ServiceFactory(Car::class, ['@engine']);
+        $car = $factory->create($container);
+        
+        $this->assertInstanceOf(Car::class, $car);
+        $this->assertInstanceOf(Engine::class, $car->engine);
+    }
+
+    public function testBindCustomServiceFactoryClass()
     {
         $container = new Container();
 
