@@ -14,7 +14,7 @@ class ServiceFactoryArguments
      */
     public static function fromArray(array $arguments) : ServiceFactoryArguments
     {
-        $arguments = new static:
+        $arguments = new static;
         $arguments->addArgumentsFromArray($arguments);
         return $arguments;
     }
@@ -36,7 +36,7 @@ class ServiceFactoryArguments
     protected $arguments = [];
 
     /**
-     * Add an service argument of type
+     * Add a service argument of type
      * 
      * @param mixed             $argumentValue
      * @param int               $argumentType
@@ -53,9 +53,9 @@ class ServiceFactoryArguments
      * @param mixed             $argumentValue
      * @return self
      */
-    public function addRawArgument($argumentValue) : ServiceFactoryArguments
+    public function addRaw($argumentValue) : ServiceFactoryArguments
     {
-        return $this->addRawArgument($argumentValue, static::RAW);
+        return $this->addArgument($argumentValue, static::RAW);
     }
 
     /**
@@ -64,9 +64,9 @@ class ServiceFactoryArguments
      * @param mixed             $argumentValue
      * @return self
      */
-    public function addDependencyArgument($argumentValue) : ServiceFactoryArguments
+    public function addDependency($argumentValue) : ServiceFactoryArguments
     {
-        return $this->addRawArgument($argumentValue, static::DEPENDENCY);
+        return $this->addArgument($argumentValue, static::DEPENDENCY);
     }
 
     /**
@@ -75,9 +75,9 @@ class ServiceFactoryArguments
      * @param mixed             $argumentValue
      * @return self
      */
-    public function addParameterArgument($argumentValue) : ServiceFactoryArguments
+    public function addParameter($argumentValue) : ServiceFactoryArguments
     {
-        return $this->addRawArgument($argumentValue, static::PARAMETER);
+        return $this->addArgument($argumentValue, static::PARAMETER);
     }
 
     /**
@@ -93,10 +93,10 @@ class ServiceFactoryArguments
     {
         foreach($argumentsArray as $argument)
         {
-            if (is_string($argument) && ($argument[0] === '@' || $argument[0] === ':')))
+            if (is_string($argument) && ($argument[0] === '@' || $argument[0] === ':'))
             {
                 if ($argument[0] === '@') {
-                    $this->addDependencyArgument(substr($argument, 1));
+                    $this->addDependency(substr($argument, 1));
                 } elseif ($argument[0] === ':') {
                     $this->addParameterArgument(substr($argument, 1));
                 }

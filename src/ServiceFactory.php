@@ -9,14 +9,15 @@ class ServiceFactory implements ServiceFactoryInterface
 	 *     ServiceFactory::for('\Acme\SessionService')
 	 * 	      ->addDependencyArgument('storage')
 	 * 		  ->addParameterArgument('session_token')
-	 * 		  ->addScalarArgument(600)
-	 *        ->add
+	 * 		  ->addRawArgument(600)
 	 * 
 	 * Or the shorter way
+	 * 
+	 *     ServiceFactory::for('\Acme\SessionService', ['@storage', ':session_token', 600])
 	 */
-	public static function for(string $serviceClassName)
+	public static function for(string $serviceClassName, array $arguments = []) : ServiceFactory
 	{
-		return new static($serviceClassName);
+		return new static($serviceClassName, $arguments);
 	}
 
 	/**
@@ -49,6 +50,39 @@ class ServiceFactory implements ServiceFactoryInterface
 		$this->className = $className;
 		$this->constructorArguments = ServiceFactoryArguments::fromArray($arguments);
 	}
+
+	/**
+     * Add a simply raw argument,
+     * 
+     * @param mixed             $argumentValue
+     * @return self
+     */
+    public function addRawArgument($argumentValue) : ServiceFactory
+    {
+      	$this->constructorArguments->addRaw($argumentValue); return $this;
+    }
+
+    /**
+     * Add a simply raw argument,
+     * 
+     * @param mixed             $argumentValue
+     * @return self
+     */
+    public function addDependencyArgument($argumentValue) : ServiceFactory
+    {
+        $this->constructorArguments->addDependency($argumentValue); return $this;
+    }
+
+    /**
+     * Add a simply raw argument,
+     * 
+     * @param mixed             $argumentValue
+     * @return self
+     */
+    public function addParameterArgument($argumentValue) : ServiceFactory
+    {
+        $this->constructorArguments->addParameter($argumentValue); return $this;
+    }
 
 	/**
 	 * Generates an array of arguments 
