@@ -10,6 +10,7 @@ class ServiceFactory implements ServiceFactoryInterface
 	 * 	      ->addDependencyArgument('storage')
 	 * 		  ->addParameterArgument('session_token')
 	 * 		  ->addScalarArgument(600)
+	 *        ->add
 	 * 
 	 * Or the shorter way
 	 */
@@ -24,14 +25,29 @@ class ServiceFactory implements ServiceFactoryInterface
 	protected $className;
 
 	/**
+	 * The consturcor arguments of the service
+	 * 
+	 * @var ServiceFactoryArguments
+	 */
+	protected $constructorArguments;
+
+	/**
+	 * An array of method calls after service construction
+	 * 
+	 * @var array[string => ServiceFactoryArguments]
+	 */
+	protected $methodCallers = [];
+
+	/**
 	 * Construct a new service loader with a given cache directory
 	 * 
 	 * @param string 				$cacheDirectory
 	 * @return void
 	 */
-	public function __construct(string $className)
+	public function __construct(string $className, array $arguments = [])
 	{
 		$this->className = $className;
+		$this->constructorArguments = ServiceFactoryArguments::fromArray($arguments);
 	}
 
 	/**
