@@ -62,6 +62,17 @@ class ServiceFactory implements ServiceFactoryInterface
 	}
 
 	/**
+     * Add an array of arguments to the service construcotr
+     * 
+     * @param array             $arguments
+     * @return self
+     */
+    public function addArguments(array $arguments) : ServiceFactory
+    {
+      	$this->constructorArguments->addArgumentsFromArray($arguments); return $this;
+    }
+
+	/**
      * Add a simply raw argument,
      * 
      * @param mixed             $argumentValue

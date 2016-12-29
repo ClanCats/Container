@@ -39,6 +39,18 @@ class ServiceFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('ipsum', $factory->getArguments()->getAll()[3][0]);
     }
 
+    public function testAddArguments()
+    {
+        $factory = new ServiceFactory('\\Acme\\Demo');
+
+        $factory->addARguments(['@foo', ':bar', 42]);
+
+        $this->assertCount(3, $factory->getArguments()->getAll());
+        $this->assertEquals('foo', $factory->getArguments()->getAll()[0][0]);
+        $this->assertEquals('bar', $factory->getArguments()->getAll()[1][0]);
+        $this->assertEquals(42, $factory->getArguments()->getAll()[2][0]);
+    }
+
     public function testCreate()
     {
         $container = new Container();
@@ -63,7 +75,7 @@ class ServiceFactoryTest extends \PHPUnit_Framework_TestCase
         $container->bind('engine', ServiceFactory::for(Engine::class));
         $container->bind('producer', ServiceFactory::for(Producer::class, [':producer.name']));
         $container->bind('car', ServiceFactory::for(Car::class, ['@engine', '@producer']));
-        
+
         $car = $container->get('car');
         
         $this->assertInstanceOf(Car::class, $car);

@@ -300,10 +300,28 @@ class Container
 	/**
 	 * Binds a service factory to the container
 	 * 
-	 * @param
+	 *     $container->bind('session', new SessionFactory);
+	 * 
+	 *     $container->bind('config', function($c) {
+	 *          return new Config($c->get('config.loader'));
+	 *     }, false);
+	 * 
+	 *     $container->bind('router', '\\Routing\\Router')
+	 * 	       ->addDependencyArgument('config');
+	 * 
+	 * @param string 			$name
+	 * @param mixed 			$factory
+	 * @param bool 				$shared
+	 * 
+	 * @return Closure|ServiceFactoryInterface
 	 */
-	public function bind(string $name, $factory, bool $shared = true) : void
+	public function bind(string $name, $factory, bool $shared = true)
 	{
+		if (is_string($factory)) 
+		{
+			$factory = ServiceFactory::for($factory);
+		}
+
 		if ($shared) {
 			$this->bindSharedFactory($name, $factory);
 		} else {
