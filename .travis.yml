@@ -1,0 +1,18 @@
+language: php
+
+php:
+ - 7.1
+ - hhvm
+ - nightly
+
+before_script:
+ - composer self-update
+ - composer install --prefer-source --no-interaction --dev
+
+script:
+ - phpunit --coverage-text
+
+matrix:
+ allow_failures:
+  - php: hhvm
+  - php: nightly
