@@ -3,7 +3,8 @@ namespace ClanCats\Container\Tests;
 
 use ClanCats\Container\{
     Container,
-    ServiceFactory
+    ServiceFactory,
+    ServiceFactoryArguments
 };
 use ClanCats\Container\Tests\TestServices\{
     Car, CarFactory, Engine, Producer
@@ -43,12 +44,25 @@ class ServiceFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $factory = new ServiceFactory('\\Acme\\Demo');
 
-        $factory->addARguments(['@foo', ':bar', 42]);
+        $factory->arguments(['@foo', ':bar', 42]);
 
         $this->assertCount(3, $factory->getArguments()->getAll());
         $this->assertEquals('foo', $factory->getArguments()->getAll()[0][0]);
         $this->assertEquals('bar', $factory->getArguments()->getAll()[1][0]);
         $this->assertEquals(42, $factory->getArguments()->getAll()[2][0]);
+    }
+
+    public function testAddCalls()
+    {
+        $factory = new ServiceFactory('\\Acme\\Demo');
+
+        $factory->calls('setSomething', ['something else']);
+        $factory->calls('setContainer', ['@contanier']);
+        $factory->calls('init', [':name']);
+
+        $this->assertCount(3, $factory->getMethodCalls());
+        $this->assertEquals('setSomething', key($factory->getMethodCalls()));
+        $this->assertInstanceOf(ServiceFactoryArguments::class, $factory->getMethodCalls()['setSomething']);
     }
 
     public function testCreate()
@@ -65,6 +79,26 @@ class ServiceFactoryTest extends \PHPUnit_Framework_TestCase
         
         $this->assertInstanceOf(Car::class, $car);
         $this->assertInstanceOf(Engine::class, $car->engine);
+    }
+
+    public function testCreateCalls()
+    {
+        $container = new Container();
+
+        $engineFactory = ServiceFactory::for(Engine::class)
+            ->calls('setPower', [120]);
+
+        $this->assertEquals(120, $engineFactory->create($container)->power);
+
+        $container->bind('engine', $engineFactory);
+        $container->bind('car', ServiceFactory::for(Car::class, ['@engine'])->calls('setProducer', [new Producer('BMW')]));
+
+        $car = $container->get('car');
+
+        $this->assertInstanceOf(Car::class, $car);
+        $this->assertInstanceOf(Engine::class, $car->engine);
+        $this->assertInstanceOf(Producer::class, $car->producer);
+        $this->assertEquals(120, $car->engine->power);
     }
 
     public function testBindServiceFactory()

@@ -67,7 +67,7 @@ class ServiceFactory implements ServiceFactoryInterface
      * @param array             $arguments
      * @return self
      */
-    public function addArguments(array $arguments) : ServiceFactory
+    public function arguments(array $arguments) : ServiceFactory
     {
       	$this->constructorArguments->addArgumentsFromArray($arguments); return $this;
     }
@@ -115,6 +115,40 @@ class ServiceFactory implements ServiceFactoryInterface
     	return $this->constructorArguments;
     }
 
+    /**
+     * Adds a method call to the service factory
+     * 
+     * @param string 			$method
+     * @param array 			$arguments
+     * @return self
+     */
+    public function calls(string $method, array $arguments = []) : ServiceFactory
+    {
+    	return $this->addMethodCall($method, ServiceFactoryArguments::from($arguments));
+    }
+
+    /**
+     * Adds a method call to the service factory 
+     * 
+     * @param string 					$methodName
+     * @param ServiceFactoryArguments 	$arguments
+     * @return self
+     */
+    public function addMethodCall(string $methodName, ServiceFactoryArguments $arguments) : ServiceFactory
+    {
+    	$this->methodCallers[$methodName] = $arguments; return $this;
+    }
+
+    /**
+     * Returns all registered method calls
+     * 
+     * @return array
+     */
+    public function getMethodCalls() : array
+    {
+    	return $this->methodCallers;
+    }
+
 	/**
 	 * Construct your object, or value based on the given container.
 	 * 
@@ -123,6 +157,13 @@ class ServiceFactory implements ServiceFactoryInterface
 	 */
 	public function create(Container $container)
 	{
-		return new $this->className(...$this->constructorArguments->resolve($container)); 
+		$instance = new $this->className(...$this->constructorArguments->resolve($container)); 
+
+		foreach($this->methodCallers as $method => $arguments)
+		{
+			$instance->{$method}(... $arguments->resolve($container));
+		}
+
+		return $instance;
 	}
 }	

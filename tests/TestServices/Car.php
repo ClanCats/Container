@@ -11,4 +11,9 @@ class Car
 		$this->engine = $engine;
 		$this->producer = $producer;
 	}
+
+	public function setProducer(Producer $producer)
+	{
+		$this->producer = $producer;
+	}
 }
