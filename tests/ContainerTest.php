@@ -73,6 +73,30 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         (new Container())->getServiceResolverType('unknown');
     }
 
+    public function testBind()
+    {
+        $container = new Container();
+        $container->setParameter('ps', 205);
+
+        $container->bind('engine', Engine::class)
+            ->calls('setPower', [':ps']);
+
+        $container->bind('producer', Producer::class)
+            ->arguments(['Volvo']);
+
+        $container->bind('s60', Car::class)
+            ->arguments(['@engine', '@producer']);
+
+        $car = $container->get('s60');
+
+        $this->assertInstanceOf(Car::class, $car);
+        $this->assertInstanceOf(Engine::class, $car->engine);
+        $this->assertInstanceOf(Producer::class, $car->producer);
+
+        $this->assertEquals('Volvo', $car->producer->name);
+        $this->assertEquals(205, $car->engine->power);
+    }
+
     public function testBindFactory()
     {
         $container = new Container();
@@ -256,5 +280,17 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($container->release('car'));
         $this->assertNotSame($referenceCar, $container->get('car'));
+    }
+
+    public function testAvailable()
+    {
+        $container = new Container();
+
+        $this->assertCount(1, $container->available());
+
+        $container->bind('foo', false);
+        $container->bind('bar', false);
+
+        $this->assertEquals(['foo', 'bar', 'container'], $container->available());
     }
 }

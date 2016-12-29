@@ -106,7 +106,10 @@ class Container
 	 */
 	public function available() : array
 	{
-		return array_push(array_keys($this->serviceResolverType), 'container');
+		$available = array_keys($this->serviceResolverType);
+		$available[] = 'container';
+
+		return $available;
 	}
 
 	/**
@@ -327,6 +330,8 @@ class Container
 		} else {
 			$this->bindFactory($name, $factory);
 		}
+
+		return $factory;
 	}
 
 	/**
