@@ -32,6 +32,13 @@ class Container
 	protected $serviceResolverType = [];
 
 	/**
+	 * An array of services and their provider
+	 * 
+	 * @var array[string => ServiceProviderInterface]
+	 */
+	protected $serviceProviders = [];
+
+	/**
 	 * An array of methods that resolve a service inside the current container.
 	 * This is mostly for the cached / dumped container which creates custom methods
 	 * for each service to (try to) improve performance of the container.
@@ -276,7 +283,13 @@ class Container
 	 */
 	private function resolveServiceProvider(string $name)
 	{
-		return $this->createInstanceFromFactory($this->resolverFactories[$name]);
+		list($service, $isShared) = $this->serviceProviders[$name]->resolve($name, $this);
+
+		if ($isShared) {
+			$this->resolvedSharedServices[$name] = $service;
+		}
+
+		return $service;
 	}
 
 	/**
@@ -298,6 +311,21 @@ class Container
 	private function resolveServiceFactory(string $name)
 	{
 		return $this->createInstanceFromFactory($this->resolverFactories[$name]);
+	}
+
+	/**
+	 * Register a service provider instance
+	 * 
+	 * @param ServiceProviderInterface 			$provider
+	 * @return void
+	 */
+	public function register(ServiceProviderInterface $provider) : void
+	{
+		foreach($provider->provides() as $serviceName)
+		{
+			$this->setServiceResolverType($serviceName, static::RESOLVE_PROVIDER);
+			$this->serviceProviders[$serviceName] = $provider;
+		}
 	}
 
 	/**

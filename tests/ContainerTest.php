@@ -7,7 +7,8 @@ use ClanCats\Container\{
 use ClanCats\Container\Tests\TestServices\{
     Car, Engine, Producer,
 
-    CustomContainer
+    CustomContainer,
+    CustomServiceProviderArray
 };
 
 class ContainerTest extends \PHPUnit_Framework_TestCase
@@ -292,5 +293,26 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $container->bind('bar', false);
 
         $this->assertEquals(['foo', 'bar', 'container'], $container->available());
+    }
+
+    public function testCustomProviderArray()
+    {
+        $container = new Container();
+        $container->register(new CustomServiceProviderArray());
+
+        $this->assertCount(4, $container->available());
+
+        foreach(['car', 'engine', 'producer'] as $service)
+        {
+            $this->assertEquals(Container::RESOLVE_PROVIDER, $container->getServiceResolverType($service));
+        }
+
+        $this->assertInstanceOf(Car::class, $container->get('car'));
+        $this->assertInstanceOf(Engine::class, $container->get('car')->engine);
+        $this->assertInstanceOf(Producer::class, $container->get('car')->producer);
+
+        $this->assertEquals('Audi', $container->get('car')->producer->name);
+        $this->assertSame($container->get('car'), $container->get('car'));
+        $this->assertEquals(315, $container->get('car')->engine->power);
     }
 }
