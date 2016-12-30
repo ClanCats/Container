@@ -314,5 +314,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Audi', $container->get('car')->producer->name);
         $this->assertSame($container->get('car'), $container->get('car'));
         $this->assertEquals(315, $container->get('car')->engine->power);
+
+        $this->assertNotSame($container->get('car')->engine, $container->get('engine'));
     }
 }

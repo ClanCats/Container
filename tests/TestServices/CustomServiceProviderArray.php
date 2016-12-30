@@ -18,6 +18,7 @@ class CustomServiceProviderArray extends ServiceProviderArray
 		'engine' => 
 		[
 			'class' => Engine::class,
+			'shared' => false,
 			'calls' => [
 				['method' => 'setPower', 'arguments' => [315]]
 			]
