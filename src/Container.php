@@ -48,7 +48,7 @@ class Container
 	protected $resolverMethods = [];
 
 	/**
-	 * An array of factory callbacks 
+	 * An array of factories ojects.
 	 * 
 	 * @var array[ServiceFactoryInterface|Closure]
 	 */
@@ -62,9 +62,9 @@ class Container
 	protected $resolvedSharedServices = [];
 
 	/**
-	 * Construct a new service loader with a given cache directory
+	 * Construct a new container instance with inital parameters.
 	 * 
-	 * @param string 				$cacheDirectory
+	 * @param array 				$initalParameters Array of inital parameters.
 	 * @return void
 	 */
 	public function __construct(array $initalParameters = [])
@@ -73,9 +73,9 @@ class Container
 	}
 
 	/**
-	 * Does the container have the given parameters
+	 * Does the container contain the parameter with the given name?
 	 * 
-	 * @param string 			$name
+	 * @param string 			$name The parameter name.
 	 * @return bool
 	 */
 	public function hasParameter(string $name) : bool
@@ -84,10 +84,12 @@ class Container
 	}
 
 	/**
-	 * Get the given parameter with default
+	 * Get the parameter with the the given name, or return the default 
+	 * value if the parameter is not set.
 	 * 
-	 * @param string 			$name
-	 * @return mixed
+	 * @param string 			$name The parameter name.
+	 * @param mixed 			$default The returned default value if the parameter is not set. 
+	 * @return mixed 
 	 */
 	public function getParameter(string $name, $default = null)
 	{
@@ -97,8 +99,8 @@ class Container
 	/**
 	 * Set the given parameter with value
 	 * 
-	 * @param string 			$name
-	 * @param mixed 			$value
+	 * @param string 			$name The parameter name.
+	 * @param mixed 			$value The parameter value.
 	 * @return void
 	 */
 	public function setParameter(string $name, $value) : void
@@ -107,9 +109,9 @@ class Container
 	}
 
 	/**
-	 * Returns an array of all available services
+	 * Returns an array of all available servic keys.
 	 * 
-	 * @return array
+	 * @return array[string]
 	 */
 	public function available() : array
 	{
@@ -120,9 +122,10 @@ class Container
 	}
 
 	/**
-	 * Does the container have the given service
+	 * Does the container have the given service?
 	 * 
 	 * @param string 			$serviceName
+	 * @return bool
 	 */
 	public function has(string $serviceName) : bool
 	{
@@ -130,10 +133,12 @@ class Container
 	}
 
 	/**
-	 * Simply sets a service on the shared container
+	 * Sets a value on the container instance. 
+	 * This will overwrite any service stored / shared under the same name.
 	 * 
 	 * @param string 			$serviceName
 	 * @param mixed 			$serviceValue
+	 * @return void
 	 */
 	public function set(string $serviceName, $serviceValue) : void
 	{
@@ -147,7 +152,12 @@ class Container
 	}
 
 	/**
-	 * Removes a service from the container 
+	 * Removes a service from the container and releases the shared instance
+	 * if it has been loaded.
+	 * 
+	 * @param string 			$serviceName
+	 * 
+	 * @return bool Returns true if the service has been removed.
 	 */
 	public function remove(string $serviceName) : bool
 	{
@@ -184,7 +194,8 @@ class Container
 	}
 
 	/**
-	 * Check if the given service has already been resolved
+	 * Check if the given service has already been resolved / shared / initiated.
+	 * A factory service will always return false.
 	 * 
 	 * @param string 			$serviceName
 	 * @return bool
@@ -207,10 +218,12 @@ class Container
 	}
 
 	/**
-	 * Release a shared resolved service 
+	 * Release a shared resolved service from the container. This 
+	 * will force the service to reload when accessed again.
 	 * 
 	 * @param string 				$serviceName
-	 * @return bool
+	 * 
+	 * @return bool Return false on failure.
 	 */
 	public function release(string $serviceName) : bool
 	{
@@ -223,10 +236,13 @@ class Container
 	}
 
 	/**
-	 * Get a service by the given name
+	 * Retrieve a service from the container. 
+	 * 
+	 * @throws UnknownServiceException When a service could not be found or is unresolvable.
 	 * 
 	 * @param string 			$serviceName
-	 * @return mixed
+	 * 
+	 * @return mixed The requested service.
 	 */
 	public function get(string $serviceName)
 	{
@@ -277,10 +293,11 @@ class Container
 	}
 
 	/**
-	 * Resolve a service from the given factory
+	 * Resolve a service instance from the given factory object.
 	 * 
-	 * @param ServiceFactoryInterface|Closure 			$factory
-	 * @return mixed
+	 * @param ServiceFactoryInterface|Closure 			$factory The factory object.
+	 * 
+	 * @return mixed The instance of created by the factory object.
 	 */
 	private function createInstanceFromFactory($factory)
 	{	
@@ -298,9 +315,12 @@ class Container
 	}
 
 	/**
-	 * Resolves the service from a service provider
+	 * Resolves a service instance from a provider and stores the 
+	 * result inside the shared services if needed.
 	 * 
-	 * @param string 			$method
+	 * @param string 			$name The service name.
+	 * 
+	 * @return mixed The service instance created by the provider.
 	 */
 	private function resolveServiceProvider(string $name)
 	{
@@ -314,10 +334,11 @@ class Container
 	}
 
 	/**
-	 * Resolver that will store the returned value for the next
-	 * access.
+	 * Resolver that will always store the returned value inside the service container.
 	 * 
-	 * @param string 			$method
+	 * @param string 			$name The service name.
+	 * 
+	 * @return mixed The service instance created by the factory or shared in the container.
 	 */
 	private function resolveServiceShared(string $name)
 	{
@@ -325,9 +346,11 @@ class Container
 	}
 
 	/**
-	 * Resolver that will simply return the factoryies value 
+	 * Resolver that will simply create an instance from the factory.
 	 * 
-	 * @param string 			$method
+	 * @param string 			$name The service name.
+	 * 
+	 * @return mixed The service instance created by the factory.
 	 */
 	private function resolveServiceFactory(string $name)
 	{
@@ -335,9 +358,10 @@ class Container
 	}
 
 	/**
-	 * Register a service provider instance
+	 * Register a service provider.
+	 * This will call the `provides` method on the given service provider instance.
 	 * 
-	 * @param ServiceProviderInterface 			$provider
+	 * @param ServiceProviderInterface 			$provider The service provider instance.
 	 * @return void
 	 */
 	public function register(ServiceProviderInterface $provider) : void
@@ -350,7 +374,7 @@ class Container
 	}
 
 	/**
-	 * Binds a service factory to the container
+	 * Binds a service factory to the container.
 	 * 
 	 *     $container->bind('session', new SessionFactory);
 	 * 
@@ -361,11 +385,11 @@ class Container
 	 *     $container->bind('router', '\\Routing\\Router')
 	 * 	       ->addDependencyArgument('config');
 	 * 
-	 * @param string 			$name
-	 * @param mixed 			$factory
-	 * @param bool 				$shared
+	 * @param string 			$name The service name.
+	 * @param mixed 			$factory The service factory instance, the closure or the classname as string
+	 * @param bool 				$shared Should the service be shared inside the container.
 	 * 
-	 * @return Closure|ServiceFactoryInterface
+	 * @return Closure|ServiceFactoryInterface The given or generated service factory.
 	 */
 	public function bind(string $name, $factory, bool $shared = true)
 	{
@@ -384,9 +408,9 @@ class Container
 	}
 
 	/**
-	 * Binds a normal unshared factory to the service container
+	 * Binds an unshared factory instance to the service container.
 	 * 
-	 * @param ServiceFactoryInterface|Closure 			$factory
+	 * @param ServiceFactoryInterface|Closure 	$factory The service factory instance or closure.
 	 * @return void
 	 */
 	public function bindFactory(string $name, $factory) : void
@@ -396,9 +420,9 @@ class Container
 	}
 
 	/**
-	 * Binds a default shared factory to the service container
+	 * Binds a shared factory instance to the service container.
 	 * 
-	 * @param ServiceFactoryInterface|Closure 			$factory
+	 * @param ServiceFactoryInterface|Closure 	$factory The service factory instance or closure.
 	 * @return void
 	 */
 	public function bindSharedFactory(string $name, $factory) : void
@@ -408,11 +432,11 @@ class Container
 	}
 
 	/**
-	 * Add a service resolver type to the container. 
+	 * Set a service resolver type.
 	 * The service resolver type tells the container where to look for the correct resolver.
 	 * 
 	 * @param string 			$serviceName
-	 * @param int 				$serviceType
+	 * @param int 				$serviceType The service type as int represented by the `RESOLVE_` prefixed constants.
 	 * @return void
 	 */
 	private function setServiceResolverType(string $serviceName, int $serviceType) : void
@@ -421,7 +445,7 @@ class Container
 	}
 
 	/**
-	 * Get the resolver type of the given name
+	 * Get the resolver type of the given service name.
 	 * 
 	 * @param string 				$serviceName
 	 * @return int
