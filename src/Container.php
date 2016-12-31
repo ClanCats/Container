@@ -159,7 +159,28 @@ class Container
 			return false; // the container itself cannot be removed
 		}
 
+		// remove the already shared instnace if set
+		if (isset($this->resolvedSharedServices[$serviceName])) {
+			unset($this->resolvedSharedServices[$serviceName]);
+		}
 
+		// remove the service type
+		if (isset($this->serviceResolverType[$serviceName])) {
+			unset($this->serviceResolverType[$serviceName]);
+		}
+
+		// remove all possible references
+		if (isset($this->serviceProviders[$serviceName])) {
+			unset($this->serviceProviders[$serviceName]);
+		}
+		if (isset($this->resolverMethods[$serviceName])) {
+			unset($this->resolverMethods[$serviceName]);
+		}
+		if (isset($this->resolverFactories[$serviceName])) {
+			unset($this->resolverFactories[$serviceName]);
+		}
+
+		return true;
 	}
 
 	/**

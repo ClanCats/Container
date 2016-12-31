@@ -317,4 +317,42 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotSame($container->get('car')->engine, $container->get('engine'));
     }
+
+    public function testRemove()
+    {
+        $container = new Container();
+
+        $this->assertFalse($container->remove('unknown'));
+        $this->assertFalse($container->remove('container'));
+
+        // test remove from service provider
+        $container->register(new CustomServiceProviderArray());
+
+        $this->assertTrue($container->has('car'));
+        $this->assertInstanceOf(Car::class, $container->get('car'));
+
+        $this->assertTrue($container->remove('car'));
+        $this->assertFalse($container->has('car'));
+
+        // test remove from factory
+        $container->bind('car', function($c) 
+        {
+            return new Car($c->get('engine'));
+        });
+
+        $this->assertTrue($container->has('car'));
+        $this->assertInstanceOf(Car::class, $container->get('car'));
+
+        $this->assertTrue($container->remove('car'));
+        $this->assertFalse($container->has('car'));
+
+        $container = new CustomContainer();
+
+        $this->assertTrue($container->has('car'));
+        $this->assertInstanceOf(Car::class, $container->get('car'));
+
+        $this->assertTrue($container->remove('car'));
+        $this->assertFalse($container->has('car'));
+
+    }
 }
