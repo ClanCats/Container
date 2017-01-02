@@ -5,32 +5,14 @@ use ClanCats\Container\{
 	ServiceLoaderService as Service
 };
 
-class ServiceLoader 
+class ContainerBuilder 
 {
-	/**
-	 * Service loader file cache
-	 * 
-	 * @var string
-	 */
-	protected $cacheDirectory = null;
-
 	/**
 	 * An array of binded services
 	 * 
 	 * @param array[string => Service]
 	 */
 	protected $bindedServices = [];
-
-	/**
-	 * Construct a new service loader with a given cache directory
-	 * 
-	 * @param string 				$cacheDirectory
-	 * @return void
-	 */
-	public function __construct(string $cacheDirectory)
-	{
-		$this->cacheDirectory = $cacheDirectory;
-	}
 
 	/**
 	 * Adds the given service to the loader
