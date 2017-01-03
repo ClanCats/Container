@@ -1,6 +1,10 @@
 <?php 
 namespace ClanCats\Container;
 
+use ClanCats\Container\{
+    Exceptions\InvalidServiceException
+};
+
 class ServiceDefinition implements ServiceDefinitionInterface
 {
 	/**
@@ -19,6 +23,49 @@ class ServiceDefinition implements ServiceDefinitionInterface
 	{
 		return new static($serviceClassName, $arguments);
 	}
+
+    /**
+     * Construct a single service definition object from an array
+     * 
+     *     ServiceDefinition::fromArray([
+     *         'class' => '\Acme\Demo',
+     *         'arguments' => ['@foo', ':bar'],
+     *         'calls' => [
+     *             ['method' => 'setName', [':demo.name']]
+     *         ]
+     *     ])
+     * 
+     * @param array             $serviceConfiguration
+     * @return ServiceDefinition
+     */
+    public static function fromArray(array $serviceConfiguration)
+    {
+        if (!isset($serviceConfiguration['class']))
+        {
+            throw new InvalidServiceException('The service configuration must define a "class" attribute.');
+        }
+
+        // construct the service definition
+        $defintion = static::for($serviceConfiguration['class'], $serviceConfiguration['arguments'] ?? []);
+
+        // add service method calls if configured
+        if (isset($serviceConfiguration['calls']))
+        {
+            foreach($serviceConfiguration['calls'] as $call)
+            {
+                if (isset($call['method']) && isset($call['arguments']))
+                {
+                    $defintion->calls($call['method'], $call['arguments']);
+                }
+                else 
+                {
+                    throw new InvalidServiceException('Every service call must have the attributes "method" and "arguments".');
+                }
+            }
+        }
+
+        return $defintion;
+    }
 
 	/**
 	 * The services class name
@@ -69,7 +116,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
      * @param array             $arguments
      * @return self
      */
-    public function arguments(array $arguments) : ServiceFactory
+    public function arguments(array $arguments) : ServiceDefinition
     {
       	$this->constructorArguments->addArgumentsFromArray($arguments); return $this;
     }
@@ -80,7 +127,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
      * @param mixed             $argumentValue
      * @return self
      */
-    public function addRawArgument($argumentValue) : ServiceFactory
+    public function addRawArgument($argumentValue) : ServiceDefinition
     {
       	$this->constructorArguments->addRaw($argumentValue); return $this;
     }
@@ -91,7 +138,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
      * @param mixed             $argumentValue
      * @return self
      */
-    public function addDependencyArgument($argumentValue) : ServiceFactory
+    public function addDependencyArgument($argumentValue) : ServiceDefinition
     {
         $this->constructorArguments->addDependency($argumentValue); return $this;
     }
@@ -102,7 +149,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
      * @param mixed             $argumentValue
      * @return self
      */
-    public function addParameterArgument($argumentValue) : ServiceFactory
+    public function addParameterArgument($argumentValue) : ServiceDefinition
     {
         $this->constructorArguments->addParameter($argumentValue); return $this;
     }
@@ -124,7 +171,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
      * @param array 			$arguments
      * @return self
      */
-    public function calls(string $method, array $arguments = []) : ServiceFactory
+    public function calls(string $method, array $arguments = []) : ServiceDefinition
     {
     	return $this->addMethodCall($method, ServiceArguments::from($arguments));
     }
@@ -136,7 +183,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
      * @param ServiceArguments 	$arguments
      * @return self
      */
-    public function addMethodCall(string $methodName, ServiceArguments $arguments) : ServiceFactory
+    public function addMethodCall(string $methodName, ServiceArguments $arguments) : ServiceDefinition
     {
     	$this->methodCallers[$methodName] = $arguments; return $this;
     }

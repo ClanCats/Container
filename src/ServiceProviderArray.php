@@ -55,29 +55,8 @@ class ServiceProviderArray implements ServiceProviderInterface
 
 		$serviceConfiguration = $this->services[$serviceName];
 
-		if (!isset($serviceConfiguration['class']))
-		{
-			throw new InvalidServiceException('The "' . $serviceName . '" service configuration must define a "class" attribute.');
-		}
-
-		// construct the service factory
-		$factory = ServiceFactory::for($serviceConfiguration['class'], $serviceConfiguration['arguments'] ?? []);
-
-		// add service method calls if configured
-		if (isset($serviceConfiguration['calls']))
-		{
-			foreach($serviceConfiguration['calls'] as $call)
-			{
-				if (isset($call['method']) && isset($call['arguments']))
-				{
-					$factory->calls($call['method'], $call['arguments']);
-				}
-				else 
-				{
-					throw new InvalidServiceException('Every "' . $serviceName . '" service call must have the attributes "method" and "arguments".');
-				}
-			}
-		}
+		// create the factory 
+		$factory = ServiceFactory::fromArray($serviceConfiguration);
 
 		// resolve the service 
 		$service = $factory->create($container);
