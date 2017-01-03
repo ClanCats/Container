@@ -30,14 +30,14 @@ class ServiceDefinition implements ServiceDefinitionInterface
 	/**
 	 * The consturcor arguments of the service
 	 * 
-	 * @var ServiceFactoryArguments
+	 * @var ServiceArguments
 	 */
 	protected $constructorArguments;
 
 	/**
 	 * An array of method calls after service construction
 	 * 
-	 * @var array[string => ServiceFactoryArguments]
+	 * @var array[string => ServiceArguments]
 	 */
 	protected $methodCallers = [];
 
@@ -50,7 +50,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
 	public function __construct(string $className, array $arguments = [])
 	{
 		$this->className = $className;
-		$this->constructorArguments = ServiceFactoryArguments::from($arguments);
+		$this->constructorArguments = ServiceArguments::from($arguments);
 	}
 
 	/**
@@ -110,9 +110,9 @@ class ServiceDefinition implements ServiceDefinitionInterface
     /**
      * Returns the constructor arguments object
      * 
-     * @return ServiceFactoryArguments
+     * @return ServiceArguments
      */
-    public function getArguments() : ServiceFactoryArguments
+    public function getArguments() : ServiceArguments
     {
     	return $this->constructorArguments;
     }
@@ -126,17 +126,17 @@ class ServiceDefinition implements ServiceDefinitionInterface
      */
     public function calls(string $method, array $arguments = []) : ServiceFactory
     {
-    	return $this->addMethodCall($method, ServiceFactoryArguments::from($arguments));
+    	return $this->addMethodCall($method, ServiceArguments::from($arguments));
     }
 
     /**
      * Adds a method call to the service factory 
      * 
      * @param string 					$methodName
-     * @param ServiceFactoryArguments 	$arguments
+     * @param ServiceArguments 	$arguments
      * @return self
      */
-    public function addMethodCall(string $methodName, ServiceFactoryArguments $arguments) : ServiceFactory
+    public function addMethodCall(string $methodName, ServiceArguments $arguments) : ServiceFactory
     {
     	$this->methodCallers[$methodName] = $arguments; return $this;
     }

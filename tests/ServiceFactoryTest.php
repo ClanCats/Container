@@ -4,7 +4,7 @@ namespace ClanCats\Container\Tests;
 use ClanCats\Container\{
     Container,
     ServiceFactory,
-    ServiceFactoryArguments
+    ServiceArguments
 };
 use ClanCats\Container\Tests\TestServices\{
     Car, CarFactory, Engine, Producer
@@ -62,7 +62,7 @@ class ServiceFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(3, $factory->getMethodCalls());
         $this->assertEquals('setSomething', key($factory->getMethodCalls()));
-        $this->assertInstanceOf(ServiceFactoryArguments::class, $factory->getMethodCalls()['setSomething']);
+        $this->assertInstanceOf(ServiceArguments::class, $factory->getMethodCalls()['setSomething']);
     }
 
     public function testCreate()

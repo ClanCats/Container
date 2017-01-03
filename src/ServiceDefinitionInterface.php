@@ -13,14 +13,14 @@ interface ServiceDefinitionInterface
 	/**
      * Returns the constructor arguments object
      * 
-     * @return ServiceFactoryArguments
+     * @return ServiceArguments
      */
-    public function getArguments() : ServiceFactoryArguments;
+    public function getArguments() : ServiceArguments;
 
     /**
      * Returns all registered method calls
      * 
-     * @return array[string => ServiceFactoryArguments]
+     * @return array[string => ServiceArguments]
      */
     public function getMethodCalls() : array;
 }	

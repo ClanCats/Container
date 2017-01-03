@@ -1,18 +1,18 @@
 <?php 
 namespace ClanCats\Container;
 
-class ServiceFactoryArguments 
+class ServiceArguments 
 {
     /**
      * Static instance constructor from array for eye candy
      * 
-     *     ServiceFactoryArguments::from([
+     *     ServiceArguments::from([
      *         '@session.storage.redis',
      *         ':session_token',
      *         600, // session lifetime
      *     ])
      */
-    public static function from(array $arguments) : ServiceFactoryArguments
+    public static function from(array $arguments) : ServiceArguments
     {
         return new static($arguments);
     }
@@ -51,7 +51,7 @@ class ServiceFactoryArguments
      * @param int               $argumentType
      * @return self
      */
-    private function addArgument($argumentValue, int $argumentType) : ServiceFactoryArguments
+    private function addArgument($argumentValue, int $argumentType) : ServiceArguments
     {
         $this->arguments[] = [$argumentValue, $argumentType]; return $this;
     }
@@ -62,7 +62,7 @@ class ServiceFactoryArguments
      * @param mixed             $argumentValue
      * @return self
      */
-    public function addRaw($argumentValue) : ServiceFactoryArguments
+    public function addRaw($argumentValue) : ServiceArguments
     {
         return $this->addArgument($argumentValue, static::RAW);
     }
@@ -73,7 +73,7 @@ class ServiceFactoryArguments
      * @param mixed             $argumentValue
      * @return self
      */
-    public function addDependency($argumentValue) : ServiceFactoryArguments
+    public function addDependency($argumentValue) : ServiceArguments
     {
         return $this->addArgument($argumentValue, static::DEPENDENCY);
     }
@@ -84,7 +84,7 @@ class ServiceFactoryArguments
      * @param mixed             $argumentValue
      * @return self
      */
-    public function addParameter($argumentValue) : ServiceFactoryArguments
+    public function addParameter($argumentValue) : ServiceArguments
     {
         return $this->addArgument($argumentValue, static::PARAMETER);
     }
