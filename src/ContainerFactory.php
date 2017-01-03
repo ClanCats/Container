@@ -40,7 +40,7 @@ class ContainerFactory
 	 */
 	public function isDebugMode() : bool
 	{
-		return $this->isDebugMode();
+		return $this->debugMode;
 	}
 
 	/**
@@ -87,15 +87,15 @@ class ContainerFactory
 
 		$cacheFile = $this->cacheDirectory . $containerName . '.php';
 
-		if (!(file_exists($cacheFile) && is_readable($cacheFile) || $this->isDebugMode())
+		if ((!(file_exists($cacheFile) && is_readable($cacheFile))) || $this->isDebugMode())
 		{
-
+			file_put_contents($cacheFile, '<?php class ' . $containerName . ' extends \ClanCats\Container\Container {}');
 		}
 
 		// require the generated cache file
-		require $cacheFile;
+		require_once $cacheFile;
 
 		// create an instance of the generated container
-		return new \$containerName;
+		return new $containerName;
 	}
 }
