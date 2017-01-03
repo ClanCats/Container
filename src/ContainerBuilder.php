@@ -2,37 +2,59 @@
 namespace ClanCats\Container;
 
 use ClanCats\Container\{
-	ServiceLoaderService as Service
+	Container
 };
 
 class ContainerBuilder 
 {
 	/**
+	 * The container name
+	 * 
+	 * @var string
+	 */
+	protected $containerName;
+
+	/**
 	 * An array of binded services
 	 * 
 	 * @param array[string => Service]
 	 */
-	protected $bindedServices = [];
+	protected $services = [];
 
 	/**
-	 * Adds the given service to the loader
+	 * Constrcut a container builder instance 
 	 * 
-	 * @param string 			$name
-	 * @param Service 			$service
+	 * @param string 			$containerName
 	 * @return void
 	 */
-	public function bindService(string $name, Service $service) : void
+	public function __construct(string $containerName)
 	{
-		$this->bindedServices[$name] = $service;
+		$this->containerName = $containerName;
 	}
 
 	/**
-	 * Returns an array of the currently binded services
-	 * 
-	 * @return array[string => Service]
+	 * Add a service 
 	 */
-	public function getBindedServices() : array
+	public function add()
 	{
-		return $this->bindedServices;
+
+	}
+
+	/**
+	 * 
+	 */
+	public function addService(string $serviceName, ServiceDefinitionInterface $serviceDefinition)
+	{
+		$this->services[$serviceName] = $serviceDefinition;
+	}
+
+	/**
+	 * Generate the container class code string
+	 * 
+	 * @return string
+	 */
+	public function generate() : string
+	{
+		return "<?php class $this->containerName extends " . Container::class . ' {}';
 	}
 }

@@ -74,11 +74,11 @@ class ContainerFactory
 	 * array with services
 	 * 
 	 * @param string 				$containerName
-	 * @param 
+	 * @param callable 				$builderCallback
 	 * 
 	 * @return Container The generated container instnace.
 	 */
-	public function create(string $containerName, $builderCallback) : Container
+	public function create(string $containerName, callable $builderCallback) : Container
 	{
 		if (class_exists($containerName))
 		{
@@ -89,7 +89,13 @@ class ContainerFactory
 
 		if ((!(file_exists($cacheFile) && is_readable($cacheFile))) || $this->isDebugMode())
 		{
-			file_put_contents($cacheFile, '<?php class ' . $containerName . ' extends \ClanCats\Container\Container {}');
+			$builder = new ContainerBuilder($containerName);
+
+			// run the builder callback
+			$builderCallback($builder);
+
+			// store the cache file
+			file_put_contents($cacheFile, $builder->generate());
 		}
 
 		// require the generated cache file
