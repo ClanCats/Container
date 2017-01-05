@@ -22,6 +22,13 @@ class ContainerBuilder
 	protected $services = [];
 
 	/**
+	 * An array of service names that should be shared in the builded container
+	 * 
+	 * @param array[string]
+	 */
+	protected $shared = [];
+
+	/**
 	 * Constrcut a container builder instance 
 	 * 
 	 * @param string 			$containerName
@@ -36,13 +43,20 @@ class ContainerBuilder
 	 * Add a service by string and arguments array.
 	 * 
 	 * @param string 			$serviceName
+	 * @param string 			$serviceClass
 	 * @param array 			$serviceArguments
+	 * @param bool 				$shared
 	 * @return ServiceDefinition
 	 */
-	public function add(string $serviceName, string $serviceClass, array $serviceArguments = []) : ServiceDefinition
+	public function add(string $serviceName, string $serviceClass, array $serviceArguments = [], bool $isShared = true) : ServiceDefinition
 	{
 		$service = ServiceDefinition::for($serviceClass, $serviceArguments);
 		$this->addService($serviceName, $service);
+
+		if ($isShared && (!in_array($serviceName, $this->shared)))
+		{
+			$this->shared[] = $serviceName;
+		}
 
 		return $service;
 	}
@@ -58,6 +72,11 @@ class ContainerBuilder
 		foreach($servicesArray as $serviceName => $serviceConfiguration)
 		{
 			$this->addService($serviceName, ServiceDefinition::fromArray($serviceConfiguration));
+
+			if ((!isset($serviceConfiguration['shared'])) || $serviceConfiguration['shared'] !== false || in_array($serviceName, $this->shared))
+			{
+				$this->shared[] = $serviceName;
+			}
 		}
 	}
 
@@ -82,6 +101,10 @@ class ContainerBuilder
 	{
 		$buffer = "<?php \nclass $this->containerName extends " . Container::class . " {\n\n";
 
+		$buffer .= $this->generateResolverTypes() . "\n";
+
+		$buffer .= $this->generateResolverMappings() . "\n";
+
 		$buffer .= $this->generateResolverMethods() . "\n";
 
 		return $buffer . "\n}";
@@ -103,12 +126,36 @@ class ContainerBuilder
 			}
 			elseif ($argumentType === ServiceArguments::RAW)
 			{
-				$buffer[] = var_export($argumentsValue);
+				$buffer[] = var_export($argumentsValue, true);
 			}
 		}
 
 
 		return implode(', ', $buffer);
+	}
+
+	private function generateResolverTypes() : string
+	{
+		$types = []; 
+
+		foreach($this->services as $serviceName => $serviceDefinition)
+		{
+			$types[] = var_export($serviceName, true) . ' => ' . Container::RESOLVE_METHOD;
+		}
+
+		return "protected \$serviceResolverType = [" . implode(', ', $types) . "];\n";
+	}
+
+	private function generateResolverMappings() : string
+	{
+		$mappings = []; 
+
+		foreach($this->services as $serviceName => $serviceDefinition)
+		{
+			$mappings[] = var_export($serviceName, true) . ' => ' . var_export('resolve' . ucfirst($serviceName), true);
+		}
+
+		return "protected \$resolverMethods = [" . implode(', ', $mappings) . "];\n";
 	}
 
 	private function generateResolverMethods() : string
@@ -120,6 +167,13 @@ class ContainerBuilder
 			$buffer .= "protected function resolve" . ucfirst($serviceName) . "() {\n";
 
 			$buffer .= "\t\$instance = new " . $serviceDefinition->getClassName() . "(". $this->generateArgumentsCode($serviceDefinition->getArguments()) .");\n";
+
+			if (in_array($serviceName, $this->shared))
+			{
+				$buffer .= "\t\$this->resolvedSharedServices[" . var_export($serviceName, true) . "] = \$instance;\n";
+			}
+
+			$buffer .= "\treturn \$instance;\n";
 
 			$buffer .= "}\n";
 		}
