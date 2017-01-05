@@ -174,7 +174,7 @@ class ContainerBuilder
 
 			foreach($serviceDefinition->getMethodCalls() as $callName => $callArguments)
 			{
-				$buffer .= "\$instance->" . $callName . '('. $this->generateArgumentsCode($callArguments) .');';
+				$buffer .= "\t\$instance->" . $callName . '('. $this->generateArgumentsCode($callArguments) .");\n";
 			}
 
 			$buffer .= "\treturn \$instance;\n";
