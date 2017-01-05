@@ -126,10 +126,9 @@ class ContainerBuilder
 			}
 			elseif ($argumentType === ServiceArguments::RAW)
 			{
-				$buffer[] = var_export($argumentsValue, true);
+				$buffer[] = var_export($argumentValue, true);
 			}
 		}
-
 
 		return implode(', ', $buffer);
 	}
@@ -171,6 +170,11 @@ class ContainerBuilder
 			if (in_array($serviceName, $this->shared))
 			{
 				$buffer .= "\t\$this->resolvedSharedServices[" . var_export($serviceName, true) . "] = \$instance;\n";
+			}
+
+			foreach($serviceDefinition->getMethodCalls() as $callName => $callArguments)
+			{
+				$buffer .= "\$instance->" . $callName . '('. $this->generateArgumentsCode($callArguments) .');';
 			}
 
 			$buffer .= "\treturn \$instance;\n";
