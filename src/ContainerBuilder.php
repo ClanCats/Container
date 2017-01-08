@@ -40,7 +40,7 @@ class ContainerBuilder
 	 */
 	public function __construct(string $containerName)
 	{
-		if (is_numeric($containerName) || empty($containerName))
+		if ($this->validateNonNumericString($containerName))
 		{
 			throw new ContainerBuilderException('The container name cannot be empty.');
 		}
@@ -116,8 +116,13 @@ class ContainerBuilder
 	 * @param ServiceDefinitionInterface	$serviceDefinition
 	 * @return void
 	 */
-	public function addService(string $serviceName, ServiceDefinitionInterface $serviceDefinition, $isShared = true) : void
+	public function addService(string $serviceName, ServiceDefinitionInterface $serviceDefinition, bool $isShared = true) : void
 	{
+		if ($this->validateNonNumericString($serviceName))
+		{
+			throw new ContainerBuilderException('The servicename must be a string and cannot be numeric or empty.');
+		}
+
 		$this->services[$serviceName] = $serviceDefinition;
 
 		if ($isShared && (!in_array($serviceName, $this->shared)))
@@ -128,6 +133,17 @@ class ContainerBuilder
 		{
 			unset($this->shared[array_search($serviceName, $this->shared)]);
 		}
+	}
+
+	/**
+	 * Trhows exception if the value is empty or numeric
+	 * 
+	 * @param string 			$value
+	 * @return bool
+	 */
+	private function validateNonNumericString(string $value) : bool
+	{
+		return empty($value) || is_numeric($value);
 	}
 
 	/**
@@ -154,6 +170,11 @@ class ContainerBuilder
 
 		foreach($arguments->getAll() as list($argumentValue, $argumentType))
 		{
+			if (in_array($argumentType, [ServiceArguments::DEPENDENCY, ServiceArguments::PARAMETER]) && $this->validateNonNumericString($argumentValue))
+			{
+				throw new ContainerBuilderException('Parameter and dependency arguments must be non numeric and not empty to be builded.');
+			}
+
 			if ($argumentType === ServiceArguments::DEPENDENCY)
 			{
 				$buffer[] = "\$this->get('$argumentValue')";

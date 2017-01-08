@@ -76,6 +76,16 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['engine', 'car'], array_values($builder->getSharedNames()));
     }
 
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerBuilderException
+     * @dataProvider invalidContainerNameProvider
+     */
+    public function testAddServiceInvalidName($name)
+    {
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->addService($name, ServiceDefinition::for(Car::class));
+    }
+
     public function testAdd()
     {
         $builder = new ContainerBuilder('TestContainer');
@@ -112,5 +122,61 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(['car', 'producer', 'engine'], array_keys($builder->getServices()));
         $this->assertEquals(['car', 'producer'], $builder->getSharedNames());
+    }
+
+    public function testGenerate()
+    {
+        $builder = new ContainerBuilder('TestContainer');
+
+        $code = $builder->generate();
+
+        // has class definition
+        $this->assertContains('class TestContainer', $code);
+
+        // has superclass
+        $this->assertContains('extends ClanCats\Container\Container', $code);
+    }
+
+    public function testGenerateArgumentsCode()
+    {
+        $builder = new ContainerBuilder('TestContainer');
+
+        // Test dependency
+        $builder->add('foo', 'Test', ['@foo']);
+        $this->assertContains("Test(\$this->get('foo'))", $builder->generate());
+
+        // Test parameter
+        $builder->add('foo', 'Test', [':foo']);
+        $this->assertContains("Test(\$this->getParameter('foo'))", $builder->generate());
+
+        // Test string
+        $builder->add('foo', 'Test', ['foo']);
+        $this->assertContains("Test('foo')", $builder->generate());
+
+        // Test number
+        $builder->add('foo', 'Test', [42]);
+        $this->assertContains("Test(42)", $builder->generate());
+
+        // Test bool
+        $builder->add('foo', 'Test', [true]);
+        $this->assertContains("Test(true)", $builder->generate());
+
+        // Test array
+        $builder->add('foo', 'Test', [['a', 2, 'c' => 'b']]);
+        $this->assertContains("Test(array (
+  0 => 'a',
+  1 => 2,
+  'c' => 'b',
+))", $builder->generate());
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerBuilderException
+     */
+    public function testGenerateArgumentsCodeInvalid()
+    {
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->add('foo', 'Test', ['@42']);
+        $builder->generate();
     }
 }
