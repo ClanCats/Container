@@ -210,7 +210,7 @@ class ContainerBuilder
 
 		foreach($this->services as $serviceName => $serviceDefinition)
 		{
-			$mappings[] = var_export($serviceName, true) . ' => ' . var_export('resolve' . ucfirst($serviceName), true);
+			$mappings[] = var_export($serviceName, true) . ' => ' . var_export('resolve' . $this->camelize($serviceName), true);
 		}
 
 		return "protected \$resolverMethods = [" . implode(', ', $mappings) . "];\n";
@@ -222,7 +222,7 @@ class ContainerBuilder
 
 		foreach($this->services as $serviceName => $serviceDefinition)
 		{
-			$buffer .= "protected function resolve" . ucfirst($serviceName) . "() {\n";
+			$buffer .= "protected function resolve" . $this->camelize($serviceName) . "() {\n";
 
 			$buffer .= "\t\$instance = new " . $serviceDefinition->getClassName() . "(". $this->generateArgumentsCode($serviceDefinition->getArguments()) .");\n";
 
@@ -242,5 +242,11 @@ class ContainerBuilder
 		}
 
 		return $buffer;
+	}
+
+	private function camelize($input) : string
+	{
+		$input = str_replace([' ', '_'], '.', $input);
+	    return str_replace('.', '', ucwords($input, '.'));
 	}
 }

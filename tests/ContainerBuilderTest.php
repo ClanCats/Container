@@ -179,4 +179,23 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
         $builder->add('foo', 'Test', ['@42']);
         $builder->generate();
     }
+
+    public function testGenerateResolverTypes()
+    {
+        $builder = new ContainerBuilder('TestContainer');
+
+        $builder->add('foo', 'Test');
+        $this->assertContains("\$serviceResolverType = ['foo' => 0];", $builder->generate());
+        
+        $builder->add('bar', 'Test');
+        $this->assertContains("\$serviceResolverType = ['foo' => 0, 'bar' => 0];", $builder->generate());
+    }
+
+    public function testGenerateResolverMapping()
+    {
+        $builder = new ContainerBuilder('TestContainer');
+
+        $builder->add('foo', 'Test');
+        $this->assertContains("protected \$resolverMethods = ['foo' => 'resolveFoo'];", $builder->generate());
+    }
 }
