@@ -1,8 +1,12 @@
 <?php 
+declare(strict_types=1);
+
 namespace ClanCats\Container;
 
 use ClanCats\Container\{
-	Container
+	Container,
+
+	Exceptions\ContainerBuilderException
 };
 
 class ContainerBuilder 
@@ -36,7 +40,42 @@ class ContainerBuilder
 	 */
 	public function __construct(string $containerName)
 	{
+		if (is_numeric($containerName) || empty($containerName))
+		{
+			throw new ContainerBuilderException('The container name cannot be empty.');
+		}
+
 		$this->containerName = $containerName;
+	}
+
+	/**
+	 * Get the current container name
+	 * 
+	 * @return string 
+	 */
+	public function getContainerName() : string
+	{
+		return $this->containerName;
+	}
+
+	/**
+	 * Get all currently added services 
+	 * 
+	 * @return array[string => ServiceDefinition]
+	 */
+	public function getServices() : array 
+	{
+		return $this->services;
+	}
+
+	/**
+	 * Returns all shared service names
+	 * 
+	 * @return array[string]
+	 */
+	public function getSharedNames() : array 
+	{
+		return $this->shared;
 	}
 
 	/**
@@ -51,12 +90,7 @@ class ContainerBuilder
 	public function add(string $serviceName, string $serviceClass, array $serviceArguments = [], bool $isShared = true) : ServiceDefinition
 	{
 		$service = ServiceDefinition::for($serviceClass, $serviceArguments);
-		$this->addService($serviceName, $service);
-
-		if ($isShared && (!in_array($serviceName, $this->shared)))
-		{
-			$this->shared[] = $serviceName;
-		}
+		$this->addService($serviceName, $service, $isShared);
 
 		return $service;
 	}
@@ -71,12 +105,7 @@ class ContainerBuilder
 	{
 		foreach($servicesArray as $serviceName => $serviceConfiguration)
 		{
-			$this->addService($serviceName, ServiceDefinition::fromArray($serviceConfiguration));
-
-			if ((!isset($serviceConfiguration['shared'])) || $serviceConfiguration['shared'] !== false || in_array($serviceName, $this->shared))
-			{
-				$this->shared[] = $serviceName;
-			}
+			$this->addService($serviceName, ServiceDefinition::fromArray($serviceConfiguration), $serviceConfiguration['shared'] ?? true);
 		}
 	}
 
@@ -87,9 +116,18 @@ class ContainerBuilder
 	 * @param ServiceDefinitionInterface	$serviceDefinition
 	 * @return void
 	 */
-	public function addService(string $serviceName, ServiceDefinitionInterface $serviceDefinition) : void
+	public function addService(string $serviceName, ServiceDefinitionInterface $serviceDefinition, $isShared = true) : void
 	{
 		$this->services[$serviceName] = $serviceDefinition;
+
+		if ($isShared && (!in_array($serviceName, $this->shared)))
+		{
+			$this->shared[] = $serviceName;
+		} 
+		elseif ((!$isShared) && in_array($serviceName, $this->shared))
+		{
+			unset($this->shared[array_search($serviceName, $this->shared)]);
+		}
 	}
 
 	/**
@@ -167,14 +205,14 @@ class ContainerBuilder
 
 			$buffer .= "\t\$instance = new " . $serviceDefinition->getClassName() . "(". $this->generateArgumentsCode($serviceDefinition->getArguments()) .");\n";
 
-			if (in_array($serviceName, $this->shared))
-			{
-				$buffer .= "\t\$this->resolvedSharedServices[" . var_export($serviceName, true) . "] = \$instance;\n";
-			}
-
 			foreach($serviceDefinition->getMethodCalls() as $callName => $callArguments)
 			{
 				$buffer .= "\t\$instance->" . $callName . '('. $this->generateArgumentsCode($callArguments) .");\n";
+			}
+
+			if (in_array($serviceName, $this->shared))
+			{
+				$buffer .= "\t\$this->resolvedSharedServices[" . var_export($serviceName, true) . "] = \$instance;\n";
 			}
 
 			$buffer .= "\treturn \$instance;\n";

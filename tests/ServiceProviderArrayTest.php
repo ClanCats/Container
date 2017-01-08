@@ -52,7 +52,6 @@ class ServiceProviderArrayTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['foo', 'bar'], $provider->provides());
     }
 
-
     /**
      * @expectedException ClanCats\Container\Exceptions\InvalidServiceException
      */
