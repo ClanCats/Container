@@ -12,11 +12,25 @@ use ClanCats\Container\{
 class ContainerBuilder 
 {
 	/**
-	 * The container name
+	 * The full container name with namespace
 	 * 
 	 * @var string
 	 */
 	protected $containerName;
+
+	/**
+	 * The class name without namespace
+	 * 
+	 * @var string
+	 */
+	protected $containerClassName;
+
+	/**
+	 * Just the namespace
+	 * 
+	 * @var string
+	 */
+	protected $containerNamespace;
 
 	/**
 	 * An array of binded services
@@ -40,22 +54,66 @@ class ContainerBuilder
 	 */
 	public function __construct(string $containerName)
 	{
+		$this->setContainerName($containerName);
+	}
+
+	/**
+	 * Sets the container name 
+	 * This will also update the "containerClassName" and "containerNamespace"
+	 * 
+	 * @param string 			$containerName
+	 * @return void
+ 	 */
+	public function setContainerName(string $containerName) : void
+	{
 		if ($this->validateNonNumericString($containerName))
 		{
 			throw new ContainerBuilderException('The container name cannot be empty.');
 		}
 
+		if ($containerName[0] === "\\")
+		{
+			$containerName = substr($containerName, 1);
+		}
+
 		$this->containerName = $containerName;
+
+		// check if we need to generate a namespace
+		if (($pos = strrpos($containerName, "\\")) !== false)
+		{
+			$this->containerNamespace = substr($containerName, 0, $pos);
+			$this->containerClassName = substr($containerName, $pos + 1);
+		}
 	}
 
 	/**
-	 * Get the current container name
+	 * Get the current container full name
 	 * 
 	 * @return string 
 	 */
 	public function getContainerName() : string
 	{
 		return $this->containerName;
+	}
+
+	/**
+	 * Get the current container class name without namespace
+	 * 
+	 * @return string
+	 */
+	public function getContainerClassName() : string
+	{
+		return $this->containerClassName;
+	}
+
+	/**
+	 * Get the current container namespace
+	 * 
+	 * @return string|null
+	 */
+	public function getContainerNamespace()
+	{
+		return $this->containerNamespace;
 	}
 
 	/**
@@ -89,7 +147,7 @@ class ContainerBuilder
 	 */
 	public function add(string $serviceName, string $serviceClass, array $serviceArguments = [], bool $isShared = true) : ServiceDefinition
 	{
-		$service = ServiceDefinition::for($serviceClass, $serviceArguments);
+		$service = new ServiceDefinition($serviceClass, $serviceArguments);
 		$this->addService($serviceName, $service, $isShared);
 
 		return $service;
@@ -120,7 +178,7 @@ class ContainerBuilder
 	{
 		if ($this->validateNonNumericString($serviceName))
 		{
-			throw new ContainerBuilderException('The servicename must be a string and cannot be numeric or empty.');
+			throw new ContainerBuilderException('The "'.$serviceName.'" servicename must be a string and cannot be numeric or empty.');
 		}
 
 		$this->services[$serviceName] = $serviceDefinition;
@@ -153,12 +211,23 @@ class ContainerBuilder
 	 */
 	public function generate() : string
 	{
-		$buffer = "<?php \nclass $this->containerName extends " . Container::class . " {\n\n";
+		$buffer = "<?php\n\n";
+
+		// add namespace if needed
+		if (!is_null($this->containerNamespace))
+		{
+			$buffer .= "namespace " . $this->containerNamespace . ";\n\n";
+		}
+
+		// add use statement for the super container
+		$aliasContainerName = 'ClanCatsContainer' . md5($this->containerName);
+		$buffer .= "use " . Container::class . " as " . $aliasContainerName . ";\n\n";
+
+		// generate the the class
+		$buffer .= "class $this->containerClassName extends " . $aliasContainerName . " {\n\n";
 
 		$buffer .= $this->generateResolverTypes() . "\n";
-
 		$buffer .= $this->generateResolverMappings() . "\n";
-
 		$buffer .= $this->generateResolverMethods() . "\n";
 
 		return $buffer . "\n}";
@@ -224,7 +293,14 @@ class ContainerBuilder
 		{
 			$buffer .= "protected function resolve" . $this->camelize($serviceName) . "() {\n";
 
-			$buffer .= "\t\$instance = new " . $serviceDefinition->getClassName() . "(". $this->generateArgumentsCode($serviceDefinition->getArguments()) .");\n";
+			$serviceClassName = $serviceDefinition->getClassName();
+
+			if ($serviceClassName[0] !== "\\")
+			{
+				$serviceClassName = "\\" . $serviceClassName;
+			}
+
+			$buffer .= "\t\$instance = new " . $serviceClassName . "(". $this->generateArgumentsCode($serviceDefinition->getArguments()) .");\n";
 
 			foreach($serviceDefinition->getMethodCalls() as $callName => $callArguments)
 			{
