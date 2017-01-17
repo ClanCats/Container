@@ -246,7 +246,27 @@ class ContainerBuilder
 
 			if ($argumentType === ServiceArguments::DEPENDENCY)
 			{
-				$buffer[] = "\$this->get('$argumentValue')";
+				if ($argumentValue === 'container')
+				{
+					$buffer = "\$this";
+				} 
+				// if builder definition exists
+				elseif (isset($this->services[$argumentValue])) 
+				{
+					// if is not shared we can just forward the factory method
+					if (!in_array($argumentValue, $this->shared))
+					{
+						$buffer[] = "\$this->" . var_export('resolve' . $this->camelize($argumentValue), true);
+					}
+					else
+					{
+						$buffer[] = "\$this->resolvedSharedServices['$argumentValue'] ?? \$this->resolvedSharedServices['$argumentValue'] = \$this->" . 'resolve' . $this->camelize($argumentValue) . '()';
+					}	
+				}
+				else
+				{
+					$buffer[] = "\$this->get('$argumentValue')";
+				}
 			}
 			elseif ($argumentType === ServiceArguments::PARAMETER)
 			{
