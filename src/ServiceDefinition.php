@@ -46,7 +46,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
         }
 
         // construct the service definition
-        $defintion = static::for($serviceConfiguration['class'], $serviceConfiguration['arguments'] ?? []);
+        $defintion = new static($serviceConfiguration['class'], $serviceConfiguration['arguments'] ?? []);
 
         // add service method calls if configured
         if (isset($serviceConfiguration['calls']))
@@ -97,7 +97,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
 	public function __construct(string $className, array $arguments = [])
 	{
 		$this->className = $className;
-		$this->constructorArguments = ServiceArguments::from($arguments);
+		$this->constructorArguments = new ServiceArguments($arguments);
 	}
 
 	/**
@@ -173,7 +173,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
      */
     public function calls(string $method, array $arguments = []) : ServiceDefinition
     {
-    	return $this->addMethodCall($method, ServiceArguments::from($arguments));
+    	return $this->addMethodCall($method, new ServiceArguments($arguments));
     }
 
     /**

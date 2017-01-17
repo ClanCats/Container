@@ -395,7 +395,7 @@ class Container
 	{
 		if (is_string($factory)) 
 		{
-			$factory = ServiceFactory::for($factory);
+			$factory = new ServiceFactory($factory);
 		}
 
 		if ($shared) {
