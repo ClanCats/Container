@@ -85,7 +85,8 @@ class ContainerFactory
 			throw new ContainerException('The class "' . $containerName . '" is already registered!');
 		}
 
-		$cacheFile = $this->cacheDirectory . $containerName . '.php';
+		$fileName = basename(str_replace("\\", '/', $containerName));
+		$cacheFile = $this->cacheDirectory . $fileName . '.php';
 
 		if ((!(file_exists($cacheFile) && is_readable($cacheFile))) || $this->isDebugMode())
 		{
