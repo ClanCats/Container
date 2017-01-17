@@ -134,7 +134,7 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('class TestContainer', $code);
 
         // has superclass
-        $this->assertContains('extends ClanCats\Container\Container', $code);
+        $this->assertContains('extends ClanCatsContainer', $code);
     }
 
     public function testGenerateArgumentsCode()

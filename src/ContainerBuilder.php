@@ -76,7 +76,7 @@ class ContainerBuilder
 			$containerName = substr($containerName, 1);
 		}
 
-		$this->containerName = $containerName;
+		$this->containerClassName = $this->containerName = $containerName;
 
 		// check if we need to generate a namespace
 		if (($pos = strrpos($containerName, "\\")) !== false)
