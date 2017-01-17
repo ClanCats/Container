@@ -256,7 +256,7 @@ class ContainerBuilder
 					// if is not shared we can just forward the factory method
 					if (!in_array($argumentValue, $this->shared))
 					{
-						$buffer[] = "\$this->" . var_export('resolve' . $this->camelize($argumentValue), true);
+						$buffer[] = "\$this->" . 'resolve' . $this->camelize($argumentValue) . '()';
 					}
 					else
 					{
