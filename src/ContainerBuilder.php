@@ -66,7 +66,7 @@ class ContainerBuilder
  	 */
 	public function setContainerName(string $containerName) : void
 	{
-		if ($this->validateNonNumericString($containerName))
+		if ($this->invalidServiceBuilderString($containerName))
 		{
 			throw new ContainerBuilderException('The container name cannot be empty.');
 		}
@@ -176,7 +176,7 @@ class ContainerBuilder
 	 */
 	public function addService(string $serviceName, ServiceDefinitionInterface $serviceDefinition, bool $isShared = true) : void
 	{
-		if ($this->validateNonNumericString($serviceName))
+		if ($this->invalidServiceBuilderString($serviceName))
 		{
 			throw new ContainerBuilderException('The "'.$serviceName.'" servicename must be a string and cannot be numeric or empty.');
 		}
@@ -194,14 +194,38 @@ class ContainerBuilder
 	}
 
 	/**
-	 * Trhows exception if the value is empty or numeric
+	 * Checks if the given string is valid and not numeric &
 	 * 
 	 * @param string 			$value
 	 * @return bool
 	 */
-	private function validateNonNumericString(string $value) : bool
+	private function invalidServiceBuilderString(string $value) : bool
 	{
-		return empty($value) || is_numeric($value);
+		if (empty($value) || is_numeric($value)) {
+			return true;
+		}
+
+		// check for trailing / prepending whitespace ect.
+		if (trim($value) !== $value) {
+			return true;
+		}
+
+		// check for other special characters
+		if (preg_match('/[^a-zA-Z0-9._]+/', $value))  {
+			return true;
+		}
+
+		// also check if the string contains with a number
+		if (is_numeric($value[0]) || $value[0] === '.' || $value[0] === '_') {
+			return true;
+		}
+
+		// check for doubled spacial characters
+		// if (preg_replace('/,+/', ',', rtrim($value, ',')) !== $value) {
+
+		// }
+
+		return false;
 	}
 
 	/**
@@ -239,7 +263,7 @@ class ContainerBuilder
 
 		foreach($arguments->getAll() as list($argumentValue, $argumentType))
 		{
-			if (in_array($argumentType, [ServiceArguments::DEPENDENCY, ServiceArguments::PARAMETER]) && $this->validateNonNumericString($argumentValue))
+			if (in_array($argumentType, [ServiceArguments::DEPENDENCY, ServiceArguments::PARAMETER]) && $this->invalidServiceBuilderString($argumentValue))
 			{
 				throw new ContainerBuilderException('Parameter and dependency arguments must be non numeric and not empty to be builded.');
 			}
@@ -256,11 +280,11 @@ class ContainerBuilder
 					// if is not shared we can just forward the factory method
 					if (!in_array($argumentValue, $this->shared))
 					{
-						$buffer[] = "\$this->" . 'resolve' . $this->camelize($argumentValue) . '()';
+						$buffer[] = "\$this->" . 'resolve' . $this->camelizeServiceName($argumentValue) . '()';
 					}
 					else
 					{
-						$buffer[] = "\$this->resolvedSharedServices['$argumentValue'] ?? \$this->resolvedSharedServices['$argumentValue'] = \$this->" . 'resolve' . $this->camelize($argumentValue) . '()';
+						$buffer[] = "\$this->resolvedSharedServices['$argumentValue'] ?? \$this->resolvedSharedServices['$argumentValue'] = \$this->" . 'resolve' . $this->camelizeServiceName($argumentValue) . '()';
 					}	
 				}
 				else
@@ -299,10 +323,15 @@ class ContainerBuilder
 
 		foreach($this->services as $serviceName => $serviceDefinition)
 		{
-			$mappings[] = var_export($serviceName, true) . ' => ' . var_export('resolve' . $this->camelize($serviceName), true);
+			$mappings[] = var_export($serviceName, true) . ' => ' . var_export('resolve' . $this->camelizeServiceName($serviceName), true);
 		}
 
 		return "protected \$resolverMethods = [" . implode(', ', $mappings) . "];\n";
+	}
+
+	private function generateResolverMethodName($serviceName) : string 
+	{
+		return 'resolve' . $this->camelizeServiceName($serviceName);
 	}
 
 	private function generateResolverMethods() : string
@@ -311,7 +340,7 @@ class ContainerBuilder
 
 		foreach($this->services as $serviceName => $serviceDefinition)
 		{
-			$buffer .= "protected function resolve" . $this->camelize($serviceName) . "() {\n";
+			$buffer .= "protected function resolve" . $this->camelizeServiceName($serviceName) . "() {\n";
 
 			$serviceClassName = $serviceDefinition->getClassName();
 
@@ -340,7 +369,7 @@ class ContainerBuilder
 		return $buffer;
 	}
 
-	private function camelize($input) : string
+	private function camelizeServiceName($input) : string
 	{
 		$input = str_replace([' ', '_'], '.', $input);
 	    return str_replace('.', '', ucwords($input, '.'));

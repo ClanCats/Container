@@ -143,7 +143,7 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
 
         // Test dependency
         $builder->add('foo', 'Test', ['@foo']);
-        $this->assertContains("Test(\$this->get('foo'))", $builder->generate());
+        $this->assertContains("Test(\$this->resolvedSharedServices['foo'] ?? \$this->resolvedSharedServices['foo'] = \$this->resolveFoo())", $builder->generate());
 
         // Test parameter
         $builder->add('foo', 'Test', [':foo']);
@@ -197,5 +197,78 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->add('foo', 'Test');
         $this->assertContains("protected \$resolverMethods = ['foo' => 'resolveFoo'];", $builder->generate());
+    }
+
+    /**
+     * I Agree, testing private methods directly is bad practice.
+     * It just is so convenient here.. I should change this in future
+     */
+    protected function executePrivateMethod($methodName, $argument)
+    {
+        $method = new \ReflectionMethod(ContainerBuilder::class, $methodName);
+        $method->setAccessible(true);
+
+        return $method->invoke(new ContainerBuilder('TestContainer'), ...$argument);
+    }
+
+    /**
+     * Test the invalid non numeric string 
+     */
+    protected function assertinvalidServiceBuilderStringTrue($value)
+    {
+        $this->assertTrue($this->executePrivateMethod('invalidServiceBuilderString', [$value]));
+    }
+    protected function assertinvalidServiceBuilderStringFalse($value)
+    {
+        $this->assertFalse($this->executePrivateMethod('invalidServiceBuilderString', [$value]));
+    }
+
+    public function testinvalidServiceBuilderString()
+    {
+        $this->assertinvalidServiceBuilderStringTrue(0);
+        $this->assertinvalidServiceBuilderStringTrue(42);
+        $this->assertinvalidServiceBuilderStringTrue(true);
+        $this->assertinvalidServiceBuilderStringTrue(false);
+        $this->assertinvalidServiceBuilderStringTrue('');
+        $this->assertinvalidServiceBuilderStringTrue(' ');
+        $this->assertinvalidServiceBuilderStringTrue('1');
+        $this->assertinvalidServiceBuilderStringTrue('1test');
+        $this->assertinvalidServiceBuilderStringTrue('.');
+        $this->assertinvalidServiceBuilderStringTrue('.test');
+        $this->assertinvalidServiceBuilderStringTrue('_test');
+        $this->assertinvalidServiceBuilderStringTrue('/test');
+        $this->assertinvalidServiceBuilderStringTrue('\\test');
+        $this->assertinvalidServiceBuilderStringTrue(' test');
+        // $this->assertinvalidServiceBuilderStringTrue('test..test');
+        // $this->assertinvalidServiceBuilderStringTrue('test__bar');
+
+        $this->assertinvalidServiceBuilderStringFalse('test');
+        $this->assertinvalidServiceBuilderStringFalse('test1');
+        $this->assertinvalidServiceBuilderStringFalse('foo.bar');
+        $this->assertinvalidServiceBuilderStringFalse('foo_bar');
+        // $this->assertinvalidServiceBuilderStringFalse('foo/bar');
+        // $this->assertinvalidServiceBuilderStringFalse('foo\\bar');
+        $this->assertinvalidServiceBuilderStringFalse('fooBar');
+    }
+
+    /**
+     * Test resolver method name generation
+     */
+    protected function assertGenerateResolverMethodName($expected, $serviceName)
+    {
+        $this->assertEquals($expected, $this->executePrivateMethod('generateResolverMethodName', [$serviceName]));
+    }
+
+    public function testGenerateResolverMethodName()
+    {
+        $this->assertGenerateResolverMethodName('resolveFoo', 'foo');
+
+        $this->assertGenerateResolverMethodName('resolveFooBar', 'foo.bar');
+
+        $this->assertGenerateResolverMethodName('resolveFooBarTest', 'foo.bar test');
+
+        $this->assertGenerateResolverMethodName('resolveFooBarTest', 'foo.bar.test');
+
+        //$this->assertGenerateResolverMethodName('resolveFoo_Bar', 'fooBar');
     }
 }

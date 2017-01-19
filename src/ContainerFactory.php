@@ -82,7 +82,7 @@ class ContainerFactory
 	{
 		if (class_exists($containerName))
 		{
-			throw new ContainerException('The class "' . $containerName . '" is already registered!');
+			return new $containerName;
 		}
 
 		$fileName = basename(str_replace("\\", '/', $containerName));
