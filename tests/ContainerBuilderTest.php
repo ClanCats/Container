@@ -176,45 +176,56 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateArgumentsCode()
     {
-        $builder = new ContainerBuilder('TestContainer');
-
         // Test dependency
-        $builder->add('foo', 'Test', ['@foo']);
-        $this->assertContains("Test(\$this->resolvedSharedServices['foo'] ?? \$this->resolvedSharedServices['foo'] = \$this->resolveFoo())", $builder->generate());
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->add('foo', 'Test', ['@bar']);
+        $builder->add('bar', 'Bar', []);
+        $this->assertContains("\Test(\$this->resolvedSharedServices['bar'] ?? \$this->resolvedSharedServices['bar'] = \$this->resolveBar())", $builder->generate());
+
+        // test prototype dependency
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->add('foo', 'Test', ['@bar']);
+        $builder->add('bar', 'Bar', [], false);
+        $this->assertContains("\Test(\$this->resolveBar())", $builder->generate());
+
+        // Test Unknown dependency
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->add('foo', 'Test', ['@bar']);
+        $this->assertContains("\Test(\$this->get('bar'))", $builder->generate());
+
+         // Test Container dependency
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->add('foo', 'Test', ['@container']);
+        $this->assertContains("\Test(\$this)", $builder->generate());
 
         // Test parameter
+        $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', [':foo']);
         $this->assertContains("Test(\$this->getParameter('foo'))", $builder->generate());
 
         // Test string
+        $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', ['foo']);
         $this->assertContains("Test('foo')", $builder->generate());
 
         // Test number
+        $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', [42]);
         $this->assertContains("Test(42)", $builder->generate());
 
         // Test bool
+        $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', [true]);
         $this->assertContains("Test(true)", $builder->generate());
 
         // Test array
+        $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', [['a', 2, 'c' => 'b']]);
         $this->assertContains("Test(array (
   0 => 'a',
   1 => 2,
   'c' => 'b',
 ))", $builder->generate());
-    }
-
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerBuilderException
-     */
-    public function testGenerateArgumentsCodeInvalid()
-    {
-        $builder = new ContainerBuilder('TestContainer');
-        $builder->add('foo', 'Test', ['@42']);
-        $builder->generate();
     }
 
     public function testGenerateResolverTypes()

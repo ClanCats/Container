@@ -308,7 +308,7 @@ class ContainerBuilder
 	 * @param string 			$serviceName
 	 * @return string
 	 */
-	private function getResolverMethodName($serviceName) : string 
+	private function getResolverMethodName(string $serviceName) : string 
 	{
 		if (!isset($this->normalizedServiceNames[$serviceName]))
 		{
@@ -318,36 +318,44 @@ class ContainerBuilder
 		return 'resolve' . $this->normalizedServiceNames[$serviceName];
 	}
 
-	private function generateArgumentsCode(ServiceArguments $arguments)
+	/**
+	 * Generate arguments code 
+	 * 
+	 * @param ServiceArguments 			$arguments
+	 * @return string
+	 */
+	private function generateArgumentsCode(ServiceArguments $arguments) : string
 	{
 		$buffer = [];
 
 		foreach($arguments->getAll() as list($argumentValue, $argumentType))
 		{
-			if (in_array($argumentType, [ServiceArguments::DEPENDENCY, ServiceArguments::PARAMETER]) && $this->invalidServiceBuilderString($argumentValue))
-			{
-				throw new ContainerBuilderException('Parameter and dependency arguments must be non numeric and not empty to be builded.');
-			}
-
 			if ($argumentType === ServiceArguments::DEPENDENCY)
 			{
 				if ($argumentValue === 'container')
 				{
-					$buffer = "\$this";
-				} 
-				// if builder definition exists
+					$buffer[] = "\$this";
+				}
+				// if the dependency is defined in the current container builder
+				// we can be sure that it exists and directly call the resolver method
 				elseif (isset($this->services[$argumentValue])) 
 				{
+					$resolverMethodCall = "\$this->" . $this->getResolverMethodName($argumentValue) . '()';
+
 					// if is not shared we can just forward the factory method
 					if (!in_array($argumentValue, $this->shared))
 					{
-						$buffer[] = "\$this->" . 'resolve' . $this->camelizeServiceName($argumentValue) . '()';
+						$buffer[] = $resolverMethodCall;
 					}
+					// otherwise we have to check if the singleton has 
+					// already been resolved.
 					else
 					{
-						$buffer[] = "\$this->resolvedSharedServices['$argumentValue'] ?? \$this->resolvedSharedServices['$argumentValue'] = \$this->" . 'resolve' . $this->camelizeServiceName($argumentValue) . '()';
+						$buffer[] = "\$this->resolvedSharedServices['$argumentValue'] ?? \$this->resolvedSharedServices['$argumentValue'] = " . $resolverMethodCall;
 					}	
 				}
+				// if the dependency is not defined inside the container builder
+				// it might be added dynamically later. So we just access the containers `get` method.
 				else
 				{
 					$buffer[] = "\$this->get('$argumentValue')";
