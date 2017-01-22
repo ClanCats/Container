@@ -256,24 +256,40 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * Test resolver method name generation
      */
-    protected function assertGetResolverMethodName($expected, $serviceName)
+    protected function assertGetResolverMethodName($expected, $serviceName, ContainerBuilder $builder = null)
     {
-        $builder = new ContainerBuilder('TestContainer');
+        if (is_null($builder)) {
+            $builder = new ContainerBuilder('TestContainer');
+        }
+        
         $builder->add($serviceName, Engine::class);
-
         $this->assertEquals($expected, $this->executePrivateMethod('getResolverMethodName', [$serviceName], $builder));
     }
 
     public function testGenerateResolverMethodName()
     {
         $this->assertGetResolverMethodName('resolveFoo', 'foo');
-
         $this->assertGetResolverMethodName('resolveFooBar', 'foo.bar');
-
         $this->assertGetResolverMethodName('resolveFooBar', 'fooBar');
-
         $this->assertGetResolverMethodName('resolveFooBarTest', 'foo.bar_test');
-
         $this->assertGetResolverMethodName('resolveFooBarTest', 'foo.bar.test');
+    }
+
+    public function testGenerateResolverMethodNameConflicts()
+    {
+        $builder = new ContainerBuilder('TestContainer');
+
+        $this->assertGetResolverMethodName('resolveFooBar', 'foo.bar', $builder);
+        $this->assertGetResolverMethodName('resolveFooBar1', 'fooBar', $builder);
+        $this->assertGetResolverMethodName('resolveFooBar2', 'foo_bar', $builder);
+        $this->assertGetResolverMethodName('resolveFooBar3', 'foo__bar', $builder);
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerBuilderException
+     */
+    public function testGenerateNormalizedServiceNameWithoutService()
+    {
+        $this->executePrivateMethod('generateNormalizedServiceName', ['foo']);
     }
 }
