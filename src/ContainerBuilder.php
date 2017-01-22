@@ -447,6 +447,4 @@ class ContainerBuilder
 
 		return $buffer;
 	}
-
-	
 }

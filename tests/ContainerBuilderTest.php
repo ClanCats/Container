@@ -245,6 +245,54 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
 
         $builder->add('foo', 'Test');
         $this->assertContains("protected \$resolverMethods = ['foo' => 'resolveFoo'];", $builder->generate());
+
+        $builder = new ContainerBuilder('TestContainer');
+
+        $builder->add('foo.bar_test', 'Test');
+        $this->assertContains("protected \$resolverMethods = ['foo.bar_test' => 'resolveFooBarTest'];", $builder->generate());
+    }
+
+    public function testgenerateResolverMethods()
+    {
+        $builder = new ContainerBuilder('TestContainer');
+
+        // test method name
+        $builder->add('foo', 'Test');
+        $this->assertContains("protected function resolveFoo()", $builder->generate());
+
+        $builder->add('foo.bar', 'Test');
+        $this->assertContains("protected function resolveFooBar()", $builder->generate());
+
+        $builder->add('fooBar', 'Test');
+        $this->assertContains("protected function resolveFooBar1()", $builder->generate());
+
+        // test instance creation
+        $builder = new ContainerBuilder('TestContainer');
+
+        $builder->add('foo', '\\Test');
+        $this->assertContains("\$instance = new \\Test();", $builder->generate());
+
+        // without full namespace
+        $builder->add('foo', 'Test');
+        $this->assertContains("\$instance = new \\Test();", $builder->generate());
+
+        // test shared instance
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->add('foo', 'Test', [], false);
+        $this->assertNotContains("\$this->resolvedSharedServices['foo'] = \$instance;", $builder->generate());
+
+        $builder->add('bar', 'Test', [], true);
+        $this->assertContains("\$this->resolvedSharedServices['bar'] = \$instance;", $builder->generate());
+
+        // test method calls
+        $builder = new ContainerBuilder('TestContainer');
+
+        $builder->add('person', 'Person')
+            ->calls('setName', ['Mario'])
+            ->calls('setAge', [42]);
+
+        $this->assertContains("\$instance->setName('Mario');", $builder->generate());
+        $this->assertContains("\$instance->setAge(42);", $builder->generate());
     }
 
     /**
