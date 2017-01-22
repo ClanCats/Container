@@ -374,6 +374,11 @@ class ContainerBuilder
 		return implode(', ', $buffer);
 	}
 
+	/**
+	 * Generate the resolver types array 
+	 * 
+	 * @return string 
+	 */
 	private function generateResolverTypes() : string
 	{
 		$types = []; 
@@ -386,25 +391,35 @@ class ContainerBuilder
 		return "protected \$serviceResolverType = [" . implode(', ', $types) . "];\n";
 	}
 
+	/**
+	 * Generate the resolver mappings array
+	 * 
+	 * @return string 
+	 */
 	private function generateResolverMappings() : string
 	{
 		$mappings = []; 
 
 		foreach($this->services as $serviceName => $serviceDefinition)
 		{
-			$mappings[] = var_export($serviceName, true) . ' => ' . var_export('resolve' . $this->camelizeServiceName($serviceName), true);
+			$mappings[] = var_export($serviceName, true) . ' => ' . var_export($this->getResolverMethodName($serviceName), true);
 		}
 
 		return "protected \$resolverMethods = [" . implode(', ', $mappings) . "];\n";
 	}
 
+	/**
+	 * Generate the resolver methods
+	 * 
+	 * @return string
+	 */
 	private function generateResolverMethods() : string
 	{
 		$buffer = "";
 
 		foreach($this->services as $serviceName => $serviceDefinition)
 		{
-			$buffer .= "protected function resolve" . $this->camelizeServiceName($serviceName) . "() {\n";
+			$buffer .= "protected function " . $this->getResolverMethodName($serviceName) . "() {\n";
 
 			$serviceClassName = $serviceDefinition->getClassName();
 
