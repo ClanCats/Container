@@ -252,7 +252,7 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains("protected \$resolverMethods = ['foo.bar_test' => 'resolveFooBarTest'];", $builder->generate());
     }
 
-    public function testgenerateResolverMethods()
+    public function testGenerateResolverMethods()
     {
         $builder = new ContainerBuilder('TestContainer');
 
