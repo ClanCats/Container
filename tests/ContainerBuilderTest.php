@@ -290,6 +290,6 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function testGenerateNormalizedServiceNameWithoutService()
     {
-        $this->executePrivateMethod('generateNormalizedServiceName', ['foo']);
+        $this->executePrivateMethod('getResolverMethodName', ['foo']);
     }
 }

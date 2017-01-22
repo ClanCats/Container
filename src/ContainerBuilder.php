@@ -260,11 +260,6 @@ class ContainerBuilder
 	 */
 	private function generateNormalizedServiceName(string $serviceName) : void
 	{
-		if (!isset($this->services[$serviceName]))
-		{
-			throw new ContainerBuilderException("Cannot generate normalized service name without service definition.");
-		}
-
 		$normalizedServiceName = $this->camelizeServiceName($serviceName);
 
 		$duplicateCounter = 0;
