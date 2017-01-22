@@ -74,9 +74,9 @@ class ContainerBuilder
  	 */
 	public function setContainerName(string $containerName) : void
 	{
-		if ($this->invalidServiceBuilderString($containerName))
+		if (empty($containerName) || !(preg_match('/^[a-zA-Z0-9\\\\_]*$/', $containerName)) || is_numeric($containerName[0]))
 		{
-			throw new ContainerBuilderException('The container name cannot be empty.');
+			throw new ContainerBuilderException('The container name cannot be empty, start with a number or contain sepcial characters except "\\".');
 		}
 
 		if ($containerName[0] === "\\")

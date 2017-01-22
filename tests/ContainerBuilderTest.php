@@ -34,7 +34,11 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
             [1],
             [42],
             [true],
-            [false]
+            [false],
+            ['foo bar'],
+            ['foo.bar'],
+            ['foo/bar'],
+            ['1foo']
         ];
     }
 
@@ -45,6 +49,32 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
     public function testContainerNameEmpty($name)
     {
         new ContainerBuilder($name);
+    }
+
+    public function testSetContainerName()
+    {
+        $builder = new ContainerBuilder('Foo');
+
+        $this->assertEquals('Foo', $builder->getContainerName());
+        $this->assertEquals('Foo', $builder->getContainerClassName());
+
+        $builder->setContainerName('Foo_Bar');
+        $this->assertEquals('Foo_Bar', $builder->getContainerName());
+        $this->assertEquals('Foo_Bar', $builder->getContainerClassName());
+
+        $builder->setContainerName('someContainer1');
+        $this->assertEquals('someContainer1', $builder->getContainerName());
+        $this->assertEquals('someContainer1', $builder->getContainerClassName());
+
+        $builder->setContainerName('\\Foo\\Bar');
+        $this->assertEquals('Foo\\Bar', $builder->getContainerName());
+        $this->assertEquals('Foo', $builder->getContainerNamespace());
+        $this->assertEquals('Bar', $builder->getContainerClassName());
+
+        $builder->setContainerName('Foo\\Bar\\Test');
+        $this->assertEquals('Foo\\Bar\\Test', $builder->getContainerName());
+        $this->assertEquals('Foo\\Bar', $builder->getContainerNamespace());
+        $this->assertEquals('Test', $builder->getContainerClassName());
     }
 
     public function testAddService()
@@ -76,15 +106,6 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['engine', 'car'], array_values($builder->getSharedNames()));
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerBuilderException
-     * @dataProvider invalidContainerNameProvider
-     */
-    public function testAddServiceInvalidName($name)
-    {
-        $builder = new ContainerBuilder('TestContainer');
-        $builder->addService($name, ServiceDefinition::for(Car::class));
-    }
 
     public function testAdd()
     {
