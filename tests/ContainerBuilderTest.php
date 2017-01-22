@@ -3,7 +3,8 @@ namespace ClanCats\Container\Tests;
 
 use ClanCats\Container\{
     ContainerBuilder,
-    ServiceDefinition
+    ServiceDefinition,
+    Container
 };
 use ClanCats\Container\Tests\TestServices\{
     Car, Engine, Producer
@@ -106,6 +107,14 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['engine', 'car'], array_values($builder->getSharedNames()));
     }
 
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerBuilderException
+     */
+    public function testAddServiceInvalid()
+    {
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->addService('.engine', ServiceDefinition::for(Engine::class));
+    }
 
     public function testAdd()
     {
@@ -151,10 +160,17 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
 
         $code = $builder->generate();
 
-        // has class definition
+        $this->assertNotContains('namespace', $code);
+        $this->assertContains('use ' . Container::class . ' as ClanCatsContainer', $code);
         $this->assertContains('class TestContainer', $code);
+        $this->assertContains('extends ClanCatsContainer', $code);
 
-        // has superclass
+        // Now test the behaviour with a namespace
+        $builder->setContainerName('\\PHPUnit\\Test\\ExampleContainer');
+        $code = $builder->generate();
+
+        $this->assertContains('namespace PHPUnit\\Test;', $code);
+        $this->assertContains('class ExampleContainer', $code);
         $this->assertContains('extends ClanCatsContainer', $code);
     }
 
