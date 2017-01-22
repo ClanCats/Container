@@ -203,12 +203,16 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
      * I Agree, testing private methods directly is bad practice.
      * It just is so convenient here.. I should change this in future
      */
-    protected function executePrivateMethod($methodName, $argument)
+    protected function executePrivateMethod($methodName, $argument, ContainerBuilder $builder = null)
     {
+        if (is_null($builder)) {
+            $builder = new ContainerBuilder('TestContainer');
+        }
+
         $method = new \ReflectionMethod(ContainerBuilder::class, $methodName);
         $method->setAccessible(true);
 
-        return $method->invoke(new ContainerBuilder('TestContainer'), ...$argument);
+        return $method->invoke($builder, ...$argument);
     }
 
     /**
@@ -236,39 +240,40 @@ class ContainerBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertinvalidServiceBuilderStringTrue('.');
         $this->assertinvalidServiceBuilderStringTrue('.test');
         $this->assertinvalidServiceBuilderStringTrue('_test');
+        $this->assertinvalidServiceBuilderStringTrue('test.');
+        $this->assertinvalidServiceBuilderStringTrue('test_');
         $this->assertinvalidServiceBuilderStringTrue('/test');
         $this->assertinvalidServiceBuilderStringTrue('\\test');
         $this->assertinvalidServiceBuilderStringTrue(' test');
-        // $this->assertinvalidServiceBuilderStringTrue('test..test');
-        // $this->assertinvalidServiceBuilderStringTrue('test__bar');
 
         $this->assertinvalidServiceBuilderStringFalse('test');
         $this->assertinvalidServiceBuilderStringFalse('test1');
         $this->assertinvalidServiceBuilderStringFalse('foo.bar');
         $this->assertinvalidServiceBuilderStringFalse('foo_bar');
-        // $this->assertinvalidServiceBuilderStringFalse('foo/bar');
-        // $this->assertinvalidServiceBuilderStringFalse('foo\\bar');
         $this->assertinvalidServiceBuilderStringFalse('fooBar');
     }
 
     /**
      * Test resolver method name generation
      */
-    protected function assertGenerateResolverMethodName($expected, $serviceName)
+    protected function assertGetResolverMethodName($expected, $serviceName)
     {
-        $this->assertEquals($expected, $this->executePrivateMethod('generateResolverMethodName', [$serviceName]));
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->add($serviceName, Engine::class);
+
+        $this->assertEquals($expected, $this->executePrivateMethod('getResolverMethodName', [$serviceName], $builder));
     }
 
     public function testGenerateResolverMethodName()
     {
-        $this->assertGenerateResolverMethodName('resolveFoo', 'foo');
+        $this->assertGetResolverMethodName('resolveFoo', 'foo');
 
-        $this->assertGenerateResolverMethodName('resolveFooBar', 'foo.bar');
+        $this->assertGetResolverMethodName('resolveFooBar', 'foo.bar');
 
-        $this->assertGenerateResolverMethodName('resolveFooBarTest', 'foo.bar test');
+        $this->assertGetResolverMethodName('resolveFooBar', 'fooBar');
 
-        $this->assertGenerateResolverMethodName('resolveFooBarTest', 'foo.bar.test');
+        $this->assertGetResolverMethodName('resolveFooBarTest', 'foo.bar_test');
 
-        //$this->assertGenerateResolverMethodName('resolveFoo_Bar', 'fooBar');
+        $this->assertGetResolverMethodName('resolveFooBarTest', 'foo.bar.test');
     }
 }

@@ -47,6 +47,14 @@ class ContainerBuilder
 	protected $shared = [];
 
 	/**
+	 * An array of converted service names
+	 * The normalized service names is camel cased and should be usable as method name.
+	 * 
+	 * @param array[string]
+	 */
+	private $normalizedServiceNames = [];
+
+	/**
 	 * Constrcut a container builder instance 
 	 * 
 	 * @param string 			$containerName
@@ -178,11 +186,16 @@ class ContainerBuilder
 	{
 		if ($this->invalidServiceBuilderString($serviceName))
 		{
-			throw new ContainerBuilderException('The "'.$serviceName.'" servicename must be a string and cannot be numeric or empty.');
+			throw new ContainerBuilderException('The "'.$serviceName.'" servicename must be a string, cannot be numeric, empty or contain any special characters except "." and "_".');
 		}
 
+		// add the service definition
 		$this->services[$serviceName] = $serviceDefinition;
 
+		// generate the normalized name
+		$this->generateNormalizedServiceName($serviceName);
+
+		// set the shared unshared flag
 		if ($isShared && (!in_array($serviceName, $this->shared)))
 		{
 			$this->shared[] = $serviceName;
@@ -215,17 +228,54 @@ class ContainerBuilder
 			return true;
 		}
 
-		// also check if the string contains with a number
+		// also check the first character the string contains with a number
 		if (is_numeric($value[0]) || $value[0] === '.' || $value[0] === '_') {
 			return true;
 		}
 
-		// check for doubled spacial characters
-		// if (preg_replace('/,+/', ',', rtrim($value, ',')) !== $value) {
-
-		// }
+		$lastCharacter = $value[strlen($value) - 1];
+		if ($lastCharacter === '.' || $lastCharacter === '_') {
+			return true;
+		}
 
 		return false;
+	}
+
+	/**
+	 * Generate a camelized service name
+	 * 
+	 * @param string 			$serviceName
+	 * @return string
+	 */
+	private function camelizeServiceName(string $serviceName) : string
+	{
+	    return str_replace(['.', '_'], '', ucwords(str_replace(['.', '_'], '.', $serviceName), '.'));
+	}
+
+	/**
+	 * Generates the "normalizedServiceNames" array.
+	 * 
+	 * @param string 			$serviceName
+	 * @return void 
+	 */
+	private function generateNormalizedServiceName(string $serviceName) : void
+	{
+		if (!isset($this->services[$serviceName]))
+		{
+			throw new ContainerBuilderException("Cannot generate normalized service name without service definition.");
+		}
+
+		$normalizedServiceName = $this->camelizeServiceName($serviceName);
+
+		$duplicateCounter = 0;
+		$countedNormalizedServiceName = $normalizedServiceName;
+		while(in_array($countedNormalizedServiceName, $this->normalizedServiceNames))
+		{
+			$duplicateCounter++;
+			$countedNormalizedServiceName = $normalizedServiceName . $duplicateCounter;
+		}
+
+		$this->normalizedServiceNames[$serviceName] = $countedNormalizedServiceName;
 	}
 
 	/**
@@ -248,13 +298,29 @@ class ContainerBuilder
 		$buffer .= "use " . Container::class . " as " . $aliasContainerName . ";\n\n";
 
 		// generate the the class
-		$buffer .= "class $this->containerClassName extends " . $aliasContainerName . " {\n\n";
+		$buffer .= "class $this->containerClassName extends $aliasContainerName {\n\n";
 
 		$buffer .= $this->generateResolverTypes() . "\n";
 		$buffer .= $this->generateResolverMappings() . "\n";
 		$buffer .= $this->generateResolverMethods() . "\n";
 
 		return $buffer . "\n}";
+	}
+
+	/**
+	 * Generate the service resolver method name for the given service
+	 * 
+	 * @param string 			$serviceName
+	 * @return string
+	 */
+	private function getResolverMethodName($serviceName) : string 
+	{
+		if (!isset($this->normalizedServiceNames[$serviceName]))
+		{
+			throw new ContainerBuilderException("The '" . $serviceName . "' service has never been definied.");
+		}
+
+		return 'resolve' . $this->normalizedServiceNames[$serviceName];
 	}
 
 	private function generateArgumentsCode(ServiceArguments $arguments)
@@ -329,11 +395,6 @@ class ContainerBuilder
 		return "protected \$resolverMethods = [" . implode(', ', $mappings) . "];\n";
 	}
 
-	private function generateResolverMethodName($serviceName) : string 
-	{
-		return 'resolve' . $this->camelizeServiceName($serviceName);
-	}
-
 	private function generateResolverMethods() : string
 	{
 		$buffer = "";
@@ -369,9 +430,5 @@ class ContainerBuilder
 		return $buffer;
 	}
 
-	private function camelizeServiceName($input) : string
-	{
-		$input = str_replace([' ', '_'], '.', $input);
-	    return str_replace('.', '', ucwords($input, '.'));
-	}
+	
 }
