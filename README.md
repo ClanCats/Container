@@ -83,4 +83,4 @@ And finally the company object constructs with a _string_ which represents the c
 
 ## License
 
-The MIT License (MIT). Please see [License File](https://github.com/ClanCats/Container/blob/master/LICENSE.md) for more information.
+The MIT License (MIT). Please see [License File](https://github.com/ClanCats/Container/blob/master/LICENSE) for more information.
