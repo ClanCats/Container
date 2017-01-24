@@ -41,7 +41,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     public function testServiceTypeFactoryShared()
     {
         $container = new Container();
-        $container->bindSharedFactory('test', function($c) {});
+        $container->bindFactoryShared('test', function($c) {});
         $this->assertEquals(Container::RESOLVE_SHARED, $container->getServiceResolverType('test'));
 
         $container->bind('test2', function($c) {});
@@ -131,7 +131,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertNotSame($car1->engine, $car2->engine);
     } 
 
-    public function testBindSharedFactory()
+    public function testbindFactoryShared()
     {
         $container = new Container();
         $container->bindFactory('engine.custom', function($c) 
@@ -139,12 +139,12 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             return new Engine();   
         });
 
-        $container->bindSharedFactory('engine.d8', function($c) 
+        $container->bindFactoryShared('engine.d8', function($c) 
         {
             $engine = new Engine(); $engine->power = 300; return $engine;
         });
 
-        $container->bindSharedFactory('engine.t8', function($c) 
+        $container->bindFactoryShared('engine.t8', function($c) 
         {
             $engine = new Engine(); $engine->power = 325; return $engine; 
         });
@@ -157,7 +157,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($container->get('engine.t8'), $container->get('engine.t8'));
         $this->assertNotSame($container->get('engine.custom'), $container->get('engine.custom'));
 
-        $container->bindSharedFactory('volvo.s90', function($c) 
+        $container->bindFactoryShared('volvo.s90', function($c) 
         {
             return new Car($c->get('engine.d8')); 
         });

@@ -399,7 +399,7 @@ class Container
 		}
 
 		if ($shared) {
-			$this->bindSharedFactory($name, $factory);
+			$this->bindFactoryShared($name, $factory);
 		} else {
 			$this->bindFactory($name, $factory);
 		}
@@ -425,7 +425,7 @@ class Container
 	 * @param ServiceFactoryInterface|Closure 	$factory The service factory instance or closure.
 	 * @return void
 	 */
-	public function bindSharedFactory(string $name, $factory) : void
+	public function bindFactoryShared(string $name, $factory) : void
 	{
 		$this->setServiceResolverType($name, static::RESOLVE_SHARED);
 		$this->resolverFactories[$name] = $factory;

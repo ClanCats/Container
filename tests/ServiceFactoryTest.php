@@ -122,12 +122,12 @@ class ServiceFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $container = new Container();
 
-        $container->bindSharedFactory('d8', function($c) 
+        $container->bindFactoryShared('d8', function($c) 
         {
             $engine = new Engine(); $engine->power = 300; return $engine;
         });
 
-        $container->bindSharedFactory('t8', function($c) 
+        $container->bindFactoryShared('t8', function($c) 
         {
             $engine = new Engine(); $engine->power = 325; return $engine; 
         });
