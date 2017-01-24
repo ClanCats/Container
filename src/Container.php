@@ -393,10 +393,28 @@ class Container
 	 */
 	public function bind(string $name, $factory, bool $shared = true)
 	{
-		if (is_string($factory)) 
-		{
-			$factory = new ServiceFactory($factory);
+		if (is_string($factory)) {
+			return $this->bindClass($name, $factory, [], $shared);
+		} elseif ($shared) {
+			$this->bindFactoryShared($name, $factory);
+		} else {
+			$this->bindFactory($name, $factory);
 		}
+	}
+
+	/**
+	 * Creates and binds a service factory by class name and arguments. 
+	 * 
+	 * @param string 			$name The service name.
+	 * @param string 			$className The service class name.
+	 * @param array 			$arguments An array of arguments.
+	 * @param bool 				$shared Should the service be shared inside the container.
+	 * 
+	 * @return ServiceFactory The created service factory
+	 */
+	public function bindClass(string $name, string $factory, array $arguments = [], bool $shared = true) : ServiceFactory
+	{
+		$factory = new ServiceFactory($factory, $arguments);
 
 		if ($shared) {
 			$this->bindFactoryShared($name, $factory);
@@ -409,7 +427,8 @@ class Container
 
 	/**
 	 * Binds an unshared factory instance to the service container.
-	 * 
+	 *
+	 * @param string 							$name The service name.
 	 * @param ServiceFactoryInterface|Closure 	$factory The service factory instance or closure.
 	 * @return void
 	 */
@@ -422,6 +441,7 @@ class Container
 	/**
 	 * Binds a shared factory instance to the service container.
 	 * 
+	 * @param string 							$name The service name.
 	 * @param ServiceFactoryInterface|Closure 	$factory The service factory instance or closure.
 	 * @return void
 	 */

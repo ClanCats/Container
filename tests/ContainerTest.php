@@ -79,13 +79,13 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $container = new Container();
         $container->setParameter('ps', 205);
 
-        $container->bind('engine', Engine::class)
+        $container->bind('engine', Engine::class, false)
             ->calls('setPower', [':ps']);
 
         $container->bind('producer', Producer::class)
             ->arguments(['Volvo']);
 
-        $container->bind('s60', Car::class)
+        $container->bind('s60', Car::class, false)
             ->arguments(['@engine', '@producer']);
 
         $car = $container->get('s60');
