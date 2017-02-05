@@ -36,7 +36,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
      *     ])
      * 
      * @param array             $serviceConfiguration
-     * @return ServiceDefinition
+     * @return static
      */
     public static function fromArray(array $serviceConfiguration)
     {
