@@ -72,7 +72,7 @@ class ContainerBuilder
 	 * @param string 			$containerName
 	 * @return void
  	 */
-	public function setContainerName(string $containerName) : void
+	public function setContainerName(string $containerName) 
 	{
 		if (empty($containerName) || !(preg_match('/^[a-zA-Z0-9\\\\_]*$/', $containerName)) || is_numeric($containerName[0]))
 		{
@@ -167,7 +167,7 @@ class ContainerBuilder
 	 * @param array 			$serviceArray
 	 * @return void
 	 */
-	public function addArray(array $servicesArray) : void
+	public function addArray(array $servicesArray) 
 	{
 		foreach($servicesArray as $serviceName => $serviceConfiguration)
 		{
@@ -182,7 +182,7 @@ class ContainerBuilder
 	 * @param ServiceDefinitionInterface	$serviceDefinition
 	 * @return void
 	 */
-	public function addService(string $serviceName, ServiceDefinitionInterface $serviceDefinition, bool $isShared = true) : void
+	public function addService(string $serviceName, ServiceDefinitionInterface $serviceDefinition, bool $isShared = true) 
 	{
 		if ($this->invalidServiceBuilderString($serviceName))
 		{
@@ -258,7 +258,7 @@ class ContainerBuilder
 	 * @param string 			$serviceName
 	 * @return void 
 	 */
-	private function generateNormalizedServiceName(string $serviceName) : void
+	private function generateNormalizedServiceName(string $serviceName) 
 	{
 		$normalizedServiceName = $this->camelizeServiceName($serviceName);
 

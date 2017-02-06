@@ -103,7 +103,7 @@ class Container
 	 * @param mixed 			$value The parameter value.
 	 * @return void
 	 */
-	public function setParameter(string $name, $value) : void
+	public function setParameter(string $name, $value) 
 	{
 		$this->parameters[$name] = $value;
 	}
@@ -140,7 +140,7 @@ class Container
 	 * @param mixed 			$serviceValue
 	 * @return void
 	 */
-	public function set(string $serviceName, $serviceValue) : void
+	public function set(string $serviceName, $serviceValue) 
 	{
 		if ($serviceName === 'container')
 		{
@@ -364,7 +364,7 @@ class Container
 	 * @param ServiceProviderInterface 			$provider The service provider instance.
 	 * @return void
 	 */
-	public function register(ServiceProviderInterface $provider) : void
+	public function register(ServiceProviderInterface $provider) 
 	{
 		foreach($provider->provides() as $serviceName)
 		{
@@ -432,7 +432,7 @@ class Container
 	 * @param ServiceFactoryInterface|Closure 	$factory The service factory instance or closure.
 	 * @return void
 	 */
-	public function bindFactory(string $name, $factory) : void
+	public function bindFactory(string $name, $factory) 
 	{
 		$this->setServiceResolverType($name, static::RESOLVE_FACTORY);
 		$this->resolverFactories[$name] = $factory;
@@ -445,7 +445,7 @@ class Container
 	 * @param ServiceFactoryInterface|Closure 	$factory The service factory instance or closure.
 	 * @return void
 	 */
-	public function bindFactoryShared(string $name, $factory) : void
+	public function bindFactoryShared(string $name, $factory) 
 	{
 		$this->setServiceResolverType($name, static::RESOLVE_SHARED);
 		$this->resolverFactories[$name] = $factory;
@@ -459,7 +459,7 @@ class Container
 	 * @param int 				$serviceType The service type as int represented by the `RESOLVE_` prefixed constants.
 	 * @return void
 	 */
-	private function setServiceResolverType(string $serviceName, int $serviceType) : void
+	private function setServiceResolverType(string $serviceName, int $serviceType) 
 	{
 		$this->serviceResolverType[$serviceName] = $serviceType;
 	}

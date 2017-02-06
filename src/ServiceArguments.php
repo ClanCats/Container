@@ -98,7 +98,7 @@ class ServiceArguments
      * @param array                 $argumentsArray
      * @return void
      */
-    public function addArgumentsFromArray(array $argumentsArray) : void
+    public function addArgumentsFromArray(array $argumentsArray) 
     {
         foreach($argumentsArray as $argument)
         {

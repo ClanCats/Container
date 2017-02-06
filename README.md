@@ -57,7 +57,7 @@ class Engine
 {
 	public $power = 10;
 
-	public function setPower(int $power) : void
+	public function setPower(int $power) 
 	{
 		$this->power = $power;
 	}
