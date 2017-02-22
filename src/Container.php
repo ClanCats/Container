@@ -124,7 +124,7 @@ class Container
     /**
      * Does the container have the given service?
      * 
-     * @param string            $serviceName
+     * @param string            $serviceName The name / Identifier of the service to look for.
      * @return bool
      */
     public function has(string $serviceName) : bool
@@ -136,7 +136,7 @@ class Container
      * Sets a value on the container instance. 
      * This will overwrite any service stored / shared under the same name.
      * 
-     * @param string            $serviceName
+     * @param string            $serviceName The name / Identifier of the service to look for.
      * @param mixed             $serviceValue
      * @return void
      */
@@ -155,7 +155,7 @@ class Container
      * Removes a service from the container and releases the shared instance
      * if it has been loaded.
      * 
-     * @param string            $serviceName
+     * @param string            $serviceName The name / Identifier of the service to look for.
      * 
      * @return bool Returns true if the service has been removed.
      */
@@ -197,7 +197,7 @@ class Container
      * Check if the given service has already been resolved / shared / initiated.
      * A factory service will always return false.
      * 
-     * @param string            $serviceName
+     * @param string            $serviceName The name / Identifier of the service to look for.
      * @return bool
      */
     public function isResolved(string $serviceName) : bool
@@ -240,7 +240,7 @@ class Container
      * 
      * @throws UnknownServiceException When a service could not be found or is unresolvable.
      * 
-     * @param string            $serviceName
+     * @param string            $serviceName The name / Identifier of the service to look for.
      * 
      * @return mixed The requested service.
      */
@@ -455,7 +455,7 @@ class Container
      * Set a service resolver type.
      * The service resolver type tells the container where to look for the correct resolver.
      * 
-     * @param string            $serviceName
+     * @param string            $serviceName The name / Identifier of the service to look for.
      * @param int               $serviceType The service type as int represented by the `RESOLVE_` prefixed constants.
      * @return void
      */
