@@ -48,3 +48,51 @@ class Company
 }
 ```
 And finally the company object constructs with a _string_ which represents the companies name.
+
+## Usage
+
+Create a new instance of the base container:
+
+```php
+use ClanCats\Container\Container;
+
+$contanier = new Container();
+```
+
+Note: Use the `ContainerFactory` to make use of the compilable `ContainerBuilder`.
+
+```php
+$contanier->bind('producer', Company::class)
+	->arguments(['Massive Industries']);
+```
+
+Binds the company service under the name `producer` and add the constructor argument "Massive Industries".
+
+```php
+echo $container->get('producer')->name; // "Massive Industries"
+```
+
+Bind the rest.
+
+```php
+// bind the pulsedrive engine and set the power
+// the boolean flag at the end indicated that this is 
+// NOT a shared service.
+$contanier->bind('pulsedrive', Engine::class, false)
+	->calls('setPower', [20]);
+
+// bind a "shuttle" space ship, inject the pulsedrive and 
+// set the producer company 
+$contanier->bind('shuttle', SpaceShip::class, false)
+	->arguments(['@pulsedrive', '@producer']);
+```
+
+When we are all set we can start creating shuttles:
+
+```php
+$jumper1 = $container->get('shuttle');
+$jumper2 = $container->get('shuttle');
+
+// note: the producer is binded as
+$jumper1->producer === $jumper1->producer; // true
+```

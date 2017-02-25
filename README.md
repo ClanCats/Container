@@ -28,13 +28,17 @@ The Container follows `PSR-4` autoloading and can be installed using composer:
 $ composer require clancats/container
 ```
 
-## Usage
+## Documentation
 
-### Example
+The full documentation can be found on: [http://clancats.io/container](http://clancats.io/container/master/)
 
-> Note: Check out the [Example Setup](http://clancats.io/master/usage/examples#setup-1).
+## Getting Started
 
-Now its time to create a  container instance:
+Here follow some really basic examples to get started with the clancats container.
+
+### Dynamic Service Container
+
+Create a new instance of the base container. This implementation type is fully dynamic and allows 
 
 ```php
 use ClanCats\Container\Container;
@@ -42,12 +46,24 @@ use ClanCats\Container\Container;
 $contanier = new Container();
 ```
 
-Note: Use the `ContainerFactory` to create your container instance to make use of the compilable `ContainerBuilder`.
+Note: Use the `ContainerFactory` to make use of the compilable `ContainerBuilder`.
+
+Bind a service to the container instance:
 
 ```php
-// bind "Massive Industries" as producer company.
-$contanier->bind('producer', Company::class)
-	->arguments(['Massive Industries']);
+$contanier->bind('router', \Acme\Router::class);
+
+$container->get('router'); // returns \Acme\Router instance
+```
+
+Bind a service with constructor arguments and 
+
+```php
+$contanier->bind('router', \Acme\Router::class);
+```
+
+```php
+$contanier->bind('logger', \Monolog\Logger::class)
 ```
 
 Binds the company service under the name `producer` and add the constructor argument "Massive Industries".
