@@ -2,8 +2,12 @@
 namespace ClanCats\Container\ContainerParser;
 
 use ClanCats\Container\{
-    Exceptions\ContainerLexerException
+    Exceptions\ContainerLexerException,
+    
+    // Alias the tokan as T
+    ContainerParser\Token as T
 };
+
 
 class ContainerLexer
 {
@@ -36,28 +40,6 @@ class ContainerLexer
     protected $line = 0;
 
     /**
-     * The lexer token types
-     */
-    const TOKEN_STRING = 0;
-    const TOKEN_NUMBER = 1;
-    const TOKEN_BOOL_TRUE = 2;
-    const TOKEN_BOOL_FALSE = 3;
-    const TOKEN_NULL = 4;
-    const TOKEN_DEPENDENCY = 5;
-    const TOKEN_PARAMETER = 6;
-    const TOKEN_COMMENT = 7;
-    const TOKEN_LINE = 8;
-    const TOKEN_SPACE = 9;
-    const TOKEN_ASSIGN = 10;
-    const TOKEN_IMPORT = 11;
-    const TOKEN_USE = 12;
-    const TOKEN_BRACE_OPEN = 13;
-    const TOKEN_BRACE_CLOSE = 14;
-    const TOKEN_MINUS = 15;
-    const TOKEN_SEPERATOR = 16;
-    const TOKEN_IDENTIFIER = 17;
-
-    /**
      * Token map
      *
      * @var array
@@ -65,45 +47,45 @@ class ContainerLexer
     protected $tokenMap = 
     [
         // strings
-        '/^"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"/' => self::TOKEN_STRING,
-        "/^'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'/" => self::TOKEN_STRING,
+        '/^"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"/' => T::TOKEN_STRING,
+        "/^'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'/" => T::TOKEN_STRING,
 
         // numbers
-        "/^-?(([1-9][0-9]*\.?[0-9]*)|(\.[0-9]+))([Ee][+-]?[0-9]+)?/" => self::TOKEN_NUMBER,
+        "/^-?(([1-9][0-9]*\.?[0-9]*)|(\.[0-9]+))([Ee][+-]?[0-9]+)?/" => T::TOKEN_NUMBER,
 
         // bool
-        "/^(yes)/" => self::TOKEN_BOOL_TRUE,
-        "/^(no)/" => self::TOKEN_BOOL_FALSE,
+        "/^(yes)/" => T::TOKEN_BOOL_TRUE,
+        "/^(no)/" => T::TOKEN_BOOL_FALSE,
 
         // null
-        "/^(null)/" => self::TOKEN_NULL,
+        "/^(null)/" => T::TOKEN_NULL,
 
         // variables
-        "/^(@\w+)/" => self::TOKEN_DEPENDENCY,
-        "/^(:\w+)/" => self::TOKEN_PARAMETER,
+        "/^(@\w+)/" => T::TOKEN_DEPENDENCY,
+        "/^(:\w+)/" => T::TOKEN_PARAMETER,
 
         // comments
-        "/^\/\/.*/" => self::TOKEN_COMMENT,
+        "/^\/\/.*/" => T::TOKEN_COMMENT,
 
         // markup
-        "/^(\r\n|\n|\r)/" => self::TOKEN_LINE,
-        "/^(\s)/" => self::TOKEN_SPACE,        
+        "/^(\r\n|\n|\r)/" => T::TOKEN_LINE,
+        "/^(\s)/" => T::TOKEN_SPACE,        
 
         // keywords
-        "/^(use )/" => self::TOKEN_USE,
-        "/^(import )/" => self::TOKEN_IMPORT,
+        "/^(use )/" => T::TOKEN_USE,
+        "/^(import )/" => T::TOKEN_IMPORT,
 
         // scope
-        "/^(\()/" => self::TOKEN_BRACE_OPEN,
-        "/^(\))/" => self::TOKEN_BRACE_CLOSE,
+        "/^(\()/" => T::TOKEN_BRACE_OPEN,
+        "/^(\))/" => T::TOKEN_BRACE_CLOSE,
         
         // syntax
-        "/^(\:)/" => self::TOKEN_ASSIGN,
-        "/^(\-)/" => self::TOKEN_MINUS,
-        "/^(\,)/" => self::TOKEN_SEPERATOR,
+        "/^(\:)/" => T::TOKEN_ASSIGN,
+        "/^(\-)/" => T::TOKEN_MINUS,
+        "/^(\,)/" => T::TOKEN_SEPERATOR,
 
         // ids
-        "/^([\w-\/\.]+)/" => self::TOKEN_IDENTIFIER,
+        "/^([\w-\/\.]+)/" => T::TOKEN_IDENTIFIER,
     ];
 
     /**
@@ -160,13 +142,13 @@ class ContainerLexer
         {
             if (preg_match($regex, substr($this->code, $this->offset), $matches)) 
             {
-                if ($token === self::TOKEN_LINE) {
+                if ($token === T::TOKEN_LINE) {
                     $this->line++;
                 }
 
                 $this->offset += strlen($matches[0]);
 
-                return new Token($token, $matches[0], $this->line + 1);
+                return new T($this->line + 1, $token, $matches[0]);
             }
         }
 
@@ -186,9 +168,9 @@ class ContainerLexer
         {
             // skip doublicated linebreaks
             if (
-                $token->type === self::TOKEN_LINE && 
+                $token->getType() === T::TOKEN_LINE && 
                 isset($tokens[count($tokens) - 1]) && 
-                $tokens[count($tokens) - 1]->type === self::TOKEN_LINE
+                $tokens[count($tokens) - 1]->getType() === T::TOKEN_LINE
             ) {
                 continue;
             }

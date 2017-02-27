@@ -29,6 +29,28 @@ class Token
     protected $line = 0;
 
     /**
+     * The token types
+     */
+    const TOKEN_STRING = 0;
+    const TOKEN_NUMBER = 1;
+    const TOKEN_BOOL_TRUE = 2;
+    const TOKEN_BOOL_FALSE = 3;
+    const TOKEN_NULL = 4;
+    const TOKEN_DEPENDENCY = 5;
+    const TOKEN_PARAMETER = 6;
+    const TOKEN_COMMENT = 7;
+    const TOKEN_LINE = 8;
+    const TOKEN_SPACE = 9;
+    const TOKEN_ASSIGN = 10;
+    const TOKEN_IMPORT = 11;
+    const TOKEN_USE = 12;
+    const TOKEN_BRACE_OPEN = 13;
+    const TOKEN_BRACE_CLOSE = 14;
+    const TOKEN_MINUS = 15;
+    const TOKEN_SEPERATOR = 16;
+    const TOKEN_IDENTIFIER = 17;
+
+    /**
      * The constructor
      *
      * @param int       $line The line the token is on.
@@ -44,6 +66,26 @@ class Token
     }
 
     /**
+     * Get the line of the token.
+     * 
+     * @return int
+     */
+    public function getLine() : int
+    {
+        return $this->line;
+    }
+
+    /**
+     * Get the type of the token represented as int.
+     * 
+     * @return int
+     */
+    public function getType() : int
+    {
+        return $this->line;
+    }
+
+    /**
      * Get the tokens value as php native type.
      *
      * @return mixed
@@ -54,23 +96,23 @@ class Token
 
         switch ($this->type) 
         {
-            case ContainerLexer::TOKEN_BOOL_TRUE:
+            case self::TOKEN_BOOL_TRUE:
                 $value = true;
                 break;
 
-            case ContainerLexer::TOKEN_BOOL_FALSE:
+            case self::TOKEN_BOOL_FALSE:
                 $value = false;
                 break;
 
-            case ContainerLexer::TOKEN_STRING:
+            case self::TOKEN_STRING:
                 $value = str_replace("\\", "", substr($value, 1, -1));
                 break;
 
-            case ContainerLexer::TOKEN_NUMBER:
+            case self::TOKEN_NUMBER:
                 $value = $value + 0;
                 break;
 
-            case ContainerLexer::TOKEN_NULL:
+            case self::TOKEN_NULL:
                 $value = null;
                 break;
         }
@@ -86,11 +128,11 @@ class Token
     public function isValue() : bool
     {
         return
-        $this->type === ContainerLexer::TOKEN_STRING ||
-        $this->type === ContainerLexer::TOKEN_NUMBER ||
-        $this->type === ContainerLexer::TOKEN_NULL ||
-        $this->type === ContainerLexer::TOKEN_BOOL_TRUE ||
-        $this->type === ContainerLexer::TOKEN_BOOL_FALSE;
+        $this->type === self::TOKEN_STRING ||
+        $this->type === self::TOKEN_NUMBER ||
+        $this->type === self::TOKEN_NULL ||
+        $this->type === self::TOKEN_BOOL_TRUE ||
+        $this->type === self::TOKEN_BOOL_FALSE;
     }
 }
 
