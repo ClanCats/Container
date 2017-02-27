@@ -51,7 +51,7 @@ class ContainerLexer
         "/^'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'/" => T::TOKEN_STRING,
 
         // numbers
-        "/^-?(([1-9][0-9]*\.?[0-9]*)|(\.[0-9]+))([Ee][+-]?[0-9]+)?/" => T::TOKEN_NUMBER,
+        "/^[+-]?([0-9]*[.])?[0-9]+/" => T::TOKEN_NUMBER,
 
         // bool
         "/^(yes)/" => T::TOKEN_BOOL_TRUE,

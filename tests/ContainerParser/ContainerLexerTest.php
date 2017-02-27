@@ -72,4 +72,22 @@ class ContainerLexerTest extends \PHPUnit_Framework_TestCase
         $string = $this->tokensFromCode("'🐌🐌🐌'")[0];
         $this->assertEquals("🐌🐌🐌", $string->getValue());
     }
+
+    public function testScalarNumber()
+    {
+        $this->assertTokenTypes("-1", [T::TOKEN_NUMBER]);
+
+        $this->assertTokenTypes("1", [T::TOKEN_NUMBER]);
+
+        $this->assertTokenTypes("0", [T::TOKEN_NUMBER]);
+
+        $this->assertTokenTypes("0.1", [T::TOKEN_NUMBER]);
+        $this->assertTokenTypes("0.1 'a' 3.14", [
+            T::TOKEN_NUMBER, 
+            T::TOKEN_SPACE,
+            T::TOKEN_STRING,
+            T::TOKEN_SPACE, 
+            T::TOKEN_NUMBER,
+        ]);
+    }
 }
