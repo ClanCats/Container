@@ -15,14 +15,21 @@ class ContainerLexerTest extends \PHPUnit_Framework_TestCase
     {
         $actualTokens = [];
 
-        $lexer = new ContainerLexer($code);
-
-        foreach($lexer->tokens() as $token)
+        foreach($this->tokensFromCode($code) as $token)
         {
             $actualTokens[] = $token->getType();
         }
 
         $this->assertEquals($expected, $actualTokens);
+    }
+
+    /**
+     * Helper to get tokens from a code string
+     */
+    protected function tokensFromCode(string $code) : array
+    {
+        $lexer = new ContainerLexer($code);
+        return $lexer->tokens();
     }
 
     public function testConstruct()
@@ -47,5 +54,22 @@ class ContainerLexerTest extends \PHPUnit_Framework_TestCase
             T::TOKEN_LINE,
             T::TOKEN_BOOL_FALSE,
         ]);
+    }
+
+    public function testScalarString()
+    {
+        $this->assertTokenTypes("'hello'\"world\"", [T::TOKEN_STRING, T::TOKEN_STRING]);
+
+        // escaping
+        $string = $this->tokensFromCode('"James \' Bond"')[0];
+        $this->assertEquals("James ' Bond", $string->getValue());
+
+        // breaks
+        $string = $this->tokensFromCode("'James \n Bond'")[0];
+        $this->assertEquals("James \n Bond", $string->getValue());
+
+        // utf8mb4
+        $string = $this->tokensFromCode("'🐌🐌🐌'")[0];
+        $this->assertEquals("🐌🐌🐌", $string->getValue());
     }
 }
