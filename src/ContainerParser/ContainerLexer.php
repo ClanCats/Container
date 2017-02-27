@@ -54,7 +54,8 @@ class ContainerLexer
     const TOKEN_BRACE_OPEN = 13;
     const TOKEN_BRACE_CLOSE = 14;
     const TOKEN_MINUS = 15;
-    const TOKEN_IDENTIFIER = 16;
+    const TOKEN_SEPERATOR = 16;
+    const TOKEN_IDENTIFIER = 17;
 
     /**
      * Token map
@@ -64,45 +65,45 @@ class ContainerLexer
     protected $tokenMap = 
     [
         // strings
-        '/^"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"/' => static::TOKEN_STRING,
-        "/^'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'/" => static::TOKEN_STRING,
+        '/^"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"/' => self::TOKEN_STRING,
+        "/^'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'/" => self::TOKEN_STRING,
 
         // numbers
-        "/^-?(([1-9][0-9]*\.?[0-9]*)|(\.[0-9]+))([Ee][+-]?[0-9]+)?/" => static::TOKEN_NUMBER,
+        "/^-?(([1-9][0-9]*\.?[0-9]*)|(\.[0-9]+))([Ee][+-]?[0-9]+)?/" => self::TOKEN_NUMBER,
 
         // bool
-        "/^(yes)/" => static::TOKEN_BOOL_TRUE,
-        "/^(no)/" => static::TOKEN_BOOL_FALSE,
+        "/^(yes)/" => self::TOKEN_BOOL_TRUE,
+        "/^(no)/" => self::TOKEN_BOOL_FALSE,
 
         // null
-        "/^(null)/" => static::TOKEN_NULL,
+        "/^(null)/" => self::TOKEN_NULL,
 
         // variables
-        "/^(@\w+)/" => static::TOKEN_DEPENDENCY,
-        "/^(:\w+)/" => static::TOKEN_PARAMETER,
+        "/^(@\w+)/" => self::TOKEN_DEPENDENCY,
+        "/^(:\w+)/" => self::TOKEN_PARAMETER,
 
         // comments
-        "/^\/\/.*/" => static::TOKEN_COMMENT,
+        "/^\/\/.*/" => self::TOKEN_COMMENT,
 
         // markup
-        "/^(\r\n|\n|\r)/" => static::TOKEN_LINE,
-        "/^(\s)/" => static::TOKEN_SPACE,        
+        "/^(\r\n|\n|\r)/" => self::TOKEN_LINE,
+        "/^(\s)/" => self::TOKEN_SPACE,        
 
         // keywords
-        "/^(use )/" => static::TOKEN_USE,
-        "/^(import )/" => static::TOKEN_IMPORT,
+        "/^(use )/" => self::TOKEN_USE,
+        "/^(import )/" => self::TOKEN_IMPORT,
 
         // scope
-        "/^(\()/" => static::TOKEN_BRACE_OPEN,
-        "/^(\))/" => static::TOKEN_BRACE_CLOSE,
+        "/^(\()/" => self::TOKEN_BRACE_OPEN,
+        "/^(\))/" => self::TOKEN_BRACE_CLOSE,
         
         // syntax
-        "/^(\:)/" => static::TOKEN_ASSIGN,
-        "/^(\-)/" => static::TOKEN_MINUS,
-        "/^(\,)/" => static::TOKEN_SEPERATOR,
+        "/^(\:)/" => self::TOKEN_ASSIGN,
+        "/^(\-)/" => self::TOKEN_MINUS,
+        "/^(\,)/" => self::TOKEN_SEPERATOR,
 
         // ids
-        "/^([\w-\/\.]+)/" => static::TOKEN_IDENTIFIER,
+        "/^([\w-\/\.]+)/" => self::TOKEN_IDENTIFIER,
     ];
 
     /**
@@ -132,6 +133,16 @@ class ContainerLexer
     }
 
     /**
+     * Get the current code
+     *
+     * @return string
+     */
+    public function code() : string
+    {
+        return $this->code;
+    }
+
+    /**
      * Get the next token from our code
      *
      * @throws ContainerLexerException
@@ -149,7 +160,7 @@ class ContainerLexer
         {
             if (preg_match($regex, substr($this->code, $this->offset), $matches)) 
             {
-                if ($token === static::TOKEN_LINE) {
+                if ($token === self::TOKEN_LINE) {
                     $this->line++;
                 }
 
@@ -175,9 +186,9 @@ class ContainerLexer
         {
             // skip doublicated linebreaks
             if (
-                $token->type === static::TOKEN_LINE && 
+                $token->type === self::TOKEN_LINE && 
                 isset($tokens[count($tokens) - 1]) && 
-                $tokens[count($tokens) - 1]->type === static::TOKEN_LINE
+                $tokens[count($tokens) - 1]->type === self::TOKEN_LINE
             ) {
                 continue;
             }
