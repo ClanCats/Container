@@ -82,7 +82,7 @@ class Token
      */
     public function getType() : int
     {
-        return $this->line;
+        return $this->type;
     }
 
     /**

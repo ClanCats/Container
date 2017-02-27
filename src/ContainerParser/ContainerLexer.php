@@ -98,7 +98,7 @@ class ContainerLexer
     {
         // there is never a need for tabs or multiple whitespaces 
         // so we remove them before assigning the code
-        $this->code = trim(preg_replace('/\s+/', ' ', $code));
+        $this->code = trim(preg_replace("/[ \t]+/", ' ', $code));
 
         // we need to know the codes length
         $this->length = strlen($this->code);
