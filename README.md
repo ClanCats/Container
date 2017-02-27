@@ -56,7 +56,7 @@ $contanier->bind('router', \Acme\Router::class);
 $container->get('router'); // returns \Acme\Router instance
 ```
 
-Bind a service with constructor arguments and 
+Bind a service with constructor arguments
 
 ```php
 $contanier->bind('router', \Acme\Router::class);

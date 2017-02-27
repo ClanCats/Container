@@ -1,18 +1,18 @@
 import andromeda/companies
 
-use \Andromeda\SpaceShip\(Ship, Engine)
+use Andromeda\SpaceShip\(Ship, Engine)
 
 ## The Car service
-ship.destroyer: Ship(@engine.hyperdrive, @engine.pulsedrive)
+@ship.destroyer: Ship(@engine.hyperdrive, @engine.pulsedrive)
  - setProducer: @producer.massive
 
 ## The Engine (the '?' marks the service as NOT shared)
-engine.hyperdrive?: Engine
+@engine.hyperdrive?: Engine
  - setPower: 34000
 
-engine.pulsedrive?: Engine
+@engine.pulsedrive?: Engine
  - setPower: 20
 
 # Producer
 :producer.default_name: 'Massive Industries'
-producer.massive: \Andromeda\Companies\Company(:producer.default_name)
+@producer.massive: \Andromeda\Companies\Company(:producer.default_name)
