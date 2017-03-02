@@ -123,4 +123,21 @@ class ContainerLexerTest extends \PHPUnit_Framework_TestCase
         $this->assertTokenTypes("@foo/bar", [T::TOKEN_DEPENDENCY]);
         $this->assertTokenTypes("@foo-bar", [T::TOKEN_DEPENDENCY]);
     }
+
+    public function testParameter()
+    {
+        $this->assertTokenTypes(":foo", [T::TOKEN_PARAMETER]);
+        $this->assertTokenTypes(":foo_bar", [T::TOKEN_PARAMETER]);
+        $this->assertTokenTypes(":foo.bar", [T::TOKEN_PARAMETER]);
+        $this->assertTokenTypes(":foo/bar", [T::TOKEN_PARAMETER]);
+        $this->assertTokenTypes(":foo-bar", [T::TOKEN_PARAMETER]);
+    }
+
+    public function testComments()
+    {
+        $this->assertTokenTypes("// :foo", [T::TOKEN_COMMENT]);
+        $this->assertTokenTypes("# :foo", [T::TOKEN_COMMENT]);
+        $this->assertTokenTypes("/* true */", [T::TOKEN_COMMENT]);
+        $this->assertTokenTypes("/* foo \n\n\n bar */", [T::TOKEN_COMMENT]);
+    }
 }

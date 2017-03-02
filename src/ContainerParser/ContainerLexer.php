@@ -66,6 +66,8 @@ class ContainerLexer
 
         // comments
         "/^\/\/.*/" => T::TOKEN_COMMENT,
+        "/^#.*/" => T::TOKEN_COMMENT,
+        "/^\/\*(?:.|[\r\n])*?\*\//" => T::TOKEN_COMMENT,
 
         // markup
         "/^(\r\n|\n|\r)/" => T::TOKEN_LINE,
