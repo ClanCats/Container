@@ -182,4 +182,19 @@ class ContainerLexerTest extends \PHPUnit_Framework_TestCase
         $this->assertTokenTypes("use Acme\Test", [T::TOKEN_USE, T::TOKEN_IDENTIFIER]);
         $this->assertTokenTypes("import foo/bar", [T::TOKEN_IMPORT, T::TOKEN_IDENTIFIER]);
     }
+
+    public function testBraces()
+    {
+        $this->assertTokenTypes("()", [T::TOKEN_BRACE_OPEN, T::TOKEN_BRACE_CLOSE]);
+
+        $this->assertTokenTypes("Ship(@engine, :name)", [
+            T::TOKEN_IDENTIFIER, 
+            T::TOKEN_BRACE_OPEN, 
+            T::TOKEN_DEPENDENCY,
+            T::TOKEN_SEPERATOR, 
+            T::TOKEN_SPACE, 
+            T::TOKEN_PARAMETER, 
+            T::TOKEN_BRACE_CLOSE, 
+        ]);
+    }
 }
