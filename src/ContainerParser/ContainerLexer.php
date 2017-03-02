@@ -85,6 +85,7 @@ class ContainerLexer
         "/^(\:)/" => T::TOKEN_ASSIGN,
         "/^(\-)/" => T::TOKEN_MINUS,
         "/^(\,)/" => T::TOKEN_SEPERATOR,
+        "/^(\?)/" => T::TOKEN_PROTOTYPE,
 
         // ids
         "/^([\w-\/\\\\.]+)/" => T::TOKEN_IDENTIFIER,

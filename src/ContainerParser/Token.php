@@ -48,7 +48,8 @@ class Token
     const TOKEN_BRACE_CLOSE = 14;
     const TOKEN_MINUS = 15;
     const TOKEN_SEPERATOR = 16;
-    const TOKEN_IDENTIFIER = 17;
+    const TOKEN_PROTOTYPE = 17;
+    const TOKEN_IDENTIFIER = 18;
 
     /**
      * The constructor
