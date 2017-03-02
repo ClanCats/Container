@@ -54,15 +54,15 @@ class ContainerLexer
         "/^[+-]?([0-9]*[.])?[0-9]+/" => T::TOKEN_NUMBER,
 
         // bool
-        "/^(yes)/" => T::TOKEN_BOOL_TRUE,
-        "/^(no)/" => T::TOKEN_BOOL_FALSE,
+        "/^(true)/" => T::TOKEN_BOOL_TRUE,
+        "/^(false)/" => T::TOKEN_BOOL_FALSE,
 
         // null
         "/^(null)/" => T::TOKEN_NULL,
 
-        // variables
-        "/^(@\w+)/" => T::TOKEN_DEPENDENCY,
-        "/^(:\w+)/" => T::TOKEN_PARAMETER,
+        // container objects
+        "/^(@[\w-\/\.]+)/" => T::TOKEN_DEPENDENCY,
+        "/^(:[\w-\/\.]+)/" => T::TOKEN_PARAMETER,
 
         // comments
         "/^\/\/.*/" => T::TOKEN_COMMENT,
@@ -85,7 +85,7 @@ class ContainerLexer
         "/^(\,)/" => T::TOKEN_SEPERATOR,
 
         // ids
-        "/^([\w-\/\.]+)/" => T::TOKEN_IDENTIFIER,
+        "/^([\w-\/\\\\.]+)/" => T::TOKEN_IDENTIFIER,
     ];
 
     /**

@@ -48,7 +48,7 @@ class ContainerLexerTest extends \PHPUnit_Framework_TestCase
 
     public function testDoublicatedLinebreaks()
     {
-        $this->assertTokenTypes("yes\n\n\nno", 
+        $this->assertTokenTypes("true\n\n\nfalse", 
         [
             T::TOKEN_BOOL_TRUE,
             T::TOKEN_LINE,
@@ -71,6 +71,12 @@ class ContainerLexerTest extends \PHPUnit_Framework_TestCase
         // utf8mb4
         $string = $this->tokensFromCode("'🐌🐌🐌'")[0];
         $this->assertEquals("🐌🐌🐌", $string->getValue());
+
+        // types inside
+        $this->assertTokenTypes("'1'", [T::TOKEN_STRING]);
+        $this->assertTokenTypes("''", [T::TOKEN_STRING]);
+        $this->assertTokenTypes("'true'", [T::TOKEN_STRING]);
+        $this->assertTokenTypes("'\"\"'", [T::TOKEN_STRING]);
     }
 
     public function testScalarNumber()
@@ -89,5 +95,32 @@ class ContainerLexerTest extends \PHPUnit_Framework_TestCase
             T::TOKEN_SPACE, 
             T::TOKEN_NUMBER,
         ]);
+    }
+
+    public function testScalarBool()
+    {
+        $this->assertTokenTypes("true", [T::TOKEN_BOOL_TRUE]);
+
+        $this->assertTokenTypes("false", [T::TOKEN_BOOL_FALSE]);
+
+        $this->assertTokenTypes("false,true", [
+            T::TOKEN_BOOL_FALSE, 
+            T::TOKEN_SEPERATOR,
+            T::TOKEN_BOOL_TRUE,
+        ]);
+    }
+
+    public function testScalarNull()
+    {
+        $this->assertTokenTypes("null", [T::TOKEN_NULL]);
+    }
+
+    public function testDependency()
+    {
+        $this->assertTokenTypes("@foo", [T::TOKEN_DEPENDENCY]);
+        $this->assertTokenTypes("@foo_bar", [T::TOKEN_DEPENDENCY]);
+        $this->assertTokenTypes("@foo.bar", [T::TOKEN_DEPENDENCY]);
+        $this->assertTokenTypes("@foo/bar", [T::TOKEN_DEPENDENCY]);
+        $this->assertTokenTypes("@foo-bar", [T::TOKEN_DEPENDENCY]);
     }
 }
