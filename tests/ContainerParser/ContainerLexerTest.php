@@ -150,6 +150,23 @@ class ContainerLexerTest extends \PHPUnit_Framework_TestCase
         $this->assertTokenTypes(":foo.bar", [T::TOKEN_PARAMETER]);
         $this->assertTokenTypes(":foo/bar", [T::TOKEN_PARAMETER]);
         $this->assertTokenTypes(":foo-bar", [T::TOKEN_PARAMETER]);
+
+        $this->assertTokenTypes(":password: '123456'", [
+            T::TOKEN_PARAMETER,
+            T::TOKEN_ASSIGN,
+            T::TOKEN_SPACE,
+            T::TOKEN_STRING
+        ]);
+
+        $this->assertTokenTypes(":needed: true, false", [
+            T::TOKEN_PARAMETER,
+            T::TOKEN_ASSIGN,
+            T::TOKEN_SPACE,
+            T::TOKEN_BOOL_TRUE, 
+            T::TOKEN_SEPERATOR, 
+            T::TOKEN_SPACE, 
+            T::TOKEN_BOOL_FALSE, 
+        ]);
     }
 
     public function testComments()
@@ -158,5 +175,11 @@ class ContainerLexerTest extends \PHPUnit_Framework_TestCase
         $this->assertTokenTypes("# :foo", [T::TOKEN_COMMENT]);
         $this->assertTokenTypes("/* true */", [T::TOKEN_COMMENT]);
         $this->assertTokenTypes("/* foo \n\n\n bar */", [T::TOKEN_COMMENT]);
+    }
+
+    public function testKeywords()
+    {
+        $this->assertTokenTypes("use Acme\Test", [T::TOKEN_USE, T::TOKEN_IDENTIFIER]);
+        $this->assertTokenTypes("import foo/bar", [T::TOKEN_IMPORT, T::TOKEN_IDENTIFIER]);
     }
 }
