@@ -6,12 +6,15 @@ A PHP Service Container with fast and compilable dependency injection.
 
  * **Singleton** and **prototype** service resolvers.
  * A **container builder** allowing to **compile** your service definitions.
+ * Container files featuring a meta language to define your services.
+ * Composer integration, allowing to import default service definitions from your dependencies.
  * Lazy **service providers** for big and dynamic class graphs.
 
 **Cons:**
 
- * Container only allows **only** named services.
+ * Container allows **only** named services.
  * Currently **no** autowiring.
+ * Obviously no IDE Support for _container files_.
 
 [![Build Status](https://travis-ci.org/ClanCats/Container.svg?branch=master)](https://travis-ci.org/ClanCats/Container)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/container.svg)](https://packagist.org/packages/clancats/container)
@@ -19,6 +22,8 @@ A PHP Service Container with fast and compilable dependency injection.
 [![GitHub release](https://img.shields.io/github/release/clancats/container.svg)](https://github.com/ClanCats/Container/releases)
 
 _Requires PHP >= 7.1_
+
+Why should I use this? Don't at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point I still might change the public API or brake functionality. Feel free to try this out on small side projects. Obviously I really appriciate everyone who wants to sacrifice time to contribute.
 
 ## Installation
 
