@@ -9,6 +9,7 @@ use Andromeda\SpaceShip\(Ship, Engine)
 ## The Engine (the '?' marks the service as NOT shared)
 @engine.hyperdrive?: Engine
  - setPower: 34000
+ = tag: "james" 
 
 @engine.pulsedrive?: Engine
  - setPower: 20
@@ -16,3 +17,21 @@ use Andromeda\SpaceShip\(Ship, Engine)
 # Producer
 :producer.default_name: 'Massive Industries'
 @producer.massive: \Andromeda\Companies\Company(:producer.default_name)
+
+override @producer.massive: \Andromeda\Companies\Company('Other Company')
+
+@engine.pulsedriver
+ = tag: "engines"
+
+@human.ray: Human('Ray')
+ - setAge: 23
+ 
+@human.ray: 
+ <- setAge: 26
+
+==== @human.ray.age === 23, 26
+
+@human.ray: 
+ - setAge: 27
+
+==== @human.ray.age === 27
