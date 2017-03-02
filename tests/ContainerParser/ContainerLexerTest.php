@@ -197,4 +197,16 @@ class ContainerLexerTest extends \PHPUnit_Framework_TestCase
             T::TOKEN_BRACE_CLOSE, 
         ]);
     }
+
+    public function testCalls()
+    {
+        $this->assertTokenTypes("- doThis: @damn", [
+            T::TOKEN_MINUS, 
+            T::TOKEN_SPACE,
+            T::TOKEN_IDENTIFIER, 
+            T::TOKEN_ASSIGN, 
+            T::TOKEN_SPACE, 
+            T::TOKEN_DEPENDENCY, 
+        ]);
+    }
 }
