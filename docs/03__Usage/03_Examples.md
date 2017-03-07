@@ -34,7 +34,7 @@ class Engine
 }
 ```
 
-The engine object has no constructor arguments but is able to mutate its power using the `setPower` method.
+The engine object has no constructor arguments, but is able to mutate its power using the `setPower` method.
 
 ```php
 class Company 
@@ -81,7 +81,7 @@ Bind the rest.
 $contanier->bind('pulsedrive', Engine::class, false)
 	->calls('setPower', [20]);
 
-// bind a "shuttle" space ship, inject the pulsedrive and 
+// bind a "shuttle" spaceship, inject the pulsedrive and 
 // set the producer company 
 $contanier->bind('shuttle', SpaceShip::class, false)
 	->arguments(['@pulsedrive', '@producer']);

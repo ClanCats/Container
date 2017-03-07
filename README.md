@@ -7,7 +7,7 @@ A PHP Service Container with fast and compilable dependency injection.
  * **Singleton** and **prototype** service resolvers.
  * A **container builder** allowing to **compile** your service definitions.
  * Container files featuring a meta language to define your services.
- * Composer integration, allowing to import default service definitions from your dependencies.
+ * Composer integration, allowing you to import default service definitions from your dependencies.
  * Lazy **service providers** for big and dynamic class graphs.
 
 **Cons:**
@@ -25,11 +25,12 @@ _Requires PHP >= 7.1_
 
 ## Why should I use this? 
 
-Don't at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or brake functionality. Feel free to try this out on small side projects. Obviously, I really appreciate everyone who wants to sacrifice time to contribute.
+Don't, at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or brake functionality. Feel free to try this out on small side projects. Obviously, I really appreciate everyone who wants to sacrifice their time to contribute.
+
 
 ## Installation
 
-The Container follows `PSR-4` autoloading and can be installed using composer:
+The container follows `PSR-4` autoloading and can be installed using composer:
 
 ```
 $ composer require clancats/container
@@ -63,11 +64,13 @@ use ClanCats\Container\Container;
 $contanier = new Container();
 ```
 
-This is the simplest and the most dynamic implementation. This type of a container cannot be compiled which is a little bit slower but has therefor almost no limitations when it comes to service binding and your parameters.
+This is the simplest and the most dynamic implementation. This type of container cannot be compiled. Which makes it a little bit slower, but it therefor has almost no limitations when it comes to service binding and your parameters.
 
-Note: Take a look at the `ContainerFactory` to make use of the compilable `ContainerBuilder`. Compiling your container reduces the overhead to a minimum and creates a big perfermance boost. 
 
-Next our example services / classes will look the following:
+
+Note: Take a look at the `ContainerFactory` to make use of the compilable `ContainerBuilder`. Compiling your container reduces the overhead to a minimum and creates a big performance boost. 
+
+Next our example services / classes will look like the following:
 
 ```php
 class Human
