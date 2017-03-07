@@ -13,7 +13,7 @@ A PHP Service Container with fast and compilable dependency injection.
 **Cons:**
 
  * Container allows **only** named services.
- * Currently **no** autowiring.
+ * Currently **no** auto wiring.
  * Obviously no IDE Support for _container files_.
 
 [![Build Status](https://travis-ci.org/ClanCats/Container.svg?branch=master)](https://travis-ci.org/ClanCats/Container)
@@ -23,9 +23,9 @@ A PHP Service Container with fast and compilable dependency injection.
 
 _Requires PHP >= 7.1_
 
-Why should I use this? Don't at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point I still might change the public API or brake functionality. Feel free to try this out on small side projects. Obviously I really appriciate everyone who wants to sacrifice time to contribute.
+Why should I use this? Don't at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or brake functionality. Feel free to try this out on small side projects. Obviously, I really appreciate everyone who wants to sacrifice time to contribute.
 
-## Installation
+## Installation
 
 The Container follows `PSR-4` autoloading and can be installed using composer:
 
@@ -35,9 +35,9 @@ $ composer require clancats/container
 
 ## Documentation
 
-The full documentation can be found on: [http://clancats.io/container](http://clancats.io/container/master/)
+The full documentation can be found on [http://clancats.io/container](http://clancats.io/container/master/)
 
-## Getting Started
+## Getting Started
 
 Here follow some really basic examples to get started with the clancats container.
 
@@ -84,12 +84,12 @@ Bind the rest.
 // the boolean flag at the end indicated that this is 
 // NOT a shared service.
 $contanier->bind('pulsedrive', Engine::class, false)
-	->calls('setPower', [20]);
+    ->calls('setPower', [20]);
 
 // bind a "shuttle" space ship, inject the pulsedrive and 
 // set the producer company 
 $contanier->bind('shuttle', SpaceShip::class, false)
-	->arguments(['@pulsedrive', '@producer']);
+    ->arguments(['@pulsedrive', '@producer']);
 ```
 
 When we are all set we can start creating shuttles:
