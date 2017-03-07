@@ -23,7 +23,9 @@ A PHP Service Container with fast and compilable dependency injection.
 
 _Requires PHP >= 7.1_
 
-Why should I use this? Don't at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or brake functionality. Feel free to try this out on small side projects. Obviously, I really appreciate everyone who wants to sacrifice time to contribute.
+## Why should I use this? 
+
+Don't at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or brake functionality. Feel free to try this out on small side projects. Obviously, I really appreciate everyone who wants to sacrifice time to contribute.
 
 ## Installation
 
@@ -37,13 +39,23 @@ $ composer require clancats/container
 
 The full documentation can be found on [http://clancats.io/container](http://clancats.io/container/master/)
 
-## Getting Started
+## Basic Usage
 
-Here follow some really basic examples to get started with the clancats container.
+### Container file
 
-### Dynamic Service Container
+Create an instance of the container `ContainerFactory` to build a container from a given container file.
 
-Create a new instance of the base container. This implementation type is fully dynamic and allows 
+```php
+use ClanCats\Container\ContainerFactory;
+
+$factory = new ContainerFactory(__DIR__ . '/cache');
+
+$container = $factory->createFromFile('App', '~/application.container');
+```
+
+### Dynamic service container
+
+Create an instance of the base container.
 
 ```php
 use ClanCats\Container\Container;
@@ -51,55 +63,56 @@ use ClanCats\Container\Container;
 $contanier = new Container();
 ```
 
-Note: Use the `ContainerFactory` to make use of the compilable `ContainerBuilder`.
+This is the simplest and the most dynamic implementation. This type of a container cannot be compiled which is a little bit slower but has therefor almost no limitations when it comes to service binding and your parameters.
 
-Bind a service to the container instance:
+Note: Take a look at the `ContainerFactory` to make use of the compilable `ContainerBuilder`. Compiling your container reduces the overhead to a minimum and creates a big perfermance boost. 
+
+Next our example services / classes will look the following:
 
 ```php
-$contanier->bind('router', \Acme\Router::class);
+class Human
+{
+	public $name;
 
-$container->get('router'); // returns \Acme\Router instance
+	public function setName(string $name) {
+		$this->name = $name;
+	}
+}
+
+class SpaceShip 
+{
+	protected $captain; // every ship needs a captain!
+
+	public function __construct(Human $captain) {
+		$this->captain = $captain;
+	}
+
+	public function ayeAye()
+	{
+		return 'aye aye captain ' . $this->captain->name;
+	}
+}
 ```
 
-Bind a service with constructor arguments
+Bind the captain to the service container.
 
 ```php
-$contanier->bind('router', \Acme\Router::class);
+$contanier->bind('malcolm', \Human::class)
+	->calls('setName', ['Reynolds']);
+
+$container->get('malcolm'); // returns \Human instance
+```
+And what is a captain without his ship?..
+
+```php
+$contanier->bind('firefly', \SpaceShip::class)
+	->arguments(['@malcolm']);
 ```
 
-```php
-$contanier->bind('logger', \Monolog\Logger::class)
-```
-
-Binds the company service under the name `producer` and add the constructor argument "Massive Industries".
+The `@` character tells the container to resolve the dependency named *malcolm*.
 
 ```php
-echo $container->get('producer')->name; // "Massive Industries"
-```
-
-Bind the rest.
-
-```php
-// bind the pulsedrive engine and set the power
-// the boolean flag at the end indicated that this is 
-// NOT a shared service.
-$contanier->bind('pulsedrive', Engine::class, false)
-    ->calls('setPower', [20]);
-
-// bind a "shuttle" space ship, inject the pulsedrive and 
-// set the producer company 
-$contanier->bind('shuttle', SpaceShip::class, false)
-    ->arguments(['@pulsedrive', '@producer']);
-```
-
-When we are all set we can start creating shuttles:
-
-```php
-$jumper1 = $container->get('shuttle');
-$jumper2 = $container->get('shuttle');
-
-// note: the producer is binded as
-$jumper1->producer === $jumper1->producer; // true
+echo $container->get('firefly')->ayeAye(); // aye aye captain Reynolds
 ```
 
 ## Credits
