@@ -1,10 +1,6 @@
 <?php 
 namespace ClanCats\Container\ContainerParser;
 
-use ClanCats\Container\{
-    Exceptions\ContainerLexerException
-};
-
 class Token
 {
     /**
