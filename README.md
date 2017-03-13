@@ -1,3 +1,8 @@
+<p align="center"><a href="http://clancats.io/container/master/" target="_blank">
+    <img width="100px" src="http://clancats.io/assets/media/img/logo/container.png">
+</a></p>
+
+
 # ClanCats Container
 
 A PHP Service Container with fast and compilable dependency injection. 
