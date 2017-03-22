@@ -6,7 +6,7 @@ use ClanCats\Container\{
 };
 
 use ClanCats\Container\ContainerParser{
-	ContainerInterpreter
+	ContainerParser
 };
 
 class ContainerNamespace
@@ -80,7 +80,7 @@ class ContainerNamespace
 	 */ 
 	public function parse(string $containerFilePath) : array
 	{
-		$interpreter = new ContainerInterpreter($this->getCodeFromFile($containerFilePath), $this);
-
+		$parser = new ContainerParser($this->getCodeFromFile($containerFilePath), $this);
+			
 	}
 }

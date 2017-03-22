@@ -8,7 +8,6 @@ use ClanCats\Container\{
     ContainerParser\Token as T
 };
 
-
 class ContainerLexer
 {
     /**
