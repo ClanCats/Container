@@ -32,6 +32,9 @@ _Requires PHP >= 7.1_
 
 Don't, at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or brake functionality. Feel free to try this out on small side projects. Obviously, I really appreciate everyone who wants to sacrifice their time to contribute.
 
+## Performance
+
+After a short warmup the compiled container is blazing fast and has almost no overhead. Binding and resolving services dynamically is slower but still won't impact performance in real world application.
 
 ## Installation
 
@@ -45,9 +48,57 @@ $ composer require clancats/container
 
 The full documentation can be found on [http://clancats.io/container](http://clancats.io/container/master/)
 
-## Basic Usage
+## Getting Started 
+
+Following is just a really rough example, a much more detailed and explained guide can be found here: [Getting Started](http://clancats.io/container/master/usage/)
+
+### Setup 
+
+For this example setup we create two classes a `SpaceShip` and a `Human`.
+
+Human.php
+
+```php
+class Human
+{
+	public $name;
+
+	public function setName(string $name) {
+		$this->name = $name;
+	}
+}
+```
+
+SpaceShip.php
+
+```php
+class SpaceShip
+{
+	protected $captain; // every ship needs a captain!
+
+	public function __construct(Human $captain) {
+		$this->captain = $captain;
+	}
+
+	public function ayeAye()
+	{
+		return 'aye aye captain ' . $this->captain->name;
+	}
+}
+```
 
 ### Container file
+
+Create a new file called `app.container` in your applications root folder.
+
+```yml
+@malcolm: Human
+	- setName: 'Reynolds'
+
+@firefly: SpaceShip(@malcolm)
+```
+
+### Container factory
 
 Create an instance of the container `ContainerFactory` to build a container from a given container file.
 
@@ -70,8 +121,6 @@ $contanier = new Container();
 ```
 
 This is the simplest and the most dynamic implementation. This type of container cannot be compiled. Which makes it a little bit slower, but it therefor has almost no limitations when it comes to service binding and your parameters.
-
-
 
 Note: Take a look at the `ContainerFactory` to make use of the compilable `ContainerBuilder`. Compiling your container reduces the overhead to a minimum and creates a big performance boost. 
 
