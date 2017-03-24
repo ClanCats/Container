@@ -1,6 +1,10 @@
-# Examples
+# Getting Started with the ClanCats Container
 
-## Setup
+Hey there, this is the more detailed version of the Quick Start found in the [README](https://github.com/ClanCats/Container/blob/master/README.md) file. 
+
+## Choosing the implementation
+
+The key diffrence between 
 
 please consider the following setup.
 
@@ -95,4 +99,25 @@ $jumper2 = $container->get('shuttle');
 
 // note: the producer is binded as
 $jumper1->producer === $jumper1->producer; // true
+```
+
+Bind the captain to the service container.
+
+```php
+$contanier->bind('malcolm', \Human::class)
+	->calls('setName', ['Reynolds']);
+
+$container->get('malcolm'); // returns \Human instance
+```
+And what is a captain without his ship?..
+
+```php
+$contanier->bind('firefly', \SpaceShip::class)
+	->arguments(['@malcolm']);
+```
+
+The `@` character tells the container to resolve the dependency named *malcolm*.
+
+```php
+echo $container->get('firefly')->ayeAye(); // aye aye captain Reynolds
 ```

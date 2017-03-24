@@ -2,24 +2,9 @@
     <img width="100px" src="http://clancats.io/assets/media/img/logo/container.png">
 </a></p>
 
-
 # ClanCats Container
 
 A PHP Service Container with fast and compilable dependency injection. 
-
-**Features:**
-
- * **Singleton** and **prototype** service resolvers.
- * A **container builder** allowing to **compile** your service definitions.
- * Container files featuring a meta language to define your services.
- * Composer integration, allowing you to import default service definitions from your dependencies.
- * Lazy **service providers** for big and dynamic class graphs.
-
-**Cons:**
-
- * Container allows **only** named services.
- * Currently **no** auto wiring.
- * Obviously no IDE Support for _container files_.
 
 [![Build Status](https://travis-ci.org/ClanCats/Container.svg?branch=master)](https://travis-ci.org/ClanCats/Container)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/container.svg)](https://packagist.org/packages/clancats/container)
@@ -28,11 +13,25 @@ A PHP Service Container with fast and compilable dependency injection.
 
 _Requires PHP >= 7.1_
 
+**Features:**
+
+ * **Singleton** and **prototype** service resolvers.
+ * A container builder allowing to **compile** your service definitions.
+ * _Container files_ featuring a **meta language** to define your services.
+ * **Composer** integration, allowing you to import default service definitions from your dependencies.
+ * **Lazy service providers** for big and dynamic class graphs.
+
+**Cons:**
+
+ * Container allows **only** named services.
+ * Currently **no** auto wiring.
+ * Obviously **no** IDE Support for _container files_.
+
 ## Why should I use this? 
 
 Don't, at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or brake functionality. Feel free to try this out on small side projects. Obviously, I really appreciate everyone who wants to sacrifice their time to contribute.
 
-## Performance
+## Performance
 
 After a short warmup the compiled container is blazing fast and has almost no overhead. Binding and resolving services dynamically is slower but still won't impact performance in real world application.
 
@@ -48,15 +47,28 @@ $ composer require clancats/container
 
 The full documentation can be found on [http://clancats.io/container](http://clancats.io/container/master/)
 
-## Getting Started 
+## Quick Start Tutorial
 
-Following is just a really rough example, a much more detailed and explained guide can be found here: [Getting Started](http://clancats.io/container/master/usage/)
+Following is just a really rough example, a much more detailed and explained guide can be found here: [Getting Started](http://clancats.io/container/master/usage/getting-started)
 
 ### Setup 
 
-For this example setup we create two classes a `SpaceShip` and a `Human`.
+Our target directy structure will look like this:
 
-Human.php
+```
+app.php
+app.container
+composer.json
+src/
+  Human.php
+  SpaceShip.php
+```
+
+### Services
+
+To demenstrate how to use this service container we need to create two classes a `SpaceShip` and a `Human`.
+
+Create a new php file `src/Human.php`:
 
 ```php
 class Human
@@ -69,7 +81,7 @@ class Human
 }
 ```
 
-SpaceShip.php
+Create another php file `src/SpaceShip.php`:
 
 ```php
 class SpaceShip
@@ -80,96 +92,48 @@ class SpaceShip
 		$this->captain = $captain;
 	}
 
-	public function ayeAye()
-	{
+	public function ayeAye() {
 		return 'aye aye captain ' . $this->captain->name;
 	}
 }
 ```
 
-### Container file
+### Container file
 
-Create a new file called `app.container` in your applications root folder.
+A container file allows you to bind your services & parameters using a simple meta language. 
 
-```yml
+> Note: This feature is entirely optional if you prefer binding your services in PHP itself read: [](http://clancats.io/container/master/service-binding/basics)
+
+Create a new file called `app.container` in your applications root folder. 
+
+```
 @malcolm: Human
-	- setName: 'Reynolds'
+    - setName: 'Reynolds'
 
 @firefly: SpaceShip(@malcolm)
 ```
 
 ### Container factory
 
-Create an instance of the container `ContainerFactory` to build a container from a given container file.
+Now we need to parse the container file and compile it as a new class. For this task we create the `app.php` file.
 
 ```php
-use ClanCats\Container\ContainerFactory;
+$factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
 
-$factory = new ContainerFactory(__DIR__ . '/cache');
-
-$container = $factory->createFromFile('App', '~/application.container');
-```
-
-### Dynamic service container
-
-Create an instance of the base container.
-
-```php
-use ClanCats\Container\Container;
-
-$contanier = new Container();
-```
-
-This is the simplest and the most dynamic implementation. This type of container cannot be compiled. Which makes it a little bit slower, but it therefor has almost no limitations when it comes to service binding and your parameters.
-
-Note: Take a look at the `ContainerFactory` to make use of the compilable `ContainerBuilder`. Compiling your container reduces the overhead to a minimum and creates a big performance boost. 
-
-Next our example services / classes will look like the following:
-
-```php
-class Human
+$container = $factory->create('AppContainer', function($builder)
 {
-	public $name;
+	// create a new container namespace
+	$namespace = new \ClanCats\Container\ContainerNamespace();
 
-	public function setName(string $name) {
-		$this->name = $name;
-	}
-}
-
-class SpaceShip 
-{
-	protected $captain; // every ship needs a captain!
-
-	public function __construct(Human $captain) {
-		$this->captain = $captain;
-	}
-
-	public function ayeAye()
-	{
-		return 'aye aye captain ' . $this->captain->name;
-	}
-}
+	// forward the parsed data to the container builder
+	$builder->addArray($namespace->parse(__DIR__ . '/app.container'));
+});
 ```
 
-Bind the captain to the service container.
+The variable `$container` contains now a class instance named `AppContainer`.
 
 ```php
-$contanier->bind('malcolm', \Human::class)
-	->calls('setName', ['Reynolds']);
-
-$container->get('malcolm'); // returns \Human instance
-```
-And what is a captain without his ship?..
-
-```php
-$contanier->bind('firefly', \SpaceShip::class)
-	->arguments(['@malcolm']);
-```
-
-The `@` character tells the container to resolve the dependency named *malcolm*.
-
-```php
-echo $container->get('firefly')->ayeAye(); // aye aye captain Reynolds
+echo $container->get('firefly')->ayeAye() // "aye aye captain Reynolds"
 ```
 
 ## Credits
