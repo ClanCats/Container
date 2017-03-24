@@ -5,7 +5,7 @@ use ClanCats\Container\{
 	Exceptions\ContainerNamespaceException
 };
 
-use ClanCats\Container\ContainerParser{
+use ClanCats\Container\ContainerParser\{
 	ContainerParser
 };
 
