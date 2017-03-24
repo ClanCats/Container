@@ -9,7 +9,7 @@ use ClanCats\Container\Tests\TestServices\{
     Car, CarFactory, Engine
 };
 
-class ServiceArgumentsTest extends \PHPUnit_Framework_TestCase
+class ServiceArgumentsTest extends \PHPUnit\Framework\TestCase
 {
     public function testConsturct()
     {

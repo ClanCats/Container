@@ -6,7 +6,7 @@ use ClanCats\Container\ContainerParser\{
     Token as T
 };
 
-class ContainerLexerTest extends \PHPUnit_Framework_TestCase
+class ContainerLexerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Assert the token types

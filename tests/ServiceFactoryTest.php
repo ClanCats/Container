@@ -10,7 +10,7 @@ use ClanCats\Container\Tests\TestServices\{
     Car, CarFactory, Engine, Producer
 };
 
-class ServiceFactoryTest extends \PHPUnit_Framework_TestCase
+class ServiceFactoryTest extends \PHPUnit\Framework\TestCase
 {
     public function testConsturct()
     {

@@ -9,7 +9,7 @@ use ClanCats\Container\Tests\TestServices\{
     Car, Engine, Producer
 };
 
-class ServiceProviderArrayTest extends \PHPUnit_Framework_TestCase
+class ServiceProviderArrayTest extends \PHPUnit\Framework\TestCase
 {
     private function resolveWithArray(string $serviceName, array $data)
     {
