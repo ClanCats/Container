@@ -4,14 +4,14 @@
 
 # ClanCats Container
 
-A PHP Service Container with fast and compilable dependency injection. 
+A PHP Service Container featuring a simple meta language with fast and compilable dependency injection. 
 
 [![Build Status](https://travis-ci.org/ClanCats/Container.svg?branch=master)](https://travis-ci.org/ClanCats/Container)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/container.svg)](https://packagist.org/packages/clancats/container)
 [![Packagist](https://img.shields.io/packagist/l/clancats/container.svg)](https://github.com/ClanCats/Container/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/clancats/container.svg)](https://github.com/ClanCats/Container/releases)
 
-_Requires PHP >= 7.1_
+_Requires PHP >= 7.1_ Check the php70 branch for older PHP versions.
 
 **Features:**
 
@@ -73,11 +73,11 @@ Create a new php file `src/Human.php`:
 ```php
 class Human
 {
-	public $name;
+    public $name;
 
-	public function setName(string $name) {
-		$this->name = $name;
-	}
+    public function setName(string $name) {
+        $this->name = $name;
+    }
 }
 ```
 
@@ -86,15 +86,15 @@ Create another php file `src/SpaceShip.php`:
 ```php
 class SpaceShip
 {
-	protected $captain; // every ship needs a captain!
+    protected $captain; // every ship needs a captain!
 
-	public function __construct(Human $captain) {
-		$this->captain = $captain;
-	}
+    public function __construct(Human $captain) {
+        $this->captain = $captain;
+    }
 
-	public function ayeAye() {
-		return 'aye aye captain ' . $this->captain->name;
-	}
+    public function ayeAye() {
+        return 'aye aye captain ' . $this->captain->name;
+    }
 }
 ```
 
@@ -122,11 +122,11 @@ $factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
 
 $container = $factory->create('AppContainer', function($builder)
 {
-	// create a new container namespace
-	$namespace = new \ClanCats\Container\ContainerNamespace();
+    // create a new container namespace
+    $namespace = new \ClanCats\Container\ContainerNamespace();
 
-	// forward the parsed data to the container builder
-	$builder->addArray($namespace->parse(__DIR__ . '/app.container'));
+    // forward the parsed data to the container builder
+    $builder->addArray($namespace->parse(__DIR__ . '/app.container'));
 });
 ```
 

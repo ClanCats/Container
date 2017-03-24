@@ -9,7 +9,7 @@ The language supports the following scalar types:
  * **strings** Single and double quoted. 
    `'hello'` & `"world"`
  * **numbers** float / double, int.
- 	`3.14`, `42`
+    `3.14`, `42`
  * **booleans** `true` and `false`.
  * **null**
     `null`
@@ -53,8 +53,8 @@ To keep things clean you can `use` multiple classes from one namespace just like
 
 ```yml
 use Acme\Log\(
-	Logger,
-	FileAdapter
+    Logger,
+    FileAdapter
 )
 
 @log: Logger

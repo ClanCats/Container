@@ -6,8 +6,8 @@ Keep in mind that in the below examples following namespaces are used:
 
 ```php
 use ClanCats\Container\{
-	Container,
-	ServiceFactory	
+    Container,
+    ServiceFactory  
 };
 ```
 
