@@ -1,17 +1,10 @@
+<p align="center"><a href="http://clancats.io/container/master/" target="_blank">
+    <img width="100px" src="http://clancats.io/assets/media/img/logo/container.png">
+</a></p>
+
 # ClanCats Container
 
 A PHP Service Container with fast and compilable dependency injection. 
-
-**Features:**
-
- * **Singleton** and **prototype** service resolvers.
- * A **container builder** allowing to **compile** your service definitions.
- * Lazy **service providers** for big and dynamic class graphs.
-
-**Cons:**
-
- * Container only allows **only** named services.
- * Currently **no** autowiring.
 
 [![Build Status](https://travis-ci.org/ClanCats/Container.svg?branch=master)](https://travis-ci.org/ClanCats/Container)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/container.svg)](https://packagist.org/packages/clancats/container)
@@ -20,110 +13,127 @@ A PHP Service Container with fast and compilable dependency injection.
 
 _Requires PHP >= 7.1_
 
-## Installation
+**Features:**
 
-The Container follows `PSR-4` autoloading and can be installed using composer:
+ * **Singleton** and **prototype** service resolvers.
+ * A container builder allowing to **compile** your service definitions.
+ * _Container files_ featuring a **meta language** to define your services.
+ * **Composer** integration, allowing you to import default service definitions from your dependencies.
+ * **Lazy service providers** for big and dynamic class graphs.
+
+**Cons:**
+
+ * Container allows **only** named services.
+ * Currently **no** auto wiring.
+ * Obviously **no** IDE Support for _container files_.
+
+## Why should I use this? 
+
+Don't, at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or brake functionality. Feel free to try this out on small side projects. Obviously, I really appreciate everyone who wants to sacrifice their time to contribute.
+
+## Performance
+
+After a short warmup the compiled container is blazing fast and has almost no overhead. Binding and resolving services dynamically is slower but still won't impact performance in real world application.
+
+## Installation
+
+The container follows `PSR-4` autoloading and can be installed using composer:
 
 ```
 $ composer require clancats/container
 ```
 
-## Usage
+## Documentation
 
-### Example
+The full documentation can be found on [http://clancats.io/container](http://clancats.io/container/master/)
 
-For the most of the following examples please consider the following setup.
+## Quick Start Tutorial
 
-We have 3 _Classes_: `SpaceShip`, `Engine` and `Company`:
+Following is just a really rough example, a much more detailed and explained guide can be found here: [Getting Started](http://clancats.io/container/master/usage/getting-started)
 
-```php
-class SpaceShip 
-{
-	public $engine;
-	public $producer;
+### Setup 
 
-	public function __construct(Engine $engine, Company $producer)
-	{
-		$this->engine = $engine;
-		$this->producer = $producer;
-	}
-}
+Our target directy structure will look like this:
+
+```
+app.php
+app.container
+composer.json
+src/
+  Human.php
+  SpaceShip.php
 ```
 
-Our beautiful `SpaceShip` knows two dependencies, _1._ Its engine and _2._ The company who built it.
+### Services
+
+To demenstrate how to use this service container we need to create two classes a `SpaceShip` and a `Human`.
+
+Create a new php file `src/Human.php`:
 
 ```php
-class Engine 
-{
-	public $power = 10;
-
-	public function setPower(int $power) 
-	{
-		$this->power = $power;
-	}
-}
-```
-
-The engine object has no constructor arguments but is able to mutate its power using the `setPower` method.
-
-```php
-class Company 
+class Human
 {
 	public $name;
 
-	public function __construct(string $name)
-	{
+	public function setName(string $name) {
 		$this->name = $name;
 	}
 }
 ```
-And finally the company object constructs with a _string_ which represents the companies name.
 
-Now its time to create a  container instance:
+Create another php file `src/SpaceShip.php`:
 
 ```php
-use ClanCats\Container\Container;
+class SpaceShip
+{
+	protected $captain; // every ship needs a captain!
 
-$contanier = new Container();
+	public function __construct(Human $captain) {
+		$this->captain = $captain;
+	}
+
+	public function ayeAye() {
+		return 'aye aye captain ' . $this->captain->name;
+	}
+}
 ```
 
-Note: Use the `ContainerFactory` to create your container instance to make use of the compilable `ContainerBuilder`.
+### Container file
 
-```php
-// bind "Massive Industries" as producer company.
-$contanier->bind('producer', Company::class)
-	->arguments(['Massive Industries']);
+A container file allows you to bind your services & parameters using a simple meta language. 
+
+> Note: This feature is entirely optional if you prefer binding your services in PHP itself read: [](http://clancats.io/container/master/service-binding/basics)
+
+Create a new file called `app.container` in your applications root folder. 
+
+```
+@malcolm: Human
+    - setName: 'Reynolds'
+
+@firefly: SpaceShip(@malcolm)
 ```
 
-Binds the company service under the name `producer` and add the constructor argument "Massive Industries".
+### Container factory
+
+Now we need to parse the container file and compile it as a new class. For this task we create the `app.php` file.
 
 ```php
-echo $container->get('producer')->name; // "Massive Industries"
+$factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
+
+$container = $factory->create('AppContainer', function($builder)
+{
+	// create a new container namespace
+	$namespace = new \ClanCats\Container\ContainerNamespace();
+
+	// forward the parsed data to the container builder
+	$builder->addArray($namespace->parse(__DIR__ . '/app.container'));
+});
 ```
 
-Bind the rest.
+The variable `$container` contains now a class instance named `AppContainer`.
 
 ```php
-// bind the pulsedrive engine and set the power
-// the boolean flag at the end indicated that this is 
-// NOT a shared service.
-$contanier->bind('pulsedrive', Engine::class, false)
-	->calls('setPower', [20]);
-
-// bind a "shuttle" space ship, inject the pulsedrive and 
-// set the producer company 
-$contanier->bind('shuttle', SpaceShip::class, false)
-	->arguments(['@pulsedrive', '@producer']);
-```
-
-When we are all set we can start creating shuttles:
-
-```php
-$jumper1 = $container->get('shuttle');
-$jumper2 = $container->get('shuttle');
-
-// note: the producer is binded as
-$jumper1->producer === $jumper1->producer; // true
+echo $container->get('firefly')->ayeAye() // "aye aye captain Reynolds"
 ```
 
 ## Credits

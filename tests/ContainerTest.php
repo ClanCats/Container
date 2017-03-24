@@ -11,7 +11,7 @@ use ClanCats\Container\Tests\TestServices\{
     CustomServiceProviderArray
 };
 
-class ContainerTest extends \PHPUnit_Framework_TestCase
+class ContainerTest extends \PHPUnit\Framework\TestCase
 {
     public function testParameterBasics()
     {
