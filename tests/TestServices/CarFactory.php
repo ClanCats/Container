@@ -2,20 +2,20 @@
 namespace ClanCats\Container\Tests\TestServices;
 
 use ClanCats\Container\{
-	Container, ServiceFactoryInterface
+    Container, ServiceFactoryInterface
 };
 
 class CarFactory implements ServiceFactoryInterface 
 {
-	protected $engineName;
+    protected $engineName;
 
-	public function __construct(string $engineName)
-	{
-		$this->engineName = $engineName;
-	}
+    public function __construct(string $engineName)
+    {
+        $this->engineName = $engineName;
+    }
 
-	public function create(Container $container)
-	{
-		return new Car($container->get($this->engineName));
-	}
-}	
+    public function create(Container $container)
+    {
+        return new Car($container->get($this->engineName));
+    }
+}   

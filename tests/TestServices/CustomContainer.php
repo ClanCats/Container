@@ -2,32 +2,32 @@
 namespace ClanCats\Container\Tests\TestServices;
 
 use ClanCats\Container\{
-	Container
+    Container
 };
 
 class CustomContainer extends Container 
 {
-	protected $resolverMethods = [
-		'engine' => 'resolveEngine',
-		'car' => 'resolveCar',
-	];
+    protected $resolverMethods = [
+        'engine' => 'resolveEngine',
+        'car' => 'resolveCar',
+    ];
 
-	protected $serviceResolverType = [
-		'engine' => 0, 'car' => 0, 'broken' => 42,
-	];
+    protected $serviceResolverType = [
+        'engine' => 0, 'car' => 0, 'broken' => 42,
+    ];
 
-	public function __construct(array $initalParameters = [])
-	{
-		parent::__construct();
-	}
+    public function __construct(array $initalParameters = [])
+    {
+        parent::__construct();
+    }
 
-	protected function resolveEngine()
-	{
-		return $this->resolvedSharedServices['engine'] = new Engine();
-	}
+    protected function resolveEngine()
+    {
+        return $this->resolvedSharedServices['engine'] = new Engine();
+    }
 
-	protected function resolveCar()
-	{
-		return new Car($this->get('engine'));
-	}
-}	
+    protected function resolveCar()
+    {
+        return new Car($this->get('engine'));
+    }
+}   
