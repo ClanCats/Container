@@ -2,32 +2,32 @@
 namespace ClanCats\Container\Tests\TestServices;
 
 use ClanCats\Container\{
-	ServiceProviderArray
+    ServiceProviderArray
 };
 
 class CustomServiceProviderArray extends ServiceProviderArray 
 {
-	protected $services = 
-	[
-		'car' => 
-		[
-			'class' => Car::class,
-			'arguments' => ['@engine', '@producer'],
-		],
+    protected $services = 
+    [
+        'car' => 
+        [
+            'class' => Car::class,
+            'arguments' => ['@engine', '@producer'],
+        ],
 
-		'engine' => 
-		[
-			'class' => Engine::class,
-			'shared' => false,
-			'calls' => [
-				['method' => 'setPower', 'arguments' => [315]]
-			]
-		],
+        'engine' => 
+        [
+            'class' => Engine::class,
+            'shared' => false,
+            'calls' => [
+                ['method' => 'setPower', 'arguments' => [315]]
+            ]
+        ],
 
-		'producer' => 
-		[
-			'class' => Producer::class,
-			'arguments' => ['Audi'],
-		]
-	];
-}	
+        'producer' => 
+        [
+            'class' => Producer::class,
+            'arguments' => ['Audi'],
+        ]
+    ];
+}   
