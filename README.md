@@ -11,7 +11,7 @@ A PHP Service Container featuring a simple meta language with fast and compilabl
 [![Packagist](https://img.shields.io/packagist/l/clancats/container.svg)](https://github.com/ClanCats/Container/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/clancats/container.svg)](https://github.com/ClanCats/Container/releases)
 
-_Requires PHP >= 7.1_ Check the php70 branch for older PHP versions.
+_Requires PHP >= 7.0_
 
 **Features:**
 
