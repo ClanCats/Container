@@ -1,37 +1,15 @@
 <?php
 namespace ClanCats\Container\Tests\ContainerParser;
 
+use ClanCats\Container\Tests\TestCases\LexerTestCase;
+
 use ClanCats\Container\ContainerParser\{
     ContainerLexer,
     Token as T
 };
 
-class ContainerLexerTest extends \PHPUnit\Framework\TestCase
+class ContainerLexerTest extends LexerTestCase
 {
-    /**
-     * Assert the token types
-     */
-    protected function assertTokenTypes(string $code, array $expected)
-    {
-        $actualTokens = [];
-
-        foreach($this->tokensFromCode($code) as $token)
-        {
-            $actualTokens[] = $token->getType();
-        }
-
-        $this->assertEquals($expected, $actualTokens);
-    }
-
-    /**
-     * Helper to get tokens from a code string
-     */
-    protected function tokensFromCode(string $code) : array
-    {
-        $lexer = new ContainerLexer($code);
-        return $lexer->tokens();
-    }
-
     public function testConstruct()
     {
         $lexer = new ContainerLexer('test');

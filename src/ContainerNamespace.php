@@ -81,6 +81,5 @@ class ContainerNamespace
     public function parse(string $containerFilePath) : array
     {
         $parser = new ContainerParser($this->getCodeFromFile($containerFilePath), $this);
-            
     }
 }
