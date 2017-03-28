@@ -19,4 +19,10 @@ class ScopeParserTest extends ParserTestCase
     {
     	$this->assertInstanceOf(ScopeParser::class, $this->scopeParserFromCode(''));
     }
+
+    public function testParseParameterDefinition()
+    {
+        $parser = $this->scopeParserFromCode(':artist: "Edgar Wasser"');
+        $scopeNode = $parser->parse();
+    }
 }

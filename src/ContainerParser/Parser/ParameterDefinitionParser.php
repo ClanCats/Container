@@ -1,8 +1,14 @@
 <?php 
 namespace ClanCats\Container\ContainerParser\Parser;
 
-class ParameterDefinitionNode extends BaseNode
-{
-    
-}
+use ClanCats\Container\ContainerParser\{
+    Nodes\BaseNode as Node,
+    ContainerParser
 
+    // contextual node
+    
+};
+
+class ParameterDefinitionNode extends ContainerParser
+{
+}
