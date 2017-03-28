@@ -278,7 +278,7 @@ class ContainerParser
      */
     protected function errorUnexpectedToken($token)
     {
-        return new ContainerParserException('unexpected "' . $token->type . '" given at line ' . $token->line);
+        return new ContainerParserException('unexpected "' . $token->getType() . '" given at line ' . $token->line);
     }
 
     /**

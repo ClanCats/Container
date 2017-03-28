@@ -83,6 +83,16 @@ class Token
     }
 
     /**
+     * Is the token the given type
+     * 
+     * @return bool
+     */
+    public function isType(int $type) : bool
+    {
+        return $this->type === $type;
+    }
+
+    /**
      * Get the tokens value as php native type.
      *
      * @return mixed

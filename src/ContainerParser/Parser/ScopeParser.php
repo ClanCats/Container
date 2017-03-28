@@ -4,6 +4,7 @@ namespace ClanCats\Container\ContainerParser\Parser;
 use ClanCats\Container\ContainerParser\{
     Nodes\BaseNode as Node,
     ContainerParser,
+    Token as T,
 
     // contextual node
     Nodes\ScopeNode
@@ -45,7 +46,16 @@ class ScopeParser extends ContainerParser
      */
     protected function next() : Node
     {
-        var_dump($this->currentToken()); die;
+        $token = $this->currentToken();
+
+        if ($token->isType(T::TOKEN_PARAMETER))
+        {
+            var_dump($token); die;
+        }
+        else 
+        {
+            throw $this->errorUnexpectedToken($token);
+        }
     }
 }
 
