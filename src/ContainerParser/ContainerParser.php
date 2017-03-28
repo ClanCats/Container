@@ -4,7 +4,7 @@ namespace ClanCats\Container\ContainerParser;
 use ClanCats\Container\{
     Exceptions\ContainerParserException,
     
-    // Alias the tokan as T
+    // Alias the token as T
     ContainerParser\Token as T,
 
     ContainerParser\Nodes\BaseNode as Node
