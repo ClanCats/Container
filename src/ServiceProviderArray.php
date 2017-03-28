@@ -24,7 +24,7 @@ class ServiceProviderArray implements ServiceProviderInterface
      * 
      * @param array             $services
      */
-    public function setServices(array $services) : void
+    public function setServices(array $services) 
     {
         $this->services = $services;
     }

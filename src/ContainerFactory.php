@@ -49,7 +49,7 @@ class ContainerFactory
      * @param string        $cacheDirectory
      * @return void
      */
-    public function setCacheDirecotry(string $cacheDirectory) : void
+    public function setCacheDirecotry(string $cacheDirectory) 
     {
         if (substr($cacheDirectory, -1) !== DIRECTORY_SEPARATOR)
         {

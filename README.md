@@ -47,7 +47,7 @@ $ composer require clancats/container
 
 The full documentation can be found on [http://clancats.io/container](http://clancats.io/container/master/)
 
-## Quick Start Tutorial
+## Quick Start
 
 Following is just a really rough example, a much more detailed and explained guide can be found here: [Getting Started](http://clancats.io/container/master/usage/getting-started)
 

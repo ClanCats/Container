@@ -2,7 +2,12 @@
 
 Hey there, this is the more detailed version of the Quick Start found in the [README](https://github.com/ClanCats/Container/blob/master/README.md) file. 
 
+**If you are not familiar with dependency injection containers read the [Core Concepts](/container/master/introduction/core-concepts).**
+
 ## Choosing the implementation
+
+Of course how you implement the service container is completly up to you but you should at least decide if you want to compile the dependency graph or not. It is possible to mix a compiled container with dynamic service definitions but for the love of structuring things your really should stick with one way.
+
 
 The key diffrence between 
 
