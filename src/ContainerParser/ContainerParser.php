@@ -6,7 +6,7 @@ use ClanCats\Container\{
     
     // Alias the token as T
     ContainerParser\Token as T,
-
+    
     ContainerParser\Nodes\BaseNode as Node
 };
 
@@ -284,7 +284,7 @@ class ContainerParser
     /**
      * Starts a new parser with the remaining or given tokens
      * 
-     * @param string                $parserClass
+     * @param string                $parserClassName
      * @param array                 $tokens
      * @param bool                  $skip
      * @return Node
@@ -296,7 +296,7 @@ class ContainerParser
             $tokens = $this->getRemainingTokens(); 
         }
 
-        $parser = new $parserClass($tokens);
+        $parser = new $parserClassName($tokens);
         $node = $parser->parse();
 
         // Update the current index based on the work of the child parser.
@@ -356,7 +356,7 @@ class ContainerParser
      *
      * @return null|Node
      */
-    protected function next() : Node
+    protected function next()
     {
         throw new ContainerParserException("The container parser acts as base and should not be used on its own.");
     }
