@@ -44,13 +44,13 @@ class ScopeParser extends ContainerParser
      *
      * @return null|Node
      */
-    protected function next() : Node
+    protected function next()
     {
         $token = $this->currentToken();
 
-        if ($token->isType(T::TOKEN_PARAMETER))
+        if ($token->isType(T::TOKEN_PARAMETER)) 
         {
-            var_dump($token); die;
+            $this->scope->addNode($this->parseChild(ParameterDefinitionParser::class));
         }
         else 
         {
