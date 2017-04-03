@@ -4,7 +4,7 @@ namespace ClanCats\Container\ContainerParser\Nodes;
 use ClanCats\Container\ContainerParser\{
     Nodes\BaseNode as Node,
     Nodes\ValueNode
-}
+};
 
 class ParameterDefinitionNode extends BaseNode
 {
@@ -32,6 +32,26 @@ class ParameterDefinitionNode extends BaseNode
     {
         $this->setName($name);
         $this->setValue($value);
+    }
+
+    /**
+     * Get the paramters name
+     * 
+     * @return string
+     */
+    public function getName() : string 
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get the parameters value
+     * 
+     * @return ValueNode
+     */
+    public function getValue() : ValueNode 
+    {
+        return $this->value;
     }
 
     /**

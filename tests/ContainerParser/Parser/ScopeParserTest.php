@@ -5,6 +5,7 @@ use ClanCats\Container\Tests\TestCases\ParserTestCase;
 
 use ClanCats\Container\ContainerParser\{
     Parser\ScopeParser,
+    Nodes\ScopeNode,
     Token as T
 };
 
@@ -15,6 +16,11 @@ class ScopeParserTest extends ParserTestCase
         return $this->parserFromCode(ScopeParser::class, $code);
     }
 
+    protected function scopeNodeFromCode(string $code) : ScopeNode 
+    {
+        return $this->scopeParserFromCode($code)->parse();
+    }
+
 	public function testConstruct()
     {
     	$this->assertInstanceOf(ScopeParser::class, $this->scopeParserFromCode(''));
@@ -22,7 +28,8 @@ class ScopeParserTest extends ParserTestCase
 
     public function testParseParameterDefinition()
     {
-        $parser = $this->scopeParserFromCode(':artist: "Edgar Wasser"');
-        $scopeNode = $parser->parse();
+        $scopeNode = $this->scopeNodeFromCode(':artist: "Edgar Wasser"');
+
+        //var_dump($scopeNode); die;
     }
 }
