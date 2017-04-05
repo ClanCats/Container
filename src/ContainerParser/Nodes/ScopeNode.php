@@ -1,4 +1,11 @@
-<?php 
+<?php
+/**
+ * ClanCats Container
+ *
+ * @link      https://github.com/ClanCats/Container/
+ * @copyright Copyright (c) 2016-2017 Mario Döring
+ * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
+ */
 namespace ClanCats\Container\ContainerParser\Nodes;
 
 use ClanCats\Container\ContainerParser\{
@@ -23,6 +30,16 @@ class ScopeNode extends BaseNode
     public function addNode(Node $node)
     {
     	$this->nodes[] = $node;
+    }
+
+    /**
+     * Returns the nodes array
+     * 
+     * @return array
+     */
+    public function getNodes() : array 
+    {
+        return $this->nodes;
     }
 }
 

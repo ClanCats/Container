@@ -6,7 +6,9 @@ use ClanCats\Container\Tests\TestCases\ParserTestCase;
 use ClanCats\Container\ContainerParser\{
     Parser\ScopeParser,
     Nodes\ScopeNode,
-    Token as T
+    Token as T,
+
+    Nodes\ParameterDefinitionNode
 };
 
 class ScopeParserTest extends ParserTestCase
@@ -28,8 +30,18 @@ class ScopeParserTest extends ParserTestCase
 
     public function testParseParameterDefinition()
     {
-        $scopeNode = $this->scopeNodeFromCode(':artist: "Edgar Wasser"');
+        $scopeNode = $this->scopeNodeFromCode(':artist.eddi: "Edgar Wasser"');
 
-        //var_dump($scopeNode); die;
+        $nodes = $scopeNode->getNodes();
+        $this->assertCount(1, $nodes);
+        $this->assertInstanceOf(ParameterDefinitionNode::class, $nodes[0]);
+
+        // multiple
+        $scopeNode = $this->scopeNodeFromCode(":artist.toni: 'Fatoni'\n:artist.justus: 'Juse Ju'");
+
+        $nodes = $scopeNode->getNodes();
+        $this->assertCount(2, $nodes);
+        $this->assertInstanceOf(ParameterDefinitionNode::class, $nodes[0]);
+        $this->assertInstanceOf(ParameterDefinitionNode::class, $nodes[1]);
     }
 }

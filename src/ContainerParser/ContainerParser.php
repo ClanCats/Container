@@ -1,4 +1,11 @@
-<?php 
+<?php
+/**
+ * ClanCats Container
+ *
+ * @link      https://github.com/ClanCats/Container/
+ * @copyright Copyright (c) 2016-2017 Mario Döring
+ * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
+ */
 namespace ClanCats\Container\ContainerParser;
 
 use ClanCats\Container\{
@@ -278,7 +285,10 @@ class ContainerParser
      */
     protected function errorUnexpectedToken($token)
     {
-        return new ContainerParserException('unexpected "' . $token->getType() . '" given at line ' . $token->line);
+        $class = new \ReflectionClass($token);
+        $constants = array_flip($class->getConstants());
+
+        return new ContainerParserException('unexpected "' . $constants[$token->getType()] . '" given at line ' . $token->getLine());
     }
 
     /**

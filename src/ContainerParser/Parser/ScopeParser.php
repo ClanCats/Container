@@ -1,4 +1,11 @@
-<?php 
+<?php
+/**
+ * ClanCats Container
+ *
+ * @link      https://github.com/ClanCats/Container/
+ * @copyright Copyright (c) 2016-2017 Mario Döring
+ * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
+ */
 namespace ClanCats\Container\ContainerParser\Parser;
 
 use ClanCats\Container\ContainerParser\{
@@ -51,6 +58,10 @@ class ScopeParser extends ContainerParser
         if ($token->isType(T::TOKEN_PARAMETER)) 
         {
             $this->scope->addNode($this->parseChild(ParameterDefinitionParser::class));
+        }
+        elseif ($token->isType(T::TOKEN_LINE)) 
+        {
+            $this->skipToken();
         }
         else 
         {
