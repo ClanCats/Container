@@ -7,13 +7,33 @@ use ClanCats\Container\ContainerParser\{
     ContainerInterpreter,
 
     // nodes
-    Nodes\ParameterDefinitionNode,
+    Nodes\ScopeNode,
     Nodes\ScopeImportNode,
+    Nodes\ParameterDefinitionNode,
     Nodes\ValueNode
 };
 
 class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Little helper to assert the scope interpreter
+     */
+    public function assertContainerNamespaceScopeCallback(array $nodes, callable $callback) 
+    {
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+
+        $scope = new ScopeNode();
+        foreach($nodes as $node) 
+        {
+            $scope->addNode($node);
+        }
+
+        $interpreter->handleScope($scope);
+
+        call_user_func_array($callback, [&$ns]);
+    }
+
 	public function testConstruct()
     {
     	$ns = new ContainerNamespace();
@@ -22,9 +42,33 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
     	$this->assertInstanceOf(ContainerInterpreter::class, $interpreter);
     }
 
-    public function testHandleScope()
+    public function testHandleScopeWithImport()
     {
-    	
+        // mock the namespace
+        $ns = $this->createMock(ContainerNamespace::class);
+        $interpreter = new ContainerInterpreter($ns);
+
+        // and return some simple code
+        $ns->method('getCode')
+            ->willReturn(':foo: "bar"');
+
+        $scope = new ScopeNode();
+        $import = new ScopeImportNode();
+        $import->setPath('doesnt/matter');
+
+        $scope->addNode($import);
+
+        $interpreter->handleScope($scope);
+    }
+
+    public function testHandleScopeWithParameterDefinition()
+    {
+        $artist = new ParameterDefinitionNode('artist', new ValueNode('Juse Ju', ValueNode::TYPE_STRING));
+
+        $this->assertContainerNamespaceScopeCallback([$artist], function($ns) 
+        {
+            $this->assertEquals(['artist' => 'Juse Ju'], $ns->getParameters());
+        });
     }
 
     public function testHandleParameterDefinition()

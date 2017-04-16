@@ -56,10 +56,14 @@ class ContainerInterpreter
     {
     	foreach($scope->getNodes() as $node)
     	{
-    		if ($node instanceof ParameterDefinitionNode)
+    		if ($node instanceof ScopeImportNode)
     		{
-    			$this->handleParameterDefinition($node);
+    			$this->handleScopeImport($node);
     		}
+            elseif ($node instanceof ParameterDefinitionNode)
+            {
+                $this->handleParameterDefinition($node);
+            }
     		else 
     		{
     			throw new ContainerInterpreterException("Unexpected node in scope found.");
