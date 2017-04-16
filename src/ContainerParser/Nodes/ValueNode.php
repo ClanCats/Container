@@ -11,7 +11,6 @@ namespace ClanCats\Container\ContainerParser\Nodes;
 use ClanCats\Container\Exceptions\LogicalNodeException;
 
 use ClanCats\Container\ContainerParser\{
-    Nodes\BaseNode as Node,
     Token
 };
 

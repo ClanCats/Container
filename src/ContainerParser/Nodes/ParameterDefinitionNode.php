@@ -9,7 +9,6 @@
 namespace ClanCats\Container\ContainerParser\Nodes;
 
 use ClanCats\Container\ContainerParser\{
-    Nodes\BaseNode as Node,
     Nodes\ValueNode
 };
 

@@ -21,20 +21,6 @@ use ClanCats\Container\ContainerParser\{
 class ParameterDefinitionParser extends ContainerParser
 {
     /**
-     * Prepare the current parser 
-     * 
-     * @return void
-     */
-    protected function prepare() {}
-
-    /**
-     * Return the current result
-     * 
-     * @return null|Node
-     */
-    protected function node() : Node {}
-
-    /**
      * Parse the next token
      *
      * @return null|Node
