@@ -49,7 +49,7 @@ The full documentation can be found on [http://clancats.io/container](http://cla
 
 ## Quick Start
 
-Following is just a really rough example, a much more detailed and explained guide can be found here: [Getting Started](http://clancats.io/container/master/usage/getting-started)
+Following is just a really rough example, a much more detailed and explained guide can be found here: [Getting Started](http://clancats.io/container/master/introduction/getting-started)
 
 ### Setup 
 
