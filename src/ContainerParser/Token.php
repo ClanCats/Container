@@ -47,12 +47,13 @@ class Token
     const TOKEN_ASSIGN = 10;
     const TOKEN_IMPORT = 11;
     const TOKEN_USE = 12;
-    const TOKEN_BRACE_OPEN = 13;
-    const TOKEN_BRACE_CLOSE = 14;
-    const TOKEN_MINUS = 15;
-    const TOKEN_SEPERATOR = 16;
-    const TOKEN_PROTOTYPE = 17;
-    const TOKEN_IDENTIFIER = 18;
+    const TOKEN_OVERRIDE = 13;
+    const TOKEN_BRACE_OPEN = 14;
+    const TOKEN_BRACE_CLOSE = 15;
+    const TOKEN_MINUS = 16;
+    const TOKEN_SEPERATOR = 17;
+    const TOKEN_PROTOTYPE = 18;
+    const TOKEN_IDENTIFIER = 19;
 
     /**
      * The constructor

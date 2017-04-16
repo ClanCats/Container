@@ -43,5 +43,16 @@ class ScopeParserTest extends ParserTestCase
         $this->assertCount(2, $nodes);
         $this->assertInstanceOf(ParameterDefinitionNode::class, $nodes[0]);
         $this->assertInstanceOf(ParameterDefinitionNode::class, $nodes[1]);
+
+        // override
+        $scopeNode = $this->scopeNodeFromCode("override :artist.dj: 'V -Reater'\n:artist.markus: 'maeckes'");
+
+        $nodes = $scopeNode->getNodes();
+        $this->assertCount(2, $nodes);
+        $this->assertInstanceOf(ParameterDefinitionNode::class, $nodes[0]);
+        $this->assertInstanceOf(ParameterDefinitionNode::class, $nodes[1]);
+        $this->assertTrue($nodes[0]->isOverride());
+        $this->assertFalse($nodes[1]->isOverride());
     }
+
 }

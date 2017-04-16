@@ -55,14 +55,32 @@ class ScopeParser extends ContainerParser
     {
         $token = $this->currentToken();
 
+        // is the current state in override mode?
+        if ($token->isType(T::TOKEN_OVERRIDE)) 
+        {
+            // set the indicating token to the next one
+            $token = $this->nextToken();
+
+            // only allow override of service and parameter definitions
+            if (!($token->isType(T::TOKEN_PARAMETER) || $token->isType(T::TOKEN_DEPENDENCY)))
+            {
+                throw $this->errorUnexpectedToken($this->currentToken());
+            }
+        }
+
+        // is parameter definition
         if ($token->isType(T::TOKEN_PARAMETER)) 
         {
             $this->scope->addNode($this->parseChild(ParameterDefinitionParser::class));
         }
+
+        // just a linebreak
         elseif ($token->isType(T::TOKEN_LINE)) 
         {
             $this->skipToken();
         }
+
+        // anything else?
         else 
         {
             throw $this->errorUnexpectedToken($token);

@@ -30,6 +30,13 @@ class ParameterDefinitionNode extends BaseNode
     protected $value;
 
     /**
+     * Does this definition override existing ones?
+     * 
+     * @var bool
+     */
+    protected $isOverride = false;
+
+    /**
      * Parameter definition constructor
      * 
      * @param string        $node
@@ -81,6 +88,27 @@ class ParameterDefinitionNode extends BaseNode
     public function setValue(ValueNode $value)
     {
         $this->value = $value;
+    }
+
+    /**
+     * Get if this definition override existing ones?
+     * 
+     * @return bool 
+     */
+    public function isOverride() : bool
+    {
+        return $this->isOverride;
+    }
+
+    /**
+     * Set if this definition override existing ones.
+     * 
+     * @param bool          $isOverride
+     * @return void
+     */
+    public function setIsOverride(bool $isOverride)
+    {
+        $this->isOverride = $isOverride;
     }
 }
 

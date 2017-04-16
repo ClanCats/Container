@@ -73,4 +73,13 @@ class ParameterDefinitionParserTest extends ParserTestCase
         $this->assertEquals(ValueNode::TYPE_BOOL_FALSE, $def->getValue()->getType());
         $this->assertEquals(false, $def->getValue()->getRawValue());
     }
+
+    public function testOverride()
+    {
+        $def = $this->parameterDefnitionNodeFromCode(':default.definition: true');
+        $this->assertFalse($def->isOverride());
+
+        $def = $this->parameterDefnitionNodeFromCode('override :default.definition: false');
+        $this->assertTrue($def->isOverride());
+    }
 }

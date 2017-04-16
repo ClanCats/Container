@@ -41,6 +41,12 @@ class ParameterDefinitionParser extends ContainerParser
      */
     protected function next()
     {
+        $isOverride = false;
+        if ($this->currentToken()->isType(T::TOKEN_OVERRIDE))
+        {
+            $isOverride = true; $this->skipToken();
+        }
+
         if (!$this->currentToken()->isType(T::TOKEN_PARAMETER))
         {
             throw $this->errorUnexpectedToken($this->currentToken());
@@ -69,6 +75,7 @@ class ParameterDefinitionParser extends ContainerParser
 
         // create the definition node
         $definition = new ParameterDefinitionNode($parameterName, ValueNode::fromToken($this->currentToken()));
+        $definition->setIsOverride($isOverride);
 
         // skip the token
         $this->skipToken();
