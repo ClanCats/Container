@@ -8,6 +8,7 @@ use ClanCats\Container\ContainerParser\{
 
     // nodes
     Nodes\ParameterDefinitionNode,
+    Nodes\ScopeImportNode,
     Nodes\ValueNode
 };
 
@@ -59,5 +60,41 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
 
     	$interpreter->handleParameterDefinition($testA);
     	$interpreter->handleParameterDefinition($testB);
+    }
+
+    public function testHandleScopeImport()
+    {
+        // mock the namespace
+        $ns = $this->createMock(ContainerNamespace::class);
+
+        // and return some simple code
+        $ns->method('getCode')
+            ->willReturn(':foo: "bar"');
+
+        $ns->expects($this->exactly(1))
+            ->method('setParameter')
+            ->withConsecutive(
+                [$this->equalTo('foo'), 'bar']
+            );
+
+        $interpreter = new ContainerInterpreter($ns);
+
+        $import = new ScopeImportNode();
+        $import->setPath('acme/test');
+
+        $interpreter->handleScopeImport($import);
+    }
+
+    /**
+     * @expectedException \ClanCats\Container\Exceptions\ContainerInterpreterException
+     */
+    public function testHandleScopeImportEmptyPath()
+    {
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+
+        $import = new ScopeImportNode();
+
+        $interpreter->handleScopeImport($import);
     }
 }

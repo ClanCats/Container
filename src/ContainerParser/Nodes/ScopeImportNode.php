@@ -15,7 +15,7 @@ class ScopeImportNode extends BaseNode
      * 
      * @var string
      */
-    protected $path;
+    protected $path = '';
 
     /**
      * Set the current import path
