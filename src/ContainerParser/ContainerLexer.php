@@ -82,6 +82,7 @@ class ContainerLexer
         // keywords
         "/^(use )/" => T::TOKEN_USE,
         "/^(import )/" => T::TOKEN_IMPORT,
+        "/^(override )/" => T::TOKEN_OVERRIDE,
 
         // scope
         "/^(\()/" => T::TOKEN_BRACE_OPEN,
