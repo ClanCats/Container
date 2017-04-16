@@ -55,4 +55,19 @@ class ScopeParserTest extends ParserTestCase
         $this->assertFalse($nodes[1]->isOverride());
     }
 
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
+     */
+    public function testInvalidOverrideKeyword()
+    {
+        $this->scopeNodeFromCode('override 42'); // actually i want this in the feature
+    }
+
+     /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
+     */
+    public function testUnexpectedToken()
+    {
+        $this->scopeNodeFromCode(":test: 42\n42"); // actually i want this in the feature
+    }
 }
