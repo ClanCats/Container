@@ -16,8 +16,33 @@ use ClanCats\Container\ContainerParser\{
     ContainerParser
 };
 
+/**
+ * The container namespace acts as a collection of multiple 
+ * container files that get parsed into one pot.
+ */
 class ContainerNamespace
 {
+    /**
+     * The container namespaces parameters
+     * 
+     * @var array
+     */
+    protected $parameters = [];
+
+    /**
+     * The container namespaces service defintions
+     * 
+     * @param array[string => Service]
+     */
+    protected $services = [];
+
+    /**
+     * An array of service names that should be shared through the container
+     * 
+     * @param array[string]
+     */
+    protected $shared = [];
+
     /**
      * An array of paths 
      * 
@@ -35,6 +60,39 @@ class ContainerNamespace
     public function __construct(array $paths = [])
     {
         $this->paths = $paths;
+    }
+
+    /**
+     * Does the container namespace have a parameter with the given name?
+     * 
+     * @param string            $name The parameter name.
+     * @return bool
+     */
+    public function hasParameter(string $name) : bool
+    {
+        return array_key_exists($name, $this->parameters);
+    }
+
+    /**
+     * Set the given parameter and value
+     * 
+     * @param string            $name The parameter name.
+     * @param mixed             $value The parameter value.
+     * @return void
+     */
+    public function setParameter(string $name, $value) 
+    {
+        $this->parameters[$name] = $value;
+    }
+
+    /**
+     * Get all parameters from the container namespace
+     * 
+     * @return array
+     */
+    public function getParameters() : array
+    {
+        return $this->parameters;
     }
 
     /**
