@@ -82,4 +82,28 @@ class ParameterDefinitionParserTest extends ParserTestCase
         $def = $this->parameterDefnitionNodeFromCode('override :default.definition: false');
         $this->assertTrue($def->isOverride());
     }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
+     */
+    public function testInvalidDefinition()
+    {
+        $def = $this->parameterDefnitionNodeFromCode('the_parameter_indicator_is_missing');
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
+     */
+    public function testMissingAssign()
+    {
+        $def = $this->parameterDefnitionNodeFromCode(':foo 42');
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
+     */
+    public function testInvalidAssignValue()
+    {
+        $def = $this->parameterDefnitionNodeFromCode(':foo: @bar'); // actually i want this in the feature
+    }
 }
