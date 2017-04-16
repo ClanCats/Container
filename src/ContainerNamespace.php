@@ -13,7 +13,9 @@ use ClanCats\Container\{
 };
 
 use ClanCats\Container\ContainerParser\{
-    ContainerParser
+    ContainerLexer,
+    ContainerInterpreter,
+    Parser\ScopeParser
 };
 
 /**
@@ -141,10 +143,17 @@ class ContainerNamespace
      * Parse the given container file with the current namespace
      * 
      * @param string        $containerFilePath The path to a container file.
-     * @return array
      */ 
-    public function parse(string $containerFilePath) : array
+    public function parse(string $containerFilePath)
     {
-        $parser = new ContainerParser($this->getCodeFromFile($containerFilePath), $this);
+        // create a lexer from the given file
+        $lexer = new ContainerLexer($this->getCodeFromFile($containerFilePath));
+
+        // parse the file
+        $parser = new ScopeParser($lexer->tokens());
+
+        // interpret the parsed node
+        $interpreter = new ContainerInterpreter($this);
+        $interpreter->handleScope($parser->parse());
     }
 }
