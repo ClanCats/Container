@@ -23,7 +23,7 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
 
     public function testHandleScope()
     {
-
+    	
     }
 
     public function testHandleParameterDefinition()
@@ -33,13 +33,31 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
 
     	$artist = new ParameterDefinitionNode('artist', new ValueNode('Juse Ju', ValueNode::TYPE_STRING));
     	$song = new ParameterDefinitionNode('song', new ValueNode('Übertreib nich deine Rolle', ValueNode::TYPE_STRING));
+    	$song2 = new ParameterDefinitionNode('song', new ValueNode('DAYONE', ValueNode::TYPE_STRING));
+    	$song2->setIsOverride(true);
 
     	$interpreter->handleParameterDefinition($artist);
     	$interpreter->handleParameterDefinition($song);
+    	$interpreter->handleParameterDefinition($song2);
 
     	$this->assertEquals([
     		'artist' => 'Juse Ju',
-    		'song' => 'Übertreib nich deine Rolle'
+    		'song' => 'DAYONE'
     	], $ns->getParameters());
+    }
+
+    /**
+     * @expectedException \ClanCats\Container\Exceptions\ContainerInterpreterException
+     */
+    public function testHandleParameterDefinitionWithoutOverride()
+    {
+    	$ns = new ContainerNamespace();
+    	$interpreter = new ContainerInterpreter($ns);
+
+    	$testA = new ParameterDefinitionNode('test', new ValueNode('foo', ValueNode::TYPE_STRING));
+    	$testB = new ParameterDefinitionNode('test', new ValueNode('bar', ValueNode::TYPE_STRING));
+
+    	$interpreter->handleParameterDefinition($testA);
+    	$interpreter->handleParameterDefinition($testB);
     }
 }

@@ -69,7 +69,12 @@ class ContainerInterpreter
      */
     public function handleParameterDefinition(ParameterDefinitionNode $definition) 
     {
-        $this->namespace->setParameter($definition->getname(), $definition->getValue()->getRawValue());
+        if ($this->namespace->hasParameter($definition->getName()) && $definition->isOverride() === false)
+        {
+            throw new ContainerInterpreterException("A parameter named \"{$definition->getName()}\" is already defined, you can prefix the definition with \"override\" to get around this error.");
+        }
+
+        $this->namespace->setParameter($definition->getName(), $definition->getValue()->getRawValue());
     }
 }
 
