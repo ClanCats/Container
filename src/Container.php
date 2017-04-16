@@ -76,7 +76,7 @@ class Container
      */
     public function __construct(array $initalParameters = [])
     {
-        $this->parameters = $initalParameters;
+        $this->parameters = array_merge($this->parameters, $initalParameters);
     }
 
     /**
