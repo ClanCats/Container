@@ -82,10 +82,11 @@ class ContainerFactory
      * 
      * @param string                $containerName
      * @param callable              $builderCallback
+     * @param array                 $initalParameters
      * 
      * @return Container The generated container instnace.
      */
-    public function create(string $containerName, callable $builderCallback) : Container
+    public function create(string $containerName, callable $builderCallback, array $initalParameters = []) : Container
     {
         if (class_exists($containerName))
         {
@@ -110,6 +111,6 @@ class ContainerFactory
         require_once $cacheFile;
 
         // create an instance of the generated container
-        return new $containerName;
+        return new $containerName($initalParameters);
     }
 }
