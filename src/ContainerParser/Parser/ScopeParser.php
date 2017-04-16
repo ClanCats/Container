@@ -74,6 +74,12 @@ class ScopeParser extends ContainerParser
             $this->scope->addNode($this->parseChild(ParameterDefinitionParser::class));
         }
 
+        // import another scope
+        elseif ($token->isType(T::TOKEN_IMPORT)) 
+        {
+            $this->scope->addNode($this->parseChild(ScopeImportParser::class));
+        }
+
         // just a linebreak
         elseif ($token->isType(T::TOKEN_LINE)) 
         {
