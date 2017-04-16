@@ -38,6 +38,14 @@ class ContainerBuilder
     protected $containerNamespace;
 
     /**
+     * An array of paramters to be builded directly
+     * as propterty.
+     * 
+     * @var array
+     */
+    protected $parameters = [];
+
+    /**
      * An array of binded services
      * 
      * @param array[string => Service]
@@ -212,6 +220,18 @@ class ContainerBuilder
     }
 
     /**
+     * Import data from a container namespace 
+     * 
+     * @param ContainerNamespace            $namespace
+     * @return void
+     */
+    public function importNamespace(ContainerNamespace $namespace)
+    {
+        // import the parameters
+        $this->parameters = array_merge($this->parameters, $namespace->getParameters());
+    }
+
+    /**
      * Checks if the given string is valid and not numeric &
      * 
      * @param string            $value
@@ -300,6 +320,7 @@ class ContainerBuilder
         // generate the the class
         $buffer .= "class $this->containerClassName extends $aliasContainerName {\n\n";
 
+        $buffer .= $this->generateParameters() . "\n";
         $buffer .= $this->generateResolverTypes() . "\n";
         $buffer .= $this->generateResolverMappings() . "\n";
         $buffer .= $this->generateResolverMethods() . "\n";
@@ -377,6 +398,16 @@ class ContainerBuilder
         }
 
         return implode(', ', $buffer);
+    }
+
+    /**
+     * Generate the containers parameter property
+     * 
+     * @return string 
+     */
+    private function generateParameters() : string
+    {
+        return "protected \$parameters = " . var_export($this->parameters, true) . ";\n";
     }
 
     /**
