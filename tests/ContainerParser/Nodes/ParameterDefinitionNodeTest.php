@@ -33,4 +33,13 @@ class ParameterDefinitionNodeTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($value, $node->getValue());
     }
+
+    public function testOverride()
+    {
+        $node = new ParameterDefinitionNode('test', new ValueNode(null, ValueNode::TYPE_NULL));
+
+        $this->assertFalse($node->isOverride());
+        $node->setIsOverride(true);
+        $this->assertTrue($node->isOverride());
+    }
 }
