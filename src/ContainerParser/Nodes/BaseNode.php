@@ -8,5 +8,8 @@
  */
 namespace ClanCats\Container\ContainerParser\Nodes;
 
-class BaseNode {}
+class BaseNode 
+{
+
+}
 
