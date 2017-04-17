@@ -225,7 +225,7 @@ class ContainerParser
     }
 
     /**
-     * Retruns all tokens until the curren scope is closed again
+     * Retruns all tokens until the opened scope is closed again
      * 
      * @return array[T]
      */
