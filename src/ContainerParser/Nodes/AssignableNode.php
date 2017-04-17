@@ -8,8 +8,5 @@
  */
 namespace ClanCats\Container\ContainerParser\Nodes;
 
-class ServiceDefinitionNode extends BaseNode
-{
-    
-}
+interface AssignableNode {}
 

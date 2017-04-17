@@ -14,7 +14,7 @@ use ClanCats\Container\ContainerParser\{
     Token
 };
 
-class ValueNode extends BaseNode
+class ValueNode extends BaseNode implements AssignableNode
 {
     /**
      * Create value node from the given token
