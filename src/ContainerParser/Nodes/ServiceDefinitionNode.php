@@ -125,23 +125,23 @@ class ServiceDefinitionNode extends BaseNode
     }
 
     /**
-     * Get all defined arguments
+     * Get defined arguments node
      * 
-     * @return [AssignableNode]
+     * @return ArgumentArrayNode
      */
-    public function getArguments() : array 
+    public function getArguments() : ArgumentArrayNode 
     {
     	return $this->arguments;
     }
 
     /**
-     * Add an AssignableNode as argument to the service definition
+     * Set the arguments array
      * 
-     * @return [AssignableNode]
+     * @param ArgumentArrayNode         $arguments
      */
-    public function addArgument(AssignableNode $argument) 
+    public function setArguments(ArgumentArrayNode $arguments) 
     {
-    	$this->arguments[] = $argument;
+    	$this->arguments = $arguments;
     }
 }
 
