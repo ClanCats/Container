@@ -93,4 +93,20 @@ class ArgumentArrayParserTest extends ParserTestCase
             $this->assertEquals($word, $argument->getName());
         }
     }
+
+    public function testOnlyOneItem()
+    {
+        $arguments = $this->argumentsArrayNodeFromCode('@hello');
+        $argument = $arguments->getArguments()[0];
+
+        $this->assertCount(1, $arguments->getArguments());
+        $this->assertInstanceOf(ServiceReferenceNode::class, $argument);
+        $this->assertEquals('hello', $argument->getName());
+    }
+
+    public function testEmpty()
+    {
+        $arguments = $this->argumentsArrayNodeFromCode('');
+        $this->assertCount(0, $arguments->getArguments());
+    }
 }
