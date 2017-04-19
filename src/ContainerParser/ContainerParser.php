@@ -133,7 +133,7 @@ class ContainerParser
     {
         if (!isset($this->tokens[$this->index]))
         {
-            return null;
+            throw new ContainerParserException("The current token is of the available tokens range.");
         }
 
         return $this->tokens[$this->index];
@@ -146,10 +146,9 @@ class ContainerParser
      * @param int             $i
      * @return T|false
      */
-    protected function nextToken(int $i = 1) : T
+    protected function nextToken(int $i = 1)
     {
-        if (!isset($this->tokens[$this->index + $i])) 
-        {
+        if (!isset($this->tokens[$this->index + $i])) {
             return false;
         }
 
