@@ -87,21 +87,31 @@ $container->get('logger')->log('Hello fellow robots.');
 
 ## Service Definition
 
-A service definition is a description of the service (What class name, the required arguments ect.). It is what gets binded to the container and contains Basically all information needded to construct a instance or object of the relevant class. 
+A service definition acts as a simple description of the service. But it does not hold _container_ relevant informations like the alias name or if the service will be shared or not.
+
+Usally the service definition holds the following information:
+
+ * class name
+ * constructor arguments
+ * inital method calls
+ * property assignments _(*currently not implemented)_
 
 ```php
-$definition = new ServiceDefinition(FileLogHandler::class, ['/path/to/some.log']);
+$definition = new ServiceDefinition(FileLogHandler::class)
+    ->addRawArgument(__DIR__ . '/var/log/application.log');
 ```
 
 > Note: More about [Serivce Definitions](/container/master/usage/service-definitions)
 
 ## Service Factory
 
-A service factories job is to create the actual instance of the service. The default service factory extends the `ServiceDefinition` and is therefor able to construct the above definition.
+A service factories job is to create an actual instance of the service. The default service factory extends the `ServiceDefinition` and is therefor able to construct the above definition.
 
 ```php
-$factory = new ServiceFactory(FileLogHandler::class, ['/path/to/some.log']);
-$fileLogger = $factory->create();
+$factory = new ServiceFactory(FileLogHandler::class)
+    ->addRawArgument(__DIR__ . '/var/log/application.log');
+
+$logger = $factory->create(); // FileLogHandler instance
 ```
 
 > Note: More about [Serivce Facatories](/container/master/service-binding/service-factories)
