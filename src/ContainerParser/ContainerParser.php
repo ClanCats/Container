@@ -231,7 +231,7 @@ class ContainerParser
      */
     protected function getTokensUntilClosingScope($includeScope = false)
     {
-        if ($this->currentToken()->type !== 'scopeOpen')
+        if ($this->currentToken()->getType() !== T::TOKEN_BRACE_OPEN)
         {
             throw $this->errorUnexpectedToken($this->currentToken());
         }
@@ -239,8 +239,7 @@ class ContainerParser
         $tokens = array();
 
         // include the opening scope
-        if ($includeScope)
-        {
+        if ($includeScope) {
             $tokens[] = $this->currentToken();
         }
         
@@ -249,14 +248,14 @@ class ContainerParser
        
         $currentLevel = 0;
 
-        while($this->currentToken() && !($this->currentToken()->type === 'scopeClose' && $currentLevel === 0))
+        while($this->currentToken() && !($this->currentToken()->getType() === T::TOKEN_BRACE_CLOSE && $currentLevel === 0))
         {
-            if ($this->currentToken()->type === 'scopeOpen')
+            if ($this->currentToken()->getType() === T::TOKEN_BRACE_OPEN)
             {
                 $currentLevel++;
             }
 
-            if ($this->currentToken()->type === 'scopeClose')
+            if ($this->currentToken()->getType() === T::TOKEN_BRACE_CLOSE)
             {
                 $currentLevel--;
             }
@@ -266,8 +265,7 @@ class ContainerParser
         }
 
         // include the closing scope
-        if ($includeScope)
-        {
+        if ($includeScope) {
             $tokens[] = $this->currentToken();
         }
 
