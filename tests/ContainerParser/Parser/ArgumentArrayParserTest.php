@@ -7,6 +7,8 @@ use ClanCats\Container\ContainerParser\{
     Parser\ArgumentArrayParser,
     Nodes\ArgumentArrayNode,
     Nodes\ValueNode,
+    Nodes\ParameterReferenceNode,
+    Nodes\ServiceReferenceNode,
     Token as T
 };
 
@@ -56,5 +58,39 @@ class ArgumentArrayParserTest extends ParserTestCase
         $this->assertEquals(false, $arguments[3]->getRawValue());
         $this->assertEquals(ValueNode::TYPE_NULL, $arguments[4]->getType());
         $this->assertEquals(null, $arguments[4]->getRawValue());
+    }
+
+    public function testArgumentArrayOfParameters()
+    {
+        $arguments = $this->argumentsArrayNodeFromCode(':hello, :world');
+
+        $this->assertCount(2, $arguments->getArguments());
+
+        $arguments = $arguments->getArguments();
+
+        foreach(['hello', 'world'] as $k => $word) {
+
+            $argument = $arguments[$k];
+
+            $this->assertInstanceOf(ParameterReferenceNode::class, $argument);
+            $this->assertEquals($word, $argument->getName());
+        }
+    }
+
+    public function testArgumentArrayOfServices()
+    {
+        $arguments = $this->argumentsArrayNodeFromCode('@hello, @world');
+
+        $this->assertCount(2, $arguments->getArguments());
+
+        $arguments = $arguments->getArguments();
+
+        foreach(['hello', 'world'] as $k => $word) {
+
+            $argument = $arguments[$k];
+
+            $this->assertInstanceOf(ServiceReferenceNode::class, $argument);
+            $this->assertEquals($word, $argument->getName());
+        }
     }
 }

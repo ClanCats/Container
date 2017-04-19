@@ -66,13 +66,13 @@ class ArgumentArrayParser extends ContainerParser
 
         elseif ($token->isType(T::TOKEN_PARAMETER)) 
         {
-            $this->arguments->addArgument(new ParameterReferenceNode($token->getValue()));
+            $this->arguments->addArgument($this->parseChild(ReferenceParser::class));
         }
 
         // is a service reference
-        elseif ($token->isType(T::TOKEN_PARAMETER)) 
+        elseif ($token->isType(T::TOKEN_DEPENDENCY)) 
         {
-            $this->scope->addNode($this->parseChild(ParameterDefinitionParser::class));
+            $this->arguments->addArgument($this->parseChild(ReferenceParser::class));
         }
 
         // just a linebreak
