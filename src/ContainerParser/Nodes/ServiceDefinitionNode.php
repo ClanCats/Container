@@ -8,6 +8,8 @@
  */
 namespace ClanCats\Container\ContainerParser\Nodes;
 
+use ClanCats\Container\Exceptions\LogicalNodeException;
+
 use ClanCats\Container\ContainerParser\{
     Nodes\ValueNode
 };
@@ -38,9 +40,9 @@ class ServiceDefinitionNode extends BaseNode
     /**
      * An array of arguments to be passed on the services construction
      * 
-     * @var [AssignableNode]
+     * @var ArgumentArrayNode
      */
-    protected $arguments = [];
+    protected $arguments;
 
     /**
      * An array of actions to take place after construction
@@ -131,7 +133,23 @@ class ServiceDefinitionNode extends BaseNode
      */
     public function getArguments() : ArgumentArrayNode 
     {
+        if (!$this->hasArguments()) 
+        {
+            throw new LogicalNodeException("This service definition has no arguments.");
+        }
+
     	return $this->arguments;
+    }
+
+    /**
+     * Check if arguments are defined 
+     * Note the arguments can still be empty
+     * 
+     * @return ArgumentArrayNode
+     */
+    public function hasArguments() : bool 
+    {
+        return !is_null($this->arguments);
     }
 
     /**

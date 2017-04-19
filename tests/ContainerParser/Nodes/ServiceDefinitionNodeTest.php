@@ -44,7 +44,20 @@ class ServiceDefinitionNodeTest extends \PHPUnit\Framework\TestCase
         $node = new ServiceDefinitionNode();
         $arguments = new ArgumentArrayNode();
 
+        $this->assertFalse($node->hasArguments());
+
         $node->setArguments($arguments);
         $this->assertEquals($arguments, $node->getArguments());
+
+        $this->assertTrue($node->hasArguments());
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
+     */
+    public function testArgumentAccessWithoutArguments()
+    {
+        $node = new ServiceDefinitionNode();
+        $node->getArguments();
     }
 }
