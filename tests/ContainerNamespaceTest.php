@@ -2,7 +2,8 @@
 namespace ClanCats\Container\Tests;
 
 use ClanCats\Container\{
-    ContainerNamespace
+    ContainerNamespace,
+    ServiceDefinition
 };
 
 class ContainerNamespaceTest extends \PHPUnit\Framework\TestCase
@@ -24,5 +25,68 @@ class ContainerNamespaceTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue($namespace->hasParameter('foo'));
         $this->assertEquals(['foo' => 'bar'], $namespace->getParameters());
+    }
+
+    public function testServices()
+    {
+        $namespace = new ContainerNamespace();
+
+        $this->assertEquals([], $namespace->getServices());
+        $this->assertFalse($namespace->hasService('logger'));
+
+        $definition = new ServiceDefinition("Logger");
+
+        $namespace->setService('logger', $definition);
+
+        $this->assertTrue($namespace->hasService('logger'));
+        $this->assertEquals(['logger' => $definition], $namespace->getServices());
+    }
+
+    public function testHasPath()
+    {
+        $namespace = new ContainerNamespace([
+            'test' => '/some/path/to/test',
+            'test/foo/bar' => '/some/path/to/test/foo/bar',
+        ]);
+
+        $this->assertTrue($namespace->has('test'));
+        $this->assertTrue($namespace->has('test/foo/bar'));
+
+        $this->assertFalse($namespace->has('does/not/exist'));
+    }
+
+    public function testGetCode()
+    {
+        $namespace = new ContainerNamespace([
+            'phpunit' => __DIR__ . '/phpunit.container',
+        ]);
+
+        $this->assertNotEmpty($namespace->getCode('phpunit'));
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerNamespaceException
+     */
+    public function testGetCodeUndefinedPath()
+    {
+        $namespace = new ContainerNamespace();
+        $namespace->getCode('nope');
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerNamespaceException
+     */
+    public function testGetCodeInvalidPath()
+    {
+        $namespace = new ContainerNamespace([
+            'phpunit' => __DIR__ . '/wrong.container',
+        ]);
+        $namespace->getCode('phpunit');
+    }
+
+    public function testParse()
+    {
+        $namespace = new ContainerNamespace();
+        $namespace->parse(__DIR__ . '/phpunit.container');
     }
 }

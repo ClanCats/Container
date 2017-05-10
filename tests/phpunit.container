@@ -1,0 +1,8 @@
+/** 
+ * Basic test services
+ */
+@engine: ClanCats\Container\Tests\TestServices\Engine
+
+@producer: ClanCats\Container\Tests\TestServices\Producer('phpunit-producer')
+
+@car: ClanCats\Container\Tests\TestServices\Car(@engine, @producer)

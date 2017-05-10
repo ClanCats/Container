@@ -9,7 +9,8 @@
 namespace ClanCats\Container;
 
 use ClanCats\Container\{
-    Exceptions\ContainerNamespaceException
+    Exceptions\ContainerNamespaceException,
+    ServiceDefinition
 };
 
 use ClanCats\Container\ContainerParser\{
@@ -95,6 +96,39 @@ class ContainerNamespace
     public function getParameters() : array
     {
         return $this->parameters;
+    }
+
+    /**
+     * Does the container namespace have a service with the given name?
+     * 
+     * @param string            $name
+     * @return bool
+     */
+    public function hasService(string $name) : bool
+    {
+        return array_key_exists($name, $this->services);
+    }
+
+    /**
+     * Set a service in the namespace
+     * 
+     * @param string            $name The service name.
+     * @param mixed             $value The service definition.
+     * @return void
+     */
+    public function setService(string $name, ServiceDefinition $service) 
+    {
+        $this->services[$name] = $service;
+    }
+
+    /**
+     * Get all services from the container namespace
+     * 
+     * @return array[ServiceDefinition]
+     */
+    public function getServices() : array
+    {
+        return $this->services;
     }
 
     /**
