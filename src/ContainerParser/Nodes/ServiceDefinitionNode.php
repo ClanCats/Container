@@ -65,6 +65,18 @@ class ServiceDefinitionNode extends BaseNode
     protected $meta = [];
 
     /**
+     * Service definition constructor
+     * 
+     * @param string        $name
+     * @param string        $className
+     */
+    public function __construct(string $name = null, string $className = null)
+    {
+        if (!is_null($name)) { $this->setName($name); }
+        if (!is_null($className)) {  $this->setClassName($className); }
+    }
+
+    /**
      * Get the services name
      * 
      * @return string
