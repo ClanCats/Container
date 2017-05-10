@@ -88,5 +88,7 @@ class ContainerNamespaceTest extends \PHPUnit\Framework\TestCase
     {
         $namespace = new ContainerNamespace();
         $namespace->parse(__DIR__ . '/phpunit.container');
+
+        $this->assertNotEmpty($namespace->getServices());
     }
 }
