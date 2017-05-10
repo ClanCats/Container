@@ -77,6 +77,12 @@ class ArgumentArrayParserTest extends ParserTestCase
         }
     }
 
+    public function testArgumentArrayWithLinebreak()
+    {
+        $arguments = $this->argumentsArrayNodeFromCode(":hello,\n:world");
+        $this->assertCount(2, $arguments->getArguments());
+    }
+
     public function testArgumentArrayOfServices()
     {
         $arguments = $this->argumentsArrayNodeFromCode('@hello, @world');
@@ -108,5 +114,21 @@ class ArgumentArrayParserTest extends ParserTestCase
     {
         $arguments = $this->argumentsArrayNodeFromCode('');
         $this->assertCount(0, $arguments->getArguments());
+    }
+
+    /**
+     * @expectedException \ClanCats\Container\Exceptions\ContainerParserException
+     */
+    public function testInvalid()
+    {
+        $arguments = $this->argumentsArrayNodeFromCode('@foo,,');
+    }
+
+    /**
+     * @expectedException \ClanCats\Container\Exceptions\ContainerParserException
+     */
+    public function testInvalidIdentifier()
+    {
+        $arguments = $this->argumentsArrayNodeFromCode('@foo,bar');
     }
 }

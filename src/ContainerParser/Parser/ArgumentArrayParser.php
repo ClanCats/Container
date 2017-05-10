@@ -78,7 +78,7 @@ class ArgumentArrayParser extends ContainerParser
         // just a linebreak
         elseif ($token->isType(T::TOKEN_LINE)) 
         {
-            $this->skipToken();
+            $this->skipToken(); return;
         }
 
         // anything else?
