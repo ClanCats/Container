@@ -1,6 +1,7 @@
 <?php
 namespace ClanCats\Container\Tests\ContainerParser;
 
+use ClanCats\Container\ServiceDefinition;
 use ClanCats\Container\ContainerNamespace;
 
 use ClanCats\Container\ContainerParser\{
@@ -10,6 +11,7 @@ use ClanCats\Container\ContainerParser\{
     Nodes\ScopeNode,
     Nodes\ScopeImportNode,
     Nodes\ParameterDefinitionNode,
+    Nodes\ServiceDefinitionNode,
     Nodes\ValueNode
 };
 
@@ -68,6 +70,20 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
         $this->assertContainerNamespaceScopeCallback([$artist], function($ns) 
         {
             $this->assertEquals(['artist' => 'Juse Ju'], $ns->getParameters());
+        });
+    }
+
+    public function testHandleScopeWithServiceDefinition()
+    {
+        $service = new ServiceDefinitionNode('logger', 'Log');
+
+        $this->assertContainerNamespaceScopeCallback([$service], function($ns)  use($service)
+        {
+            $services = $ns->getServices();
+
+            $this->assertCount(1, $services);
+            $this->assertInstanceOf(ServiceDefinition::class, $services['logger']);
+            $this->assertEquals('Log', $services['logger']->getClassName());
         });
     }
 
@@ -141,4 +157,40 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
 
         $interpreter->handleScopeImport($import);
     }
+
+    public function testHandleServiceDefinition()
+    {
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+
+        $logger = new ServiceDefinitionNode('logger', 'Log');
+        $adapter1 = new ServiceDefinitionNode('log.adapter', 'Log\\FileAdapter');
+        $adapter2 = new ServiceDefinitionNode('log.adapter', 'Log\\DBAdapter');
+        $adapter2->setIsOverride(true);
+
+        $interpreter->handleServiceDefinition($logger);
+        $interpreter->handleServiceDefinition($adapter1);
+        $interpreter->handleServiceDefinition($adapter2);
+
+        $services = $ns->getServices();
+
+        $this->assertEquals('Log', $services['logger']->getClassName());
+        $this->assertEquals('Log\\DBAdapter', $services['log.adapter']->getClassName());
+    }
+
+    /**
+     * @expectedException \ClanCats\Container\Exceptions\ContainerInterpreterException
+     */
+    public function testHandleServiceDefinitionWithoutOverride()
+    {
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+
+        $testA = new ServiceDefinitionNode('a', 'A');
+        $testB = new ServiceDefinitionNode('a', 'B');
+
+        $interpreter->handleServiceDefinition($testA);
+        $interpreter->handleServiceDefinition($testB);
+    }
+
 }

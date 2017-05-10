@@ -11,6 +11,7 @@ namespace ClanCats\Container\ContainerParser;
 use ClanCats\Container\Exceptions\ContainerInterpreterException;
 
 use ClanCats\Container\ContainerNamespace;
+use ClanCats\Container\ServiceDefinition;
 
 use ClanCats\Container\ContainerParser\{
     ContainerLexer,
@@ -23,7 +24,8 @@ use ClanCats\Container\ContainerParser\Nodes\{
     // the nodes
     ScopeNode,
     ScopeImportNode,
-    ParameterDefinitionNode
+    ParameterDefinitionNode,
+    ServiceDefinitionNode
 };
 
 class ContainerInterpreter
@@ -63,6 +65,10 @@ class ContainerInterpreter
             elseif ($node instanceof ParameterDefinitionNode)
             {
                 $this->handleParameterDefinition($node);
+            }
+            elseif ($node instanceof ServiceDefinitionNode)
+            {
+                $this->handleServiceDefinition($node);
             }
     		else 
     		{
@@ -114,6 +120,26 @@ class ContainerInterpreter
         }
 
         $this->namespace->setParameter($definition->getName(), $definition->getValue()->getRawValue());
+    }
+
+    /**
+     * Handle a service definition
+     * 
+     * @param ParameterDefinitionNode           $definition
+     * @return void
+     */
+    public function handleServiceDefinition(ServiceDefinitionNode $definition) 
+    {
+        if ($this->namespace->hasService($definition->getName()) && $definition->isOverride() === false)
+        {
+            throw new ContainerInterpreterException("A service named \"{$definition->getName()}\" is already defined, you can prefix the definition with \"override\" to get around this error.");
+        }
+
+        // create a service definition from the node
+        $service = new ServiceDefinition($definition->getClassName());
+
+        // add the node to the namespace
+        $this->namespace->setService($definition->getName(), $service);
     }
 }
 
