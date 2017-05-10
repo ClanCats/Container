@@ -74,6 +74,12 @@ class ScopeParser extends ContainerParser
             $this->scope->addNode($this->parseChild(ParameterDefinitionParser::class));
         }
 
+        // is service definition
+        elseif ($token->isType(T::TOKEN_DEPENDENCY)) 
+        {
+            $this->scope->addNode($this->parseChild(ServiceDefinitionParser::class));
+        }
+
         // import another scope
         elseif ($token->isType(T::TOKEN_IMPORT)) 
         {

@@ -8,7 +8,8 @@ use ClanCats\Container\ContainerParser\{
     Nodes\ScopeNode,
     Token as T,
 
-    Nodes\ParameterDefinitionNode
+    Nodes\ParameterDefinitionNode,
+    Nodes\ServiceDefinitionNode
 };
 
 class ScopeParserTest extends ParserTestCase
@@ -69,5 +70,17 @@ class ScopeParserTest extends ParserTestCase
     public function testUnexpectedToken()
     {
         $this->scopeNodeFromCode(":test: 42\n42"); // actually i want this in the feature
+    }
+
+    public function testParseServiceDefinition()
+    {
+        $scopeNode = $this->scopeNodeFromCode('@artist.eddi: Person(:artist.eddi)');
+
+        $nodes = $scopeNode->getNodes();
+        $this->assertCount(1, $nodes);
+        $this->assertInstanceOf(ServiceDefinitionNode::class, $nodes[0]);
+
+        $this->assertEquals('artist.eddi', $nodes[0]->getName());
+        $this->assertEquals('Person', $nodes[0]->getClassName());
     }
 }
