@@ -33,7 +33,7 @@ Don't, at least not at this stage. The container is not battle tested and is onl
 
 ## Performance
 
-After a short warmup the compiled container is blazing fast and has almost no overhead. Binding and resolving services dynamically is slower but still won't impact performance in real world application.
+This package might seem very heavy for a service container, but after a short warmup the compiled container is blazing fast and has almost no overhead (3 Classes). Binding and resolving services dynamically is slower but still won't impact performance in real world application.
 
 ## Installation
 
