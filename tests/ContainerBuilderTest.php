@@ -4,6 +4,8 @@ namespace ClanCats\Container\Tests;
 use ClanCats\Container\{
     ContainerBuilder,
     ServiceDefinition,
+    ServiceArguments,
+    ContainerNamespace,
     Container
 };
 use ClanCats\Container\Tests\TestServices\{
@@ -313,7 +315,9 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the invalid non numeric string 
+     * ----
      */
+
     protected function assertinvalidServiceBuilderStringTrue($value)
     {
         $this->assertTrue($this->executePrivateMethod('invalidServiceBuilderString', [$value]));
@@ -351,7 +355,9 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test resolver method name generation
+     * ----
      */
+
     protected function assertGetResolverMethodName($expected, $serviceName, ContainerBuilder $builder = null)
     {
         if (is_null($builder)) {
@@ -387,5 +393,45 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
     public function testGenerateNormalizedServiceNameWithoutService()
     {
         $this->executePrivateMethod('getResolverMethodName', ['foo']);
+    }
+
+    /**
+     * Namespace import tests
+     * ----
+     */
+
+    public function testImportNamespaceParameters()
+    {
+        $namespace = new ContainerNamespace();
+        $namespace->setParameter('plane', 'A320');
+        $namespace->setParameter('airport', 'TXL');
+
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->importNamespace($namespace);
+
+        $this->assertContains("'plane' => 'A320'", $builder->generate());
+        $this->assertContains("'airport' => 'TXL'", $builder->generate());
+    }
+
+    public function testImportNamespaceServices()
+    {
+        $namespace = new ContainerNamespace();
+        $namespace->setService('car', new ServiceDefinition(Car::class, ['@engine']));
+
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->importNamespace($namespace);
+
+        $services = $builder->getServices();
+
+        $this->assertCount(1, $services);
+
+        $this->assertInstanceOf(ServiceDefinition::class, $services['car']);
+        $this->assertEquals(Car::class, $services['car']->getClassName());
+
+        $arguments = $services['car']->getArguments();
+
+        $this->assertInstanceOf(ServiceArguments::class, $arguments);
+        $this->assertEquals('engine', $arguments->getAll()[0][0]);
+        $this->assertEquals(ServiceArguments::DEPENDENCY, $arguments->getAll()[0][1]);
     }
 }

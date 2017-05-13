@@ -128,7 +128,7 @@ class ContainerBuilder
     }
 
     /**
-     * Get the current container namespace
+     * Get the php container namespace not to confuse with the "ContainerNamespace" class.
      * 
      * @return string|null
      */
@@ -229,6 +229,12 @@ class ContainerBuilder
     {
         // import the parameters
         $this->parameters = array_merge($this->parameters, $namespace->getParameters());
+
+        // import the service definitions
+        foreach($namespace->getServices() as $name => $service)
+        {
+            $this->addService($name, $service);
+        }
     }
 
     /**
