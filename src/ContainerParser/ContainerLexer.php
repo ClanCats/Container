@@ -115,16 +115,6 @@ class ContainerLexer
     }
 
     /**
-     * Get the codes lenght
-     *
-     * @return int
-     */
-    public function length() : int
-    {
-        return $this->length;
-    }
-
-    /**
      * Get the current code
      *
      * @return string
