@@ -59,4 +59,37 @@ class ServiceDefinitionParserTest extends ParserTestCase
         $this->assertEquals('log.handler', $arguments[0]->getName());
         $this->assertEquals('path', $arguments[1]->getName());
     }
+
+    public function testOverride()
+    {
+        $def = $this->serviceDefnitionNodeFromCode('@logger: Acme\\Log');
+        $this->assertFalse($def->isOverride());
+
+        $def = $this->serviceDefnitionNodeFromCode('override @logger: Acme\\Log');
+        $this->assertTrue($def->isOverride());
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
+     */
+    public function testMissingDependencyIndicator()
+    {
+        $this->serviceDefnitionNodeFromCode('logger: Acme\\Log');
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
+     */
+    public function testMissingAssignIndicator()
+    {
+        $this->serviceDefnitionNodeFromCode('@logger Acme\\Log');
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
+     */
+    public function testWrongAssignment()
+    {
+        $this->serviceDefnitionNodeFromCode('@logger: @antoherone');
+    }
 }
