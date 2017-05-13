@@ -9,7 +9,8 @@ use ClanCats\Container\ContainerParser\{
     Token as T,
 
     Nodes\ParameterDefinitionNode,
-    Nodes\ServiceDefinitionNode
+    Nodes\ServiceDefinitionNode,
+    Nodes\ScopeImportNode
 };
 
 class ScopeParserTest extends ParserTestCase
@@ -70,6 +71,18 @@ class ScopeParserTest extends ParserTestCase
     public function testUnexpectedToken()
     {
         $this->scopeNodeFromCode(":test: 42\n42"); // actually i want this in the feature
+    }
+
+    public function testParseImport()
+    {
+        $scopeNode = $this->scopeNodeFromCode('import foo/bar');
+
+        $nodes = $scopeNode->getNodes();
+
+        $this->assertCount(1, $nodes);
+        $this->assertInstanceOf(ScopeImportNode::class, $nodes[0]);
+
+        $this->assertEquals('foo/bar', $nodes[0]->getPath());
     }
 
     public function testParseServiceDefinition()
