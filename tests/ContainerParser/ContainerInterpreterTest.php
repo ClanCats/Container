@@ -3,6 +3,7 @@ namespace ClanCats\Container\Tests\ContainerParser;
 
 use ClanCats\Container\ServiceDefinition;
 use ClanCats\Container\ContainerNamespace;
+use ClanCats\Container\ServiceArguments;
 
 use ClanCats\Container\ContainerParser\{
     ContainerInterpreter,
@@ -12,7 +13,10 @@ use ClanCats\Container\ContainerParser\{
     Nodes\ScopeImportNode,
     Nodes\ParameterDefinitionNode,
     Nodes\ServiceDefinitionNode,
-    Nodes\ValueNode
+    Nodes\ValueNode,
+    Nodes\ArgumentArrayNode,
+    Nodes\ServiceReferenceNode,
+    Nodes\ParameterReferenceNode
 };
 
 class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
@@ -176,6 +180,45 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals('Log', $services['logger']->getClassName());
         $this->assertEquals('Log\\DBAdapter', $services['log.adapter']->getClassName());
+    }
+
+    public function testHandleServiceDefinitionWithArguments()
+    {
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+
+        $logger = new ServiceDefinitionNode('logger', 'Log');
+        $adapter = new ServiceDefinitionNode('log.adapter', 'Log\\FileAdapter');    
+
+        $arguments = new ArgumentArrayNode();
+        $arguments->addArgument(new ServiceReferenceNode('log.adapter'));
+        $arguments->addArgument(new ParameterReferenceNode('log.name'));
+        $arguments->addArgument(new ValueNode(true, ValueNode::TYPE_BOOL_TRUE));
+
+        $logger->setArguments($arguments);
+
+        $interpreter->handleServiceDefinition($logger);
+        $interpreter->handleServiceDefinition($adapter);
+
+        $services = $ns->getServices();
+
+        $this->assertCount(2, $services); 
+
+        $loggerArguments = $services['logger']->getArguments()->getAll();
+
+        $this->assertCount(3, $loggerArguments);
+
+        // check dependency
+        $this->assertEquals('log.adapter', $loggerArguments[0][0]);
+        $this->assertEquals(ServiceArguments::DEPENDENCY, $loggerArguments[0][1]);
+
+        // check parameter
+        $this->assertEquals('log.name', $loggerArguments[1][0]);
+        $this->assertEquals(ServiceArguments::PARAMETER, $loggerArguments[1][1]);
+
+        // check value
+        $this->assertEquals(true, $loggerArguments[2][0]);
+        $this->assertEquals(ServiceArguments::RAW, $loggerArguments[2][1]);
     }
 
     /**

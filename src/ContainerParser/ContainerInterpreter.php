@@ -22,10 +22,13 @@ use ClanCats\Container\ContainerParser\Nodes\{
     BaseNode as Node,
 
     // the nodes
+    ValueNode,
     ScopeNode,
     ScopeImportNode,
     ParameterDefinitionNode,
-    ServiceDefinitionNode
+    ServiceDefinitionNode,
+    ParameterReferenceNode,
+    ServiceReferenceNode
 };
 
 class ContainerInterpreter
@@ -137,6 +140,33 @@ class ContainerInterpreter
 
         // create a service definition from the node
         $service = new ServiceDefinition($definition->getClassName());
+
+        if ($definition->hasArguments()) 
+        {
+            $arguments = $definition
+                ->getArguments() // get the definitions arguments
+                ->getArguments(); // and the argument array from the object
+
+            foreach($arguments as $argument)
+            {
+                if ($argument instanceof ServiceReferenceNode)
+                {
+                    $service->addDependencyArgument($argument->getName());
+                }
+                elseif ($argument instanceof ParameterReferenceNode)
+                {
+                    $service->addParameterArgument($argument->getName());
+                }
+                elseif ($argument instanceof ValueNode)
+                {
+                    $service->addRawArgument($argument->getRawValue());
+                }
+                else 
+                {
+                    throw new ContainerInterpreterException("Unable to handle argument node of type \"" . get_class($argument) . "\".");
+                }
+            }
+        }
 
         // add the node to the namespace
         $this->namespace->setService($definition->getName(), $service);
