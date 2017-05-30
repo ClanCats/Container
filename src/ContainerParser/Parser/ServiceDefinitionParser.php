@@ -69,7 +69,7 @@ class ServiceDefinitionParser extends ContainerParser
 
         if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_BRACE_OPEN))
         {
-            $arguments = $this->parseChild(ArgumentArrayParser::class, $this->getTokensUntilClosingScope());
+            $arguments = $this->parseChild(ArgumentArrayParser::class, $this->getTokensUntilClosingScope(), false);
             $definition->setArguments($arguments);
         }
 

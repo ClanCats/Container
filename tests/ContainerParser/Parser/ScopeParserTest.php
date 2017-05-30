@@ -95,5 +95,11 @@ class ScopeParserTest extends ParserTestCase
 
         $this->assertEquals('artist.eddi', $nodes[0]->getName());
         $this->assertEquals('Person', $nodes[0]->getClassName());
+
+        // test multiple service defintions after another
+        $scopeNode = $this->scopeNodeFromCode("@engine.pulse: Acme\Engine(40, 42)\n@engine.pulse: Acme\Engine(40)");
+
+        $nodes = $scopeNode->getNodes();
+        $this->assertCount(2, $nodes);
     }
 }
