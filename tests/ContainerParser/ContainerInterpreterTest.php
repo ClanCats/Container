@@ -16,7 +16,8 @@ use ClanCats\Container\ContainerParser\{
     Nodes\ValueNode,
     Nodes\ArgumentArrayNode,
     Nodes\ServiceReferenceNode,
-    Nodes\ParameterReferenceNode
+    Nodes\ParameterReferenceNode,
+    Nodes\ServiceMethodCallNode
 };
 
 class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
@@ -236,4 +237,21 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
         $interpreter->handleServiceDefinition($testB);
     }
 
+    public function testHandleServiceDefinitionConstructionArguments()
+    {
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+
+        $logger = new ServiceDefinitionNode('logger', 'Log');
+        $logger->addConstructionAction(new ServiceMethodCallNode('wake'));
+        $logger->addConstructionAction(new ServiceMethodCallNode('sleep'));
+
+        $interpreter->handleServiceDefinition($logger);
+
+        $services = $ns->getServices();
+
+        $calls = $services['logger']->getMethodCalls();
+
+        $this->assertCount(2, $calls);
+    }
 }

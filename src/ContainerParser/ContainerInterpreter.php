@@ -15,7 +15,8 @@ use ClanCats\Container\ServiceDefinition;
 
 use ClanCats\Container\ContainerParser\{
     ContainerLexer,
-    Parser\ScopeParser
+    Parser\ScopeParser,
+    ServiceArguments
 };
 
 use ClanCats\Container\ContainerParser\Nodes\{
@@ -28,7 +29,9 @@ use ClanCats\Container\ContainerParser\Nodes\{
     ParameterDefinitionNode,
     ServiceDefinitionNode,
     ParameterReferenceNode,
-    ServiceReferenceNode
+    ServiceReferenceNode,
+    ServiceMethodCallNode,
+    ArgumentArrayNode
 };
 
 class ContainerInterpreter
@@ -126,6 +129,42 @@ class ContainerInterpreter
     }
 
     /**
+     * Create final service arguments from an arguments array node
+     * 
+     * @param ArgumentArrayNode         $argumentsNode
+     * @return ServiceArguments
+     */
+    protected function createServiceArgumentsFromNode(ArgumentArrayNode $argumentsNode) : ServiceArguments
+    {
+        $arguments = $argumentsNode 
+            ->getArguments();
+
+        $definition = new ServiceArguments();
+
+        foreach($arguments as $argument)
+        {
+            if ($argument instanceof ServiceReferenceNode)
+            {
+                $definition->addDependency($argument->getName());
+            }
+            elseif ($argument instanceof ParameterReferenceNode)
+            {
+                $definition->addParameter($argument->getName());
+            }
+            elseif ($argument instanceof ValueNode)
+            {
+                $definition->addRaw($argument->getRawValue());
+            }
+            else 
+            {
+                throw new ContainerInterpreterException("Unable to handle argument node of type \"" . get_class($argument) . "\".");
+            }
+        }
+
+        return $definition;
+    }
+
+    /**
      * Handle a service definition
      * 
      * @param ParameterDefinitionNode           $definition
@@ -165,6 +204,24 @@ class ContainerInterpreter
                 {
                     throw new ContainerInterpreterException("Unable to handle argument node of type \"" . get_class($argument) . "\".");
                 }
+            }
+        }
+
+        // handle construction actions
+        foreach($definition->getConstructionActions() as $action)
+        {
+            if ($action instanceof ServiceMethodCallNode)
+            {
+                if ($action->hasArguments()) 
+                {
+                    $service->addMethodCall($action->getName(), $this->createServiceArgumentsFromNode($action->getArguments()));
+                } else {
+                    $service->calls($action->getName());
+                }
+            }
+            else 
+            {
+                throw new ContainerInterpreterException("Invalid construction action of type \"" . get_class($action) . "\" given.");
             }
         }
 
