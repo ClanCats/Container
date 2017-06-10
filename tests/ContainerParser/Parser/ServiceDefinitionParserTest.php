@@ -69,6 +69,16 @@ class ServiceDefinitionParserTest extends ParserTestCase
         $this->assertTrue($def->isOverride());
     }
 
+    public function testMethodCalls()
+    {
+        // @TODO!!!!!!!!
+        $def = $this->serviceDefnitionNodeFromCode('@logger: Acme\\Log');
+        $this->assertFalse($def->isOverride());
+
+        $def = $this->serviceDefnitionNodeFromCode('override @logger: Acme\\Log');
+        $this->assertTrue($def->isOverride());
+    }
+
     /**
      * @expectedException ClanCats\Container\Exceptions\ContainerParserException
      */

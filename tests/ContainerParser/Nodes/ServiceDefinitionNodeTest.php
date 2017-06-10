@@ -3,7 +3,8 @@ namespace ClanCats\Container\Tests\ContainerParser\Nodes;
 
 use ClanCats\Container\ContainerParser\Nodes\{
     ServiceDefinitionNode,
-    ArgumentArrayNode
+    ArgumentArrayNode,
+    ServiceMethodCallNode
 };
 
 class ServiceDefinitionNodeTest extends \PHPUnit\Framework\TestCase
@@ -50,6 +51,23 @@ class ServiceDefinitionNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($arguments, $node->getArguments());
 
         $this->assertTrue($node->hasArguments());
+    }
+
+    public function testConstructionActions()
+    {
+        $node = new ServiceDefinitionNode();
+        $call = new ServiceMethodCallNode('foo');
+
+        $this->assertEmpty($node->getConstructionActions());
+
+        $node->addConstructionAction($call);
+
+        $this->assertEquals([$call], $node->getConstructionActions());
+
+        // test another one
+        $node->addConstructionAction($call);
+
+        $this->assertEquals([$call, $call], $node->getConstructionActions());
     }
 
     /**

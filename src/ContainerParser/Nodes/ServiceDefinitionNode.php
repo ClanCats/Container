@@ -11,7 +11,8 @@ namespace ClanCats\Container\ContainerParser\Nodes;
 use ClanCats\Container\Exceptions\LogicalNodeException;
 
 use ClanCats\Container\ContainerParser\{
-    Nodes\ValueNode
+    Nodes\ValueNode,
+    Nodes\ConstructionActionNode
 };
 
 class ServiceDefinitionNode extends BaseNode
@@ -159,6 +160,27 @@ class ServiceDefinitionNode extends BaseNode
     public function setArguments(ArgumentArrayNode $arguments) 
     {
     	$this->arguments = $arguments;
+    }
+
+    /**
+     * Add a construction action to the service definition
+     * 
+     * @param ConstructionActionNode                $action
+     * @return void
+     */
+    public function addConstructionAction(ConstructionActionNode $action)
+    {
+        $this->constructionActions[] = $action;
+    }
+
+    /**
+     * Get all construction actions
+     * 
+     * @return array[ConstructionActionNode]
+     */
+    public function getConstructionActions() : array
+    {
+        return $this->constructionActions;
     }
 }
 
