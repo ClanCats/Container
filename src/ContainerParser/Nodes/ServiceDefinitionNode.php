@@ -47,22 +47,9 @@ class ServiceDefinitionNode extends BaseNode
     /**
      * An array of actions to take place after construction
      * 
-     * @var [[int:type, string:name, [arguments]]]
+     * @var [ConstructionActionNode]
      */
     protected $constructionActions = [];
-
-    /**
-     * The available construction action types
-     */
-    const ACTION_CALL = 0;
-    const ACTION_ASSIGN_PROPERTY = 1;
-
-    /**
-     * An array of meta data assigned to the service definition
-     * 
-     * @var [AssignableNode]
-     */
-    protected $meta = [];
 
     /**
      * Service definition constructor
