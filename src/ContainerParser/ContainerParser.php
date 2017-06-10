@@ -167,6 +167,20 @@ class ContainerParser
     }
 
     /**
+     * Skip all upcoming tokens of the given type
+     *
+     * @param array[int]         $types 
+     * @return void
+     */
+    protected function skipTokenOfType(array $types = [])
+    {
+        while ((!$this->parserIsDone()) && in_array($this->currentToken()->getType(), $types))
+        {
+            $this->skipToken();
+        }
+    }
+
+    /**
      * Check if all tokens have been parsed trough
      *
      * @return bool
