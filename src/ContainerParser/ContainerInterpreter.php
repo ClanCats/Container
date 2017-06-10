@@ -12,11 +12,11 @@ use ClanCats\Container\Exceptions\ContainerInterpreterException;
 
 use ClanCats\Container\ContainerNamespace;
 use ClanCats\Container\ServiceDefinition;
+use ClanCats\Container\ServiceArguments;
 
 use ClanCats\Container\ContainerParser\{
     ContainerLexer,
-    Parser\ScopeParser,
-    ServiceArguments
+    Parser\ScopeParser
 };
 
 use ClanCats\Container\ContainerParser\Nodes\{
