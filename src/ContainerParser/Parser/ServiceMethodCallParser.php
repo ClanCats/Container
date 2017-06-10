@@ -15,7 +15,7 @@ use ClanCats\Container\ContainerParser\{
 
     // contextual node
     Nodes\ValueNode,
-    Nodes\ServiceDefinitionNode
+    Nodes\ServiceMethodCallNode
 };
 
 class ServiceMethodCallParser extends ContainerParser
@@ -27,6 +27,37 @@ class ServiceMethodCallParser extends ContainerParser
      */
     protected function next()
     {
-        var_dump($this->currentToken()); die;
+        if (!$this->currentToken()->isType(T::TOKEN_MINUS))
+        {
+            throw $this->errorUnexpectedToken($this->currentToken());
+        }
+
+        $this->skipToken();
+
+        if (!$this->currentToken()->isType(T::TOKEN_IDENTIFIER))
+        {
+            throw $this->errorUnexpectedToken($this->currentToken());
+        }
+
+        // create the node
+        $call = new ServiceMethodCallNode($this->currentToken()->getValue());
+        $this->skipToken();
+
+        // we might already be done..
+        if ($this->parserIsDone() || $this->currentToken()->isType(T::TOKEN_LINE))
+        {
+            return $call;
+        }
+
+        // otherwise we expect an opening brace
+        if (!$this->currentToken()->isType(T::TOKEN_BRACE_OPEN))
+        {
+            throw $this->errorUnexpectedToken($this->currentToken());
+        }
+
+        $arguments = $this->parseChild(ArgumentArrayParser::class, $this->getTokensUntilClosingScope(), false);
+        $call->setArguments($arguments);
+
+        return $call;
     }
 }
