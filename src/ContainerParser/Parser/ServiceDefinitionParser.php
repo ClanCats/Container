@@ -67,10 +67,25 @@ class ServiceDefinitionParser extends ContainerParser
         $definition->setClassName($this->currentToken()->getValue());
         $this->skipToken();
 
+        // try to parse service constructor arguments
         if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_BRACE_OPEN))
         {
             $arguments = $this->parseChild(ArgumentArrayParser::class, $this->getTokensUntilClosingScope(), false);
             $definition->setArguments($arguments);
+        }
+
+        // we need at least one linebreak to continue
+        if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_LINE))
+        {
+            // skip all other linebreak
+            $this->skipTokenOfType([T::TOKEN_LINE]);
+
+            // parse servide definiton caller
+            if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_MINUS))
+            {
+                $this->parseChild(ServiceMethodCallParser::class);
+                var_dump($this->currentToken());
+            }
         }
 
         return $definition;
