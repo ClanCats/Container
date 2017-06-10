@@ -27,7 +27,7 @@ class ServiceMethodCallParserTest extends ParserTestCase
     	$this->assertInstanceOf(ServiceMethodCallParser::class, $this->serviceDefnitionParserFromCode(''));
     }
     
-    public function testSimpleAssign()
+    public function testSimpleMethodCall()
     {
         $def = $this->serviceDefnitionNodeFromCode('- setName("Ray")');
 
@@ -42,5 +42,25 @@ class ServiceMethodCallParserTest extends ParserTestCase
        	$name = $arguments[0];
 
        	$this->assertEquals('Ray', $name->getRawValue());
+    }
+
+    public function testMethodCallWithoutArguments()
+    {
+        $def = $this->serviceDefnitionNodeFromCode('- initialize');
+
+        $this->assertEquals('initialize', $def->getName());
+        $this->assertFalse($def->hasArguments());
+    }
+
+    public function testMethodCallEmptyArguments()
+    {
+        $def = $this->serviceDefnitionNodeFromCode('- initialize()');
+
+        $this->assertEquals('initialize', $def->getName());
+        $this->assertTrue($def->hasArguments());
+
+        $arguments = $def->getArguments()->getArguments();
+
+       	$this->assertCount(0, $arguments);
     }
 }
