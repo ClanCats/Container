@@ -75,7 +75,7 @@ class ServiceDefinitionParser extends ContainerParser
         }
 
         // we need at least one linebreak to continue
-        if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_LINE))
+        while(!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_LINE))
         {
             // skip all other linebreak
             $this->skipTokenOfType([T::TOKEN_LINE]);
@@ -83,8 +83,7 @@ class ServiceDefinitionParser extends ContainerParser
             // parse servide definiton caller
             if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_MINUS))
             {
-                $this->parseChild(ServiceMethodCallParser::class);
-                var_dump($this->currentToken());
+                $definition->addConstructionAction($this->parseChild(ServiceMethodCallParser::class));
             }
         }
 

@@ -71,12 +71,25 @@ class ServiceDefinitionParserTest extends ParserTestCase
 
     public function testMethodCalls()
     {
-        // @TODO!!!!!!!!
-        $def = $this->serviceDefnitionNodeFromCode('@logger: Acme\\Log');
-        $this->assertFalse($def->isOverride());
+        $def = $this->serviceDefnitionNodeFromCode("@logger: Acme\\Log\n- setName('app')");
 
-        $def = $this->serviceDefnitionNodeFromCode('override @logger: Acme\\Log');
-        $this->assertTrue($def->isOverride());
+        $actions = $def->getConstructionActions();
+
+        $this->assertCount(1, $actions);
+
+        $this->assertEquals('setName', $actions[0]->getName());
+    }
+
+    public function testMultipleMethodCalls()
+    {
+        $def = $this->serviceDefnitionNodeFromCode("@logger: Acme\\Log\n- setName('app')\n- setLevel(1)");
+
+        $actions = $def->getConstructionActions();
+
+        $this->assertCount(2, $actions);
+
+        $this->assertEquals('setName', $actions[0]->getName());
+        $this->assertEquals('setLevel', $actions[1]->getName());
     }
 
     /**
