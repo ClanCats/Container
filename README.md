@@ -43,11 +43,11 @@ The container follows `PSR-4` autoloading and can be installed using composer:
 $ composer require clancats/container
 ```
 
-## Documentation
+## Documentation 💡
 
-The full documentation can be found on [http://clancats.io/container](http://clancats.io/container/master/)
+The full documentation can be found on [clancats.io](http://clancats.io/container/master/introduction/getting-started)
 
-## Quick Start
+## Quick Start ⚡️
 
 Following is just a really rough example, a much more detailed and explained guide can be found here: [Getting Started](http://clancats.io/container/master/introduction/getting-started)
 
@@ -102,13 +102,13 @@ class SpaceShip
 
 A container file allows you to bind your services & parameters using a simple meta language. 
 
-> Note: This feature is entirely optional if you prefer binding your services in PHP itself read: [](http://clancats.io/container/master/service-binding/basics)
+> Note: This feature is entirely optional if you prefer binding your services in PHP itself read: [Service Binding](http://clancats.io/container/master/service-binding/basics)
 
 Create a new file called `app.container` in your applications root folder. 
 
 ```
 @malcolm: Human
-    - setName: 'Reynolds'
+    - setName('Reynolds')
 
 @firefly: SpaceShip(@malcolm)
 ```
@@ -118,15 +118,16 @@ Create a new file called `app.container` in your applications root folder.
 Now we need to parse the container file and compile it as a new class. For this task we create the `app.php` file.
 
 ```php
-$factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
+factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
 
 $container = $factory->create('AppContainer', function($builder)
 {
-    // create a new container namespace
+    // create a new container file namespace and parse our `app.container` file.
     $namespace = new \ClanCats\Container\ContainerNamespace();
+    $namespace->parse(__DIR__ . '/app.container');
 
-    // forward the parsed data to the container builder
-    $builder->addArray($namespace->parse(__DIR__ . '/app.container'));
+    // import the namespace data into the builder
+    $builder->importNamespace($namespace);
 });
 ```
 

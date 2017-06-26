@@ -4,15 +4,15 @@ use Andromeda\SpaceShip\(Ship, Engine)
 
 ## The Car service
 @ship.destroyer: Ship(@engine.hyperdrive, @engine.pulsedrive)
- - setProducer: @producer.massive
+ - producer: @producer.massive
 
 ## The Engine (the '?' marks the service as NOT shared)
 @engine.hyperdrive?: Engine
- - setPower: 34000
+ - setPower(34000)
  = tag: "james" 
 
 @engine.pulsedrive?: Engine
- - setPower: 20
+ - setPower(20)
 
 # Producer
 :producer.default_name: 'Massive Industries'
@@ -21,17 +21,66 @@ use Andromeda\SpaceShip\(Ship, Engine)
 override @producer.massive: \Andromeda\Companies\Company('Other Company')
 
 @engine.pulsedriver
- = tag: "engines"
+ = tag: "engines", "space"
+ = route: 'GET', '/something/else'
 
 @human.ray: Human('Ray')
- - setAge: 23
+ - setAge(23)
+ - age: 26
+ <- addAlias('Mary')
  
 @human.ray: 
- <- setAge: 26
+ - setAge(27)
+ <- addAlias('Awesome')
 
 ==== @human.ray.age === 23, 26
 
 @human.ray: 
- - setAge: 27
+ - age: 27
 
 ==== @human.ray.age === 27
+
+/**
+ * Auto wiring
+ */
+using \ContainerAwareTrait 
+ - setContainer(@container)
+
+/**
+ * Check for interface
+ */
+implementing \ContainerAwareInterface
+ - setContainer(@container)
+
+/**
+ * Check for interface
+ */
+implementing \RoutableInterface
+ <= tag: "route"
+
+/**
+ * Looping
+ */
+for class in ['File', 'MySQL', 'MongoDB']
+{
+	define(class.lower)
+}
+
+/***
+ * Prefixing
+ */
+prefix log.
+{
+	use Logger\(
+		Adapter\(
+			File, 
+			MySQL,
+			MongoDB
+		),
+		Manager
+	)
+
+	@file.adapter: File // results in log.file.adapter
+	@mysql.adapter: MySQL
+	@mongo.adapter: MongoDB
+}
