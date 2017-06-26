@@ -118,7 +118,7 @@ Create a new file called `app.container` in your applications root folder.
 Now we need to parse the container file and compile it as a new class. For this task we create the `app.php` file.
 
 ```php
-factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
+$factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
 
 $container = $factory->create('AppContainer', function($builder)
 {
@@ -134,7 +134,7 @@ $container = $factory->create('AppContainer', function($builder)
 The variable `$container` contains now a class instance named `AppContainer`.
 
 ```php
-echo $container->get('firefly')->ayeAye() // "aye aye captain Reynolds"
+echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
 ```
 
 ## Credits
