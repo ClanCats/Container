@@ -4,11 +4,11 @@ Just so that we talk about the same thing let me explain some keywords that are 
 
 ## A Service
 
-A service is simply a fancy name for a PHP object doing a specifc task and can be required at multiple locations in your application. There is absolutly nothing special about it, so why should you care? A service architecture makes you seperate your applications functionality into small focused chunks. Because a service should only serve one specify purpose he is then easier to test and replace if needed. 
+A service is simply a fancy name for a PHP object doing a specifc task and can be required at multiple locations in your application. There is absolutly nothing special about it, so why should you care? A service architecture makes you seperate your applications functionality into small focused chunks. Because a service should only serve one specific purpose he is much easier to test and replace if needed. This when done right results in a easy maintainable application that scales very well (im not talking about performance here) with the complexity of the app.
 
 https://en.wikipedia.org/wiki/Service-oriented_architecture 
 
-A perfect example would be a logger:
+If that still sound like a lot of bla bla, don't worry the following example will help.
 
 ```php
 class Logger 
@@ -19,7 +19,11 @@ class Logger
 }
 ```
 
-Now lets say we want to be able to configure what happens with the logs. So we create a handler interface for our `Logger`.
+The `Logger` above would already classify as a service, it only serves one purpose and that is to take in log messages and do something with them. To be more precise it will append them into a fix defined file.
+
+But wait what do you do when you want to just print out the log messages at some occasion? Well you could take in another parameter something like `public function log(string $message, bool $printMessage) : void` but that just doesnt feel right.. I mean what if you want to add another option to send the message via UDP?
+
+To solve this in a DI manner we need to make the `Logger` class more stupid:
 
 ```php
 interface LogHandler {
@@ -40,7 +44,20 @@ class Logger
 }
 ```
 
-This way the API for the logger stays the same no matter how the logs are handled.
+So our logger doesnt know anymore what to do with the logs, he just forwards them to a handler. This way the API for the logger stays the same no matter how the logs are handled.
+
+Every service should focus on something really specific. So we can now create multiple handlers for everything we need:
+
+```php
+class PrintLogHandler implements LogHandler 
+{
+    public function store(int $time, string $message) : void {
+        echo "[$time] – $message\n";
+    }
+}
+```
+
+To fulfill the file logger example:
 
 ```php
 class FileLogHandler implements LogHandler 
@@ -66,7 +83,6 @@ $logger->log('Hello fellow humans.');
 ```
 
 Doesnt feel very convenient right? That brings us to the next point.
-
 
 ## Service Container
 
