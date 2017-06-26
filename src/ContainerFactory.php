@@ -104,6 +104,14 @@ class ContainerFactory
             $builderCallback($builder);
 
             // store the cache file
+            $cacheDir = dirname($cacheFile);
+
+            if (!is_dir($cacheDir) || !is_writable($cacheDir)) {
+                throw new ContainerException("The directory \"{$cacheDir}\" is not writable. Cannot generate container class.");
+            } elseif (is_file($cacheFile) && !is_writable($cacheFile)) {
+                throw new ContainerException("The file \"{$cacheFile}\" is not writable. Cannot generate container class.");
+            }
+
             file_put_contents($cacheFile, $builder->generate());
         }
 
