@@ -59,6 +59,7 @@ Our target directy structure will look like this:
 app.php
 app.container
 composer.json
+cache/ # make sure this is writable
 src/
   Human.php
   SpaceShip.php
@@ -115,7 +116,7 @@ Create a new file called `app.container` in your applications root folder.
 
 ### Container factory
 
-Now we need to parse the container file and compile it as a new class. For this task we create the `app.php` file.
+Now we need to parse the container file and compile it as a new class. For this task we create the `app.php` file. There you need to require the composer autoloader and then add the following:
 
 ```php
 $factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
@@ -130,6 +131,8 @@ $container = $factory->create('AppContainer', function($builder)
     $builder->importNamespace($namespace);
 });
 ```
+
+> Note: Make sure the `../cache` directory is writable.
 
 The variable `$container` contains now a class instance named `AppContainer`.
 
