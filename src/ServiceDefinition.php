@@ -23,8 +23,11 @@ class ServiceDefinition implements ServiceDefinitionInterface
      *        ->addRawArgument(600)
      * 
      * Or the shorter way
-     * 
+     *     
      *     ServiceDefinition::for('\Acme\SessionService', ['@storage', ':session_token', 600])
+     * 
+     * @param string            $serviceClassName The full class name of the desired service.
+     * @param array             $arguments An array of constructor arguments for the service.     
      */
     public static function for(string $serviceClassName, array $arguments = [])
     {
@@ -96,10 +99,10 @@ class ServiceDefinition implements ServiceDefinitionInterface
     protected $methodCallers = [];
 
     /**
-     * Construct a new service loader with a given cache directory
+     * Construct a new service definition with the given classname and optional arguments as array.
      * 
-     * @param string                $cacheDirectory
-     * @return void
+     * @param string            $className The full class name of the desired service.
+     * @param array             $arguments An array of constructor arguments for the service.  
      */
     public function __construct(string $className, array $arguments = [])
     {
@@ -118,7 +121,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
     }
 
     /**
-     * Add an array of arguments to the service construcotr
+     * Add an array of arguments to the service constructor
      * 
      * @param array             $arguments
      * @return self
@@ -129,7 +132,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
     }
 
     /**
-     * Add a simply raw argument,
+     * Add a simple raw constructor argument. 
      * 
      * @param mixed             $argumentValue
      * @return self
@@ -140,7 +143,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
     }
 
     /**
-     * Add a simply raw argument,
+     * Add a dependency constructor argument.
      * 
      * @param mixed             $argumentValue
      * @return self
@@ -151,7 +154,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
     }
 
     /**
-     * Add a simply raw argument,
+     * Add a simply parameter constructor argument.
      * 
      * @param mixed             $argumentValue
      * @return self
