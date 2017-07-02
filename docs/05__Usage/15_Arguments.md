@@ -96,7 +96,7 @@ $args = (new ServiceArguments())
 
 [~ PHPDoc](/src/ServiceArguments.php#addArgumentsFromArray)
 
-### getAll
+### get all
 
 [~ PHPDoc](/src/ServiceArguments.php#getAll)
 
