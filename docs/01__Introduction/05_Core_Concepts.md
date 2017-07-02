@@ -19,9 +19,9 @@ class Logger
 }
 ```
 
-The `Logger` above would already classifies as a service, it only serves one purpose and that is to take in log messages and do something with them. To be more specific it will append them into a fix defined file.
+The `Logger` above then already classifies as a service, it only serves one purpose and that is to take in log messages and do something with them. To be more specific it will append them into a fix defined file.
 
-But wait. What do you do when you just want to print out the log messages at any occasion? Well you could take in another parameter something like `public function log(string $message, bool $printMessage) : void` but that just doesnt feel right.. I mean what if you want to add another option to send the message via UDP?
+But wait. What do you do if the situation occurs, when you just want to print out the log messages.  Well you could take in another parameter something like `public function log(string $message, bool $printMessage) : void` but that just doesnt feel right.. I mean what if you want to add another option to send the message via UDP?
 
 To solve this in a DI manner we need to make the `Logger` class more stupid:
 
