@@ -2,11 +2,11 @@
 
 A service definition acts as a simple description of a service. But it does not hold container relevant informations like the alias name or if the service will be shared or not.
 
-## Base implementation
-
 This package comes already with an implementation of the `ServiceDefinitionInterface` simply called `ServiceDefinition`.
 
-### Constructor
+## Constructor
+
+[~ PHPDoc](/src/ServiceDefinition.php#__construct)
 
 Create a new service definition:
 
@@ -24,9 +24,7 @@ $logger = new ServiceDefinition(MyLogger::class, ['@some_dependency', ':some_par
 
 Keep in mind when passing arguments as an array prefixing a string with `@` will be interpreted as a dependency and `:` as parameter. This applies everywhere arguments are defined as array. [Service Arguments](docs://usage/arguments)
 
-[~ PHPDoc](/src/ServiceDefinition.php#__construct)
-
-#### Static factory
+### Static factory
 
 There is also a static method to construct new service definition instance allowing a more expressive syntax.
 
@@ -36,7 +34,7 @@ There is also a static method to construct new service definition instance allow
 
 [~ PHPDoc](/src/ServiceDefinition.php#fromArray)
 
-### Adding arguments 
+## Constructor Arguments
 
 You can pass additional constructor arguments any time:
 
@@ -50,18 +48,52 @@ $QA
     ->addParameterArgument('priority.default');
 ```
 
+Using the `arguments` method you can also pass them as an array.
+
+```php
+$auth = new ServiceDefinition(MyAuth::class)
+    ->arguments([
+        '@repository.users',
+        ':auth.secret'
+    ]);
+```
+
+### Add raw argument
+
 [~ PHPDoc](/src/ServiceDefinition.php#addRawArgument)
+
+```php
+$def = ServiceDefinition::for('\Acme\SqlConnection')
+    ->addRawArgument('localhost')
+    ->addRawArgument('root')
+    ->addRawArgument('pleaseDontUseRoot');
+```
+
+### Add dependency argument
+
 [~ PHPDoc](/src/ServiceDefinition.php#addDependencyArgument)
+
+```php
+$def = ServiceDefinition::for('\Acme\Blog\PostRepository')
+    ->addDependencyArgument('db.connection');
+```
+
+### Add parameter argument
+
 [~ PHPDoc](/src/ServiceDefinition.php#addParameterArgument)
+
+```php
+$def = ServiceDefinition::for('\Acme\Session')
+    ->addParameterArgument('session.secret');
+```
 
 ### Get all arguments
 
-```php
-$QA->getArguments(); // ServiceArguments instance
-```
-
-
 [~ PHPDoc](/src/ServiceDefinition.php#getArguments)
+
+```php
+$definition->getArguments(); // ServiceArguments instance
+```
 
 ### Get service class name
 

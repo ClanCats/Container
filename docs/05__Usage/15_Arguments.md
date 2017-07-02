@@ -95,3 +95,12 @@ $args = (new ServiceArguments())
 ### From array
 
 [~ PHPDoc](/src/ServiceArguments.php#addArgumentsFromArray)
+
+### getAll
+
+[~ PHPDoc](/src/ServiceArguments.php#getAll)
+
+## Resolving
+
+[~ PHPDoc](/src/ServiceArguments.php#resolve)
+
