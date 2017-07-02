@@ -18,6 +18,8 @@ class ServiceArguments
      *         ':session_token',
      *         600, // session lifetime
      *     ])
+     * 
+     * @param array         $arguments The arguments as array.
      */
     public static function from(array $arguments) : ServiceArguments
     {

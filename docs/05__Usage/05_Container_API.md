@@ -4,7 +4,7 @@ This document focuses more on the public API of the default container instance.
 
 For more basic usage check:
 
- * [Usage examples](docs://usage/examples)
+ * [Getting Started](docs://introduction/getting-started)
  * [Service binding basics](docs://service-binding/basics)
 
 ## Parameters

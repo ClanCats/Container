@@ -13,8 +13,16 @@ Create a new service definition:
 ```php
 use ClanCats\Container\ServiceDefinition;
 
-$logger = new ServiceDefinition(MyLogger::class, [__DIR__ . '/to/my/file.log']);
+$logger = new ServiceDefinition(MyLogger::class);
 ```
+
+You can also directly pass the constructor arguments as an array:
+
+```php
+$logger = new ServiceDefinition(MyLogger::class, ['@some_dependency', ':some_parameter', 42]);
+```
+
+Keep in mind when passing arguments as an array prefixing a string with `@` will be interpreted as a dependency and `:` as parameter. This applies everywhere arguments are defined as array. [Service Arguments](docs://usage/arguments)
 
 [~ PHPDoc](/src/ServiceDefinition.php#__construct)
 
