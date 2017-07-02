@@ -175,10 +175,10 @@ class ServiceDefinition implements ServiceDefinitionInterface
     }
 
     /**
-     * Adds a method call to the service factory
+     * Adds a method call to the service definition, the arguments should be set as an array.
      * 
-     * @param string            $method
-     * @param array             $arguments
+     * @param string            $method The name of the method to be called.
+     * @param array             $arguments The method arguments as array.
      * @return self
      */
     public function calls(string $method, array $arguments = []) : ServiceDefinition
@@ -187,10 +187,10 @@ class ServiceDefinition implements ServiceDefinitionInterface
     }
 
     /**
-     * Adds a method call to the service factory 
+     * Adds a method call to the service definition, the arguments must be set with a ServiceArguments instance.
      * 
-     * @param string                    $methodName
-     * @param ServiceArguments  $arguments
+     * @param string                    $methodName The name of the method to be called.
+     * @param ServiceArguments          $arguments An `ServiceArguments` instance for the method call.
      * @return self
      */
     public function addMethodCall(string $methodName, ServiceArguments $arguments) : ServiceDefinition

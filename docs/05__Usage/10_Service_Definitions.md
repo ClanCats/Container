@@ -99,6 +99,31 @@ $definition->getArguments(); // ServiceArguments instance
 
 [~ PHPDoc](/src/ServiceDefinition.php#getClassName)
 
+## Method Calls
+
+A service definition can hold method calls that have to be called on construction, these can set dependencies, parameters or raw values just like the constructor arguments.
+
+### Add a method call (with array)
+
+[~ PHPDoc](/src/ServiceDefinition.php#calls)
+
+```php
+$def = ServiceDefinition::for('\Acme\Session')
+    ->calls('setEventDispatcher', ['@event_dispatcher']);
+````
+
+### Add a method call
+
+[~ PHPDoc](/src/ServiceDefinition.php#addMethodCall)
+
+```php
+$eventDispatchetArgs = (new ServiceArguments())
+    ->addDependencyArgument('event_dispatcher');
+
+$sessionDefinition = ServiceDefinition::for('\Acme\Session')
+    ->addMethodCall('setEventDispatcher', $eventDispatchetArgs);
+````
+
 ## Interface
 
 Any class that will be used as a service definition must implement the `ServiceDefinitionInterface` which requires the following methods:
