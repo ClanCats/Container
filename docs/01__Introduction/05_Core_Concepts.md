@@ -117,7 +117,7 @@ $definition = new ServiceDefinition(FileLogHandler::class)
     ->addRawArgument(__DIR__ . '/var/log/application.log');
 ```
 
-> Note: More about [Serivce Definitions](/container/master/usage/service-definitions)
+> Note: More about [Serivce Definitions](docs://usage/service-definitions)
 
 ## Service Factory
 
@@ -130,4 +130,4 @@ $factory = new ServiceFactory(FileLogHandler::class)
 $logger = $factory->create(); // FileLogHandler instance
 ```
 
-> Note: More about [Serivce Facatories](/container/master/service-binding/service-factories)
+> Note: More about [Serivce Facatories](docs://service-binding/service-factories)

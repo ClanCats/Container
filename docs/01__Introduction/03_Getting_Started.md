@@ -2,7 +2,72 @@
 
 Hey there, this is the more detailed version of the Quick Start found in the [README](https://github.com/ClanCats/Container/blob/master/README.md) file. 
 
-**If you are not familiar with dependency injection containers read the [Core Concepts](/container/master/introduction/core-concepts).**
+**If you are not familiar with dependency injection containers read the [Core Concepts](docs://introduction/core-concepts).**
+
+## Choosing the implementation
+
+Of course how you implement the service container is completly up to you but you should at least decide if you want to compile the dependency graph or not. It is possible to mix a compiled container with dynamic service definitions but for the love of consistent structuring things your really should stick with one way.
+
+You can read more about diffrent types of implementations here:
+
+ * [Basic & dynmaic](docs://usage/implementations/simple)
+ * [Compiled](docs://usage/implementations/compiled-container)
+ * [Container files](docs://usage/implementations/container-files)
+
+Because the big diffrence between this and any other PHP service container is the meta langauge I will stick with the container files for this getting started guide.
+
+## Setup 
+
+Just like in the README the target directy structure will look like this:
+
+```
+app.php
+app.container
+composer.json
+cache/ # make sure this is writable
+src/
+  Human.php
+  SpaceShip.php
+  Engine.php
+```
+
+### Container Factory
+
+
+
+### Engine – Example
+
+The first class we create is the engine later needed for our spaceships.
+
+The `src/Engine.php` class is constructed with a given power and an amount of fuel. It can be throttlet up for a given amount of time which will return the traveled distance and consume fuel. With the `refuel` method the engine can be, well you probably already guessd it. Also a mechanic can be assigned to the engine.
+
+```php
+class Engine
+{
+    protected $fuel; 
+    protected $power;
+    protected $mechanic;
+
+    public function __construct(int $power, int $fuel) {
+        $this->power = $power;
+        $this->fuel = $fuel;
+    }
+
+    public function throttle(int $for) {
+        $this->fuel -= ($distance = $this->power * $for); return $distance;
+    }
+
+    public function refuel(int $amount) {
+        if ($this->mechanic) $this->fuel += $amount;
+    }
+
+    public function setMechanic(Human $mechanic) {
+        $this->mechanic = $mechanic;
+    }
+}
+```
+
+So lets power the engine up a bit! 
 
 ## Choosing the implementation
 
