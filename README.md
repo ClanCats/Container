@@ -147,6 +147,28 @@ The variable `$container` contains now a class instance named `AppContainer`.
 echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
 ```
 
+## ToDo
+
+- Container Files
+  - Metadata support
+  - Container file Namespace support
+  - Use PHP namespace support
+  - Prototype service support
+  - Factory Support
+  - Array Support
+  - Override stack (meta and calls)
+  - Autowiring by "using trait"
+  - Autowiring by "instance of"
+  - Autowiring by "has method"
+  - Property injection
+  - Parameter concatination
+  - Input Parameters (used for env detection)
+  - Late service override (allow for adding meta or arguments) 
+- Container
+ - Metadata support
+ - Property injection
+ - Call stacks
+
 ## Credits
 
 - [Mario Döring](https://github.com/mario-deluna)
