@@ -95,7 +95,7 @@ $builder->importNamespace($namespace);
 
 Finally we feed our namespace into the builder object.
 
-> Note: Before we continue here, check out [Container File Syntax](docs://@todo/). There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
+> Note: Before we continue here, check out **[Container File Syntax](docs://container-files/syntax)**. There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
 
 ## Parameters 
 

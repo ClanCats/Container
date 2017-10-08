@@ -22,7 +22,7 @@ You can also directly pass the constructor arguments as an array:
 $logger = new ServiceDefinition(MyLogger::class, ['@some_dependency', ':some_parameter', 42]);
 ```
 
-Keep in mind when passing arguments as an array prefixing a string with `@` will be interpreted as a dependency and `:` as parameter. This applies everywhere arguments are defined as array. [Service Arguments](docs://usage/arguments)
+Keep in mind when passing arguments as an array prefixing a string with `@` will be interpreted as a dependency and `:` as parameter. This applies everywhere arguments are defined as array. [Service Arguments](docs://advanced/arguments)
 
 ### Static factory
 
