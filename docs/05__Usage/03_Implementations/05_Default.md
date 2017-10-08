@@ -28,3 +28,15 @@ $factory = new ContainerFactory(__DIR__ . '/cache', true); // second argument tu
 ```
 
 ## Container class name
+
+The first argument you pass into the container factories `create` method is the containers name including the namespace.
+
+```php
+$container = $factory->create('Acme\DI\AppContainer', function($builder) {});
+```
+
+Read more about this here: [Container Factory](docs://@todo/)
+
+## Container namespace
+
+> Note: continue here: [Container Namepsace](docs://@todo/)
