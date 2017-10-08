@@ -29,13 +29,13 @@ override @producer.massive: \Andromeda\Companies\Company('Other Company')
  - age: 26
  <- addAlias('Mary')
  
-@human.ray: 
+@human.ray
  - setAge(27)
  <- addAlias('Awesome')
 
 ==== @human.ray.age === 23, 26
 
-@human.ray: 
+@human.ray
  - age: 27
 
 ==== @human.ray.age === 27
@@ -84,3 +84,27 @@ prefix log.
 	@mysql.adapter: MySQL
 	@mongo.adapter: MongoDB
 }
+
+
+when using DBTrait
+	- setMysql(@mysql)
+
+when instanceof Controller
+	- setContainer(@container)
+	=> tags: "controller"
+
+@mysql: factory Service\HydrahonFactory
+
+namespace request
+{
+	@handler: TiBot\PuppetMaster\RequestHandler(@container)
+
+	namespace handler 
+	{
+		// Create server handler
+		@create_server: TiBot\PuppetMaster\RequestHandlers\CreateServerHandler(@puppet.manager, @puppet.actions)
+		// Proxy handler
+		@proxy: TiBot\PuppetMaster\RequestHandlers\ProxyHandler(@puppet.manager, @puppet.actions)
+	}
+}
+

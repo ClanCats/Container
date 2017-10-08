@@ -10,11 +10,11 @@ Of course how you implement the service container is completly up to you but you
 
 You can read more about diffrent types of implementations here:
 
- * [Basic & dynmaic](docs://usage/implementations/simple)
- * [Compiled](docs://usage/implementations/compiled-container)
- * [Container files](docs://usage/implementations/container-files)
+ * [Default](docs://usage/implementations/default)
+ * [Dynamic](docs://usage/implementations/dynamic)
+ * [Custom build](docs://usage/implementations/custom-build)
 
-Because the big diffrence between this and any other PHP service container is the meta langauge I will stick with the container files for this getting started guide.
+Because the main diffrence between this and any other PHP service container is the meta langauge I will stick with it for this getting started guide.
 
 ## Setup 
 
@@ -22,7 +22,8 @@ Just like in the README the target directy structure will look like this:
 
 ```
 app.php
-app.container
+app.ctn # this will be our container file.
+app_config.ctn
 composer.json
 cache/ # make sure this is writable
 src/
@@ -31,11 +32,105 @@ src/
   Engine.php
 ```
 
-### Container Factory
+## Container Factory
 
+To construct a container instance we make use of the `ContainerFactory` which will generate a PHP file containig our very own container.
 
+```php
+$factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
 
-### Engine – Example
+$container = $factory->create('AppContainer', function($builder)
+{
+    // create a new container file namespace and parse our `app.ctn` file.
+    $namespace = new \ClanCats\Container\ContainerNamespace([
+        'config' => __DIR__ . '/appconfig.ctn',
+    ]);
+    $namespace->parse(__DIR__ . '/app.ctn');
+
+    // import the namespace data into the builder
+    $builder->importNamespace($namespace);
+});
+```
+
+And thats it, we are now able to modify the `app.ctn` file which will build our Container instance.
+
+### Explain
+
+Not informative egnouth? I'm sorry let me get a bit more into detail what happens here:
+
+```php
+$factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
+```
+
+The container factory has not alot of functionality its purpuse is to write and read the genrerated PHP class. It supports a _debug mode_ by simply setting the second argument to `true`. In the _debug mode_ the factory will ignore if a builded file is already present and rebuild it every time.
+
+```php
+$container = $factory->create('AppContainer', function($builder)
+```
+
+The `create` method as you probably already guessed is where the container instance is beeing created. The first argument is the class name. Namespaces are supported so you could also set it to something like `Acme\MainBundle\MainContainer`. As a second parameter we have a callback where we define what the container should actually contain.
+
+Read more about this here: [Container Factory](docs://@todo/)
+
+```php 
+$namespace = new \ClanCats\Container\ContainerNamespace([
+    'config' => __DIR__ . '/app_config.ctn',
+]);
+```
+
+Okey so what the hell is a container namespace? 
+Well look at it as a little application with its own file structure. The container namespace defines this file structure. `config` is not a special key, its just a name we assign to a file that shold be accessible in your container files / scripts.
+
+```php
+$namespace->parse(__DIR__ . '/app.ctn');
+```
+
+Now we have to parse the main file. All parsed data is now assigned to our namespace instance.
+
+Read more about this here: [Container Namepsace](docs://@todo/)
+
+```php 
+$builder->importNamespace($namespace);
+```
+
+Finally we feed our namespace into the builder object.
+
+> Note: Before we continue here, check out [Container File Syntax](docs://@todo/). There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
+
+## Parameters 
+
+You might have noticed in the setup that there are two `ctn` files. Lets go on and create those: `app.ctn` and `app_config.ctn`.
+
+Now in the `app.ctn` define a parameter like this:
+
+```ctn
+:firstname: = 'James'
+```
+
+You can access any parameter of the container anytime:
+
+```php
+echo $container->getParameter('firstname');
+```
+
+And the define the lastname inside the `app_config.ctn`:
+
+```ctn
+:lastname: = 'Bond'
+```
+
+If we know would try to access lastname, we would get `null`. Thats because we need to import our `app_config.ctn` into our main `app.ctn`. Doing so is simple:
+
+```ctn
+import config
+:firstname: = 'James'
+```
+
+Remember where we constructed the container namespace? We defined the name of the `app_config.ctn` to be simply `config`.
+
+This particular example might seem a bit useless, well ok, it is usless. But I like to seperate configuration from the service definitions and this is a neat way to do so.
+ 
+## Engine – Example
 
 The first class we create is the engine later needed for our spaceships.
 
