@@ -43,7 +43,7 @@ $container = $factory->create('AppContainer', function($builder)
 {
     // create a new container file namespace and parse our `app.ctn` file.
     $namespace = new \ClanCats\Container\ContainerNamespace([
-        'config' => __DIR__ . '/appconfig.ctn',
+        'config' => __DIR__ . '/app_config.ctn',
     ]);
     $namespace->parse(__DIR__ . '/app.ctn');
 
@@ -99,7 +99,9 @@ Finally we feed our namespace into the builder object.
 
 ## Parameters 
 
-You might have noticed in the setup that there are two `ctn` files. Lets go on and create those: `app.ctn` and `app_config.ctn`.
+Parameters are always prefixed with a `:` character and can be defined in any order. They can hold scalar values (array support is also planned.) when defined inside a `ctn` file. Technically there is no limitation on what a parameter can contain, you can set a parameter containing anything you want manually `$container->setContainer('mykey', <a value>)`.
+
+You might have noticed that in the setup there are two `ctn` files mentiond. Lets go on and create those: `app.ctn` and `app_config.ctn`.
 
 Now in the `app.ctn` define a parameter like this:
 
@@ -107,19 +109,19 @@ Now in the `app.ctn` define a parameter like this:
 :firstname: = 'James'
 ```
 
-You can access any parameter of the container anytime:
+You can access the parameter of the container anytime:
 
 ```php
 echo $container->getParameter('firstname');
 ```
 
-And the define the lastname inside the `app_config.ctn`:
+And then define the lastname inside the `app_config.ctn`:
 
 ```ctn
 :lastname: = 'Bond'
 ```
 
-If we know would try to access lastname, we would get `null`. Thats because we need to import our `app_config.ctn` into our main `app.ctn`. Doing so is simple:
+If we know would try to access lastname, we would get `null`. Thats because we need to import our `app_config.ctn` into our main `app.ctn`. doing so is simple:
 
 ```ctn
 import config
