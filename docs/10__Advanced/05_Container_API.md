@@ -5,7 +5,7 @@ This document focuses more on the public API of the default container instance.
 For more basic usage check:
 
  * [Getting Started](docs://introduction/getting-started)
- * [Service binding basics](docs://service-binding/basics)
+ * [Container Basics](docs://usage/container)
 
 ## Parameters
 
@@ -13,7 +13,7 @@ Think of parameters as mostly _scalar_ configuration values that can be injected
 
 ### Construct with parameters
 
-Bla Bla
+[~ PHPDoc](/src/Container.php#__construct)
 
 ### Getting a parameter
 
@@ -29,10 +29,6 @@ Bla Bla
 
 ## Services
 
-### Binding a service
-
-> Danger: There is more! check out [Service binding basics](docs://service-binding/basics).
-
 ### Getting a service
 
 [~ PHPDoc](/src/Container.php#get)
@@ -44,6 +40,22 @@ Bla Bla
 ### Has service
 
 [~ PHPDoc](/src/Container.php#has)
+
+### Bind service
+
+[~ PHPDoc](/src/Container.php#bind)
+
+#### Bind service by class
+
+[~ PHPDoc](/src/Container.php#bindClass)
+
+#### Bind service factory
+
+[~ PHPDoc](/src/Container.php#bindFactory)
+
+#### Bind shared service factory
+
+[~ PHPDoc](/src/Container.php#bindFactoryShared)
 
 ### Set service
 
@@ -60,3 +72,11 @@ Bla Bla
 ### Is service resolved
 
 [~ PHPDoc](/src/Container.php#isResolved)
+
+### Register a service provider
+
+[~ PHPDoc](/src/Container.php#register)
+
+### Get service resolver type
+
+[~ PHPDoc](/src/Container.php#getServiceResolverType)
