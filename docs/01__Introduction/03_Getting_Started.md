@@ -54,7 +54,7 @@ $container = $factory->create('AppContainer', function($builder)
 
 And thats it, we are now able to modify the `app.ctn` file which will build our Container instance.
 
-### Explain
+### Explain
 
 Not informative egnouth? I'm sorry let me get a bit more into detail what happens here:
 
