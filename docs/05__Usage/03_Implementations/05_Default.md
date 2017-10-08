@@ -1,15 +1,30 @@
-# Dynamic / Basic Container 
+# Default Implementation
 
-Just create an instance of the base container and you are good to go.
+The recommended implementation is using the container factory, builder and namespace. It will genreate an optimized PHP file containing our Container, include it and return an instnace.
+
+**Make sure your php can write into the given cache directory.**
 
 ```php
-use ClanCats\Container\Container;
+$factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
 
-$container = Container;
+$container = $factory->create('AppContainer', function($builder)
+{
+    // create a new container file namespace and parse our `app.ctn` file.
+    $namespace = new \ClanCats\Container\ContainerNamespace();
+    $namespace->parse(__DIR__ . '/app.ctn');
+
+    // import the namespace data into the builder
+    $builder->importNamespace($namespace);
+});
 ```
 
-This is the simplest and the most dynamic implementation. But keep in mind this type of container **cannot be compiled**, which makes it a little bit slower. But it therefor has almost no limitations when it comes to service binding and your parameters.
+## Debug mode
 
----
+The container factory will not check for changes, it will only rebuild if the cache file is missing. In development always clearing the cache directory can be annoying so there is a debug mode which will ignore the existing cache file and always rebuild.
 
-___
+```php
+use \ClanCats\Container\ContainerFactory;
+$factory = new ContainerFactory(__DIR__ . '/cache', true); // second argument turns debug mode on
+```
+
+## Container class name
