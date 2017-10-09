@@ -97,44 +97,55 @@ Finally we feed our namespace into the builder object.
 
 > Note: Before we continue here, check out **[Container File Syntax](docs://container-files/syntax)**. There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
 
-## Parameters 
+## Parameters
 
-Parameters are always prefixed with a `:` character and can be defined in any order. They can hold scalar values (array support is also planned.) when defined inside a `ctn` file. Technically there is no limitation on what a parameter can contain, you can set a parameter containing anything you want manually `$container->setContainer('mykey', <a value>)`.
+Parameters are always prefixed with a `:` character and can be defined in any order. They can hold scalar values (array support is also planned.) when defined inside a `ctn` file. Technically there is no limitation on what a parameter can contain, you can set a parameter containing anything you want manually with the `setParamter` method.
 
-You might have noticed that in the setup there are two `ctn` files mentiond. Lets go on and create those: `app.ctn` and `app_config.ctn`.
-
-Now in the `app.ctn` define a parameter like this:
+Now in the `app.ctn` define some parameter like this:
 
 ```ctn
 :firstname: = 'James'
+:lastname: = 'Bond'
+:code: 007
 ```
 
-You can access the parameter of the container anytime:
+You can access the parameters of the container anytime:
 
 ```php
 echo $container->getParameter('firstname');
 ```
 
-And then define the lastname inside the `app_config.ctn`:
+## Importing 
+
+You might have noticed that in the setup there are two `ctn` files mentiond. Lets go on and create the `app_config.ctn`.
+
+Inside the `app_config.ctn` we define another parameter:
 
 ```ctn
-:lastname: = 'Bond'
+:active: true
 ```
 
-If we know would try to access lastname, we would get `null`. Thats because we need to import our `app_config.ctn` into our main `app.ctn`. doing so is simple:
+If we know would try to access `active`, we would get `null`. Thats because we need to import our `app_config.ctn` into our main `app.ctn`. doing so is simple:
 
 ```ctn
 import config
+
 :firstname: = 'James'
+:lastname: = 'Bond'
+:code: 007
 ```
 
 Remember where we constructed the container namespace? We defined the name of the `app_config.ctn` to be simply `config`.
 
-This particular example might seem a bit useless, well ok, it is usless. But I like to seperate configuration from the service definitions and this is a neat way to do so.
- 
-## Engine – Example
+This particular example (with firstname, lastname) might seem a bit useless, well ok, it is usless.
+I like to seperate configuration from the service definitions using imports are a neat way to do so.
 
-The first class we create is the engine later needed for our spaceships.
+## Service definitions
+
+
+### Example Setup – Engine
+
+The first class we are going to create, is the engine. This is class has nothing todo with the container itself, it purly acts as demonstration.
 
 The `src/Engine.php` class is constructed with a given power and an amount of fuel. It can be throttlet up for a given amount of time which will return the traveled distance and consume fuel. With the `refuel` method the engine can be, well you probably already guessd it. Also a mechanic can be assigned to the engine.
 
@@ -150,9 +161,13 @@ class Engine
         $this->fuel = $fuel;
     }
 
-    public function throttle(int $for) {
+    public function throttle(int $for) : int {
         $this->fuel -= ($distance = $this->power * $for); return $distance;
     }
+
+    public function getFuel() : int {
+        return $this->fuel;
+    } 
 
     public function refuel(int $amount) {
         if ($this->mechanic) $this->fuel += $amount;
@@ -164,7 +179,77 @@ class Engine
 }
 ```
 
-So lets power the engine up a bit! 
+So lets define our engine as a service.
+
+```ctn 
+@hyperdrive: Engine(500, 10000)
+```
+
+Now we are able to load the hyperdrive engine using the container and test it out.
+
+```php
+$hyperdrive = $container->get('hyperdrive');
+
+echo 'current fuel: ' . $hyperdrive->getFuel() . PHP_EOL; // 10000
+echo 'traveling : ' . $hyperdrive->throttle(5) . PHP_EOL; // 2500
+echo 'current fuel: ' . $hyperdrive->getFuel() . PHP_EOL; // 7500
+```
+
+Often we don't want to hardcode the constructor arguments, thats where parameters come in handy. 
+
+```ctn 
+:hyperdrive.power: 500
+:hyperdrive.fuel: 10000
+
+@hyperdrive: Engine(:hyperdrive.power, :hyperdrive.fuel)
+```
+
+But we still can not refeul our engine without a mechanic. This brings us to the next example.
+
+### Example Setup – Human
+
+The second example class will be a Human with only one argument in the constructor which represents the name. 
+
+```php
+class Human
+{
+    public $name;
+    public $job;
+
+    public function __construct(string $name) {
+        $this->name = $name;
+    }
+
+    public function setJob(string $job) {
+        $this->job = $job;
+    }
+}
+```
+
+Im a big firefly fan so excuse all the references. Here comes our mechanic. 
+
+```ctn
+@kaylee: Human('Kaylee Frye')
+  - setJob('Mechanic')
+```
+
+Now we are also able to assign Kaylee as mechanic to our engine.
+
+```ctn
+@hyperdrive: Engine(:hyperdrive.power, :hyperdrive.fuel)
+  - setMechanic(@kaylee)
+```
+
+And voila we are able to refuel:
+
+```php
+$hyperdrive = $container->get('hyperdrive');
+
+$hyperdrive->getFuel();
+$hyperdrive->throttle(5);
+$hyperdrive->refuel(1000);
+echo 'current fuel: ' . $hyperdrive->getFuel() . PHP_EOL; // 8500
+```
 
 ## Choosing the implementation
 
