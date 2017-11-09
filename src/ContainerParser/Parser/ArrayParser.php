@@ -14,7 +14,8 @@ use ClanCats\Container\ContainerParser\{
     Token as T,
 
     // contextual node
-    Nodes\ArgumentArrayNode,
+    Nodes\ArrayNode,
+    Nodes\ArrayElementNode,
     Nodes\ParameterReferenceNode,
     Nodes\ServiceReferenceNode,
     Nodes\ValueNode
@@ -36,7 +37,7 @@ class ArrayParser extends ContainerParser
      */
     protected function prepare() 
     {
-        $this->array = new ArgumentArrayNode;
+        $this->array = new ArrayNode;
     }
 
     /**
@@ -57,34 +58,64 @@ class ArrayParser extends ContainerParser
     protected function next()
     {
         // is the current element associative?
-        $associativeArray = $this->nextToken() === T::TOKEN_ASSIGN;
+        $associativeArray = $this->nextToken() && $this->nextToken()->isType(T::TOKEN_ASSIGN);
+        $associativeKeyName = null;
 
         // if yes, we parse the key first
-        if ($associativeArray) {
-            
+        if ($associativeArray) 
+        {    
+            $keyToken = $this->currentToken();
+
+            // the key can be an identifier token and will 
+            // be used as a simple string
+            if ($keyToken->isType(T::TOKEN_IDENTIFIER))
+            {
+                $associativeKeyName = $keyToken->getValue();
+            }
+            // string or numbers
+            elseif ($keyToken->isType(T::TOKEN_STRING) || $keyToken->isType(T::TOKEN_NUMBER))
+            {
+                $associativeKeyName = ValueNode::fromToken($keyToken)->getRawValue();
+            }
+
+            $this->skipToken(2); // skip the key & assign token
         }
 
-        var_dump($this->nextToken()); die;
+        // placeholder for the elements value
+        $elementValue = null;
 
+        // value token
         $token = $this->currentToken();
 
-
+        // check for nested array
+        if ($token->isType(T::TOKEN_SCOPE_OPEN)) 
+        {
+            $elementValue = $this->parseChild(
+                ArrayParser::class, 
+                $this->getTokensUntilClosingScope(
+                    false, 
+                    T::TOKEN_SCOPE_OPEN, 
+                    T::TOKEN_SCOPE_CLOSE
+                ), 
+                false
+            );
+        }
 
         // is a parameter reference 
-        if ($token->isValue()) 
+        elseif ($token->isValue()) 
         {
-            $this->arguments->addArgument(ValueNode::fromToken($token));
+            $elementValue = ValueNode::fromToken($token);
         }
 
         elseif ($token->isType(T::TOKEN_PARAMETER)) 
         {
-            $this->arguments->addArgument($this->parseChild(ReferenceParser::class));
+            $elementValue = $this->parseChild(ReferenceParser::class);
         }
 
         // is a service reference
         elseif ($token->isType(T::TOKEN_DEPENDENCY)) 
         {
-            $this->arguments->addArgument($this->parseChild(ReferenceParser::class));
+            $elementValue = $this->parseChild(ReferenceParser::class);
         }
 
         // just a linebreak
@@ -99,6 +130,14 @@ class ArrayParser extends ContainerParser
             throw $this->errorUnexpectedToken($token);
         }
 
+        // update our array node
+        if ($associativeArray) {
+            $this->array->addElement(new ArrayElementNode($associativeKeyName, $elementValue));
+        } else {
+            $this->array->push($elementValue);
+        }
+
+        // skip the value token
         $this->skipToken();
 
         // now ther might follow a seperator indicating another argument
