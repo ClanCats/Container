@@ -50,10 +50,12 @@ class Token
     const TOKEN_OVERRIDE = 13;
     const TOKEN_BRACE_OPEN = 14;
     const TOKEN_BRACE_CLOSE = 15;
-    const TOKEN_MINUS = 16;
-    const TOKEN_SEPERATOR = 17;
-    const TOKEN_PROTOTYPE = 18;
-    const TOKEN_IDENTIFIER = 19;
+    const TOKEN_SCOPE_OPEN = 16;
+    const TOKEN_SCOPE_CLOSE = 17;
+    const TOKEN_MINUS = 18;
+    const TOKEN_SEPERATOR = 19;
+    const TOKEN_PROTOTYPE = 20;
+    const TOKEN_IDENTIFIER = 21;
 
     /**
      * The constructor

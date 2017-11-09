@@ -87,6 +87,8 @@ class ContainerLexer
         // scope
         "/^(\()/" => T::TOKEN_BRACE_OPEN,
         "/^(\))/" => T::TOKEN_BRACE_CLOSE,
+        "/^(\{)/" => T::TOKEN_SCOPE_OPEN,
+        "/^(\})/" => T::TOKEN_SCOPE_CLOSE,
         
         // syntax
         "/^(\:)/" => T::TOKEN_ASSIGN,
