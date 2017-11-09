@@ -7,6 +7,7 @@ use ClanCats\Container\ContainerParser\{
     Parser\ArgumentArrayParser,
     Nodes\ArgumentArrayNode,
     Nodes\ValueNode,
+    Nodes\ArrayNode,
     Nodes\ParameterReferenceNode,
     Nodes\ServiceReferenceNode,
     Token as T
@@ -114,6 +115,24 @@ class ArgumentArrayParserTest extends ParserTestCase
     {
         $arguments = $this->argumentsArrayNodeFromCode('');
         $this->assertCount(0, $arguments->getArguments());
+    }
+
+    public function testArrayInArgumentArray()
+    {
+        $arguments = $this->argumentsArrayNodeFromCode('{"A"}');
+        $argument = $arguments->getArguments()[0];
+
+        $this->assertCount(1, $arguments->getArguments());
+        $this->assertInstanceOf(ArrayNode::class, $argument);
+        $this->assertEquals(['A'], $argument->convertToNativeArray());
+
+        // both?
+        $arguments = $this->argumentsArrayNodeFromCode('{"A"}, {1, 2, 3}');
+        $argument = $arguments->getArguments()[1];
+
+        $this->assertCount(2, $arguments->getArguments());
+        $this->assertInstanceOf(ArrayNode::class, $argument);
+        $this->assertEquals([1, 2, 3], $argument->convertToNativeArray());
     }
 
     /**

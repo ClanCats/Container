@@ -58,23 +58,34 @@ class ArgumentArrayParser extends ContainerParser
     { 
         $token = $this->currentToken();
 
-        // is a parameter reference 
-        if ($token->isValue()) 
+        // the argument might be an array
+        if ($this->currentToken()->isType(T::TOKEN_SCOPE_OPEN)) 
+        {
+            $this->arguments->addArgument($this->parseChild(
+                ArrayParser::class, 
+                $this->getTokensUntilClosingScope(
+                    false, 
+                    T::TOKEN_SCOPE_OPEN, 
+                    T::TOKEN_SCOPE_CLOSE
+                ), 
+                false
+            ));
+        }
+        // or a simple scalar value
+        elseif ($token->isValue())
         {
             $this->arguments->addArgument(ValueNode::fromToken($token));
         }
-
+        // is it a parameter?
         elseif ($token->isType(T::TOKEN_PARAMETER)) 
         {
             $this->arguments->addArgument($this->parseChild(ReferenceParser::class));
         }
-
         // is a service reference
         elseif ($token->isType(T::TOKEN_DEPENDENCY)) 
         {
             $this->arguments->addArgument($this->parseChild(ReferenceParser::class));
         }
-
         // just a linebreak
         elseif ($token->isType(T::TOKEN_LINE)) 
         {

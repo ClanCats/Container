@@ -160,6 +160,10 @@ class ContainerInterpreter
             {
                 $definition->addParameter($argument->getName());
             }
+            elseif ($argument instanceof ArrayNode)
+            {
+                $definition->addRaw($argument->convertToNativeArray());
+            }
             elseif ($argument instanceof ValueNode)
             {
                 $definition->addRaw($argument->getRawValue());
@@ -204,6 +208,10 @@ class ContainerInterpreter
                 elseif ($argument instanceof ParameterReferenceNode)
                 {
                     $service->addParameterArgument($argument->getName());
+                }
+                elseif ($argument instanceof ArrayNode)
+                {
+                    $service->addRawArgument($argument->convertToNativeArray());
                 }
                 elseif ($argument instanceof ValueNode)
                 {

@@ -199,10 +199,16 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
         $logger = new ServiceDefinitionNode('logger', 'Log');
         $adapter = new ServiceDefinitionNode('log.adapter', 'Log\\FileAdapter');    
 
+        // prepare a sample array
+        $array = new ArrayNode();
+        $array->push(new ValueNode('Foo', ValueNode::TYPE_STRING));
+        $array->push(new ValueNode('Bar', ValueNode::TYPE_STRING));
+
         $arguments = new ArgumentArrayNode();
         $arguments->addArgument(new ServiceReferenceNode('log.adapter'));
         $arguments->addArgument(new ParameterReferenceNode('log.name'));
         $arguments->addArgument(new ValueNode(true, ValueNode::TYPE_BOOL_TRUE));
+        $arguments->addArgument($array);
 
         $logger->setArguments($arguments);
 
@@ -215,7 +221,7 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
 
         $loggerArguments = $services['logger']->getArguments()->getAll();
 
-        $this->assertCount(3, $loggerArguments);
+        $this->assertCount(4, $loggerArguments);
 
         // check dependency
         $this->assertEquals('log.adapter', $loggerArguments[0][0]);
@@ -228,6 +234,10 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
         // check value
         $this->assertEquals(true, $loggerArguments[2][0]);
         $this->assertEquals(ServiceArguments::RAW, $loggerArguments[2][1]);
+
+        // check array
+        $this->assertEquals(['Foo', 'Bar'], $loggerArguments[3][0]);
+        $this->assertEquals(ServiceArguments::RAW, $loggerArguments[3][1]);
     }
 
     /**
