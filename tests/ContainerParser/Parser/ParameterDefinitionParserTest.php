@@ -83,16 +83,39 @@ class ParameterDefinitionParserTest extends ParserTestCase
         $this->assertEquals('tokens', $def->getName());
         $this->assertInstanceOf(ArrayNode::class, $def->getValue());
 
-        // var_dump($def); die;
+        $this->assertEquals(['A', 'B', 'C'], $def->getValue()->convertToNativeArray());
 
-        // $this->assertEquals(true, $def->getValue()->getRawValue());
+        // more dimensions
+        $def = $this->parameterDefnitionNodeFromCode(':people: {
+            {name: "Flexible"},
+            {name: "Jeff"},
+        }');
 
-        // $def = $this->parameterDefnitionNodeFromCode(':enable.this: false');
+        $this->assertEquals([['name' => 'Flexible'], ['name' => 'Jeff']], $def->getValue()->convertToNativeArray());
 
-        // $this->assertInstanceOf(ParameterDefinitionNode::class, $def);
-        // $this->assertEquals('enable.this', $def->getName());
-        // $this->assertEquals(ValueNode::TYPE_BOOL_FALSE, $def->getValue()->getType());
-        // $this->assertEquals(false, $def->getValue()->getRawValue());
+        // allow array definition on the next line
+        $def = $this->parameterDefnitionNodeFromCode(':people: 
+        {
+            "title": "Something",
+            likes: 123,
+            comments: 
+            {
+                "Something",
+                "Something more"
+            }
+        }');
+
+        $expected = [
+            "title" => "Something",
+            'likes' => 123,
+            'comments' => 
+            [
+                "Something",
+                "Something more"
+            ]
+        ];
+
+        $this->assertEquals($expected, $def->getValue()->convertToNativeArray());
     }
 
     public function testOverride()

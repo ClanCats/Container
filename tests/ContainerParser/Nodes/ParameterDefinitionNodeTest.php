@@ -4,6 +4,8 @@ namespace ClanCats\Container\Tests\ContainerParser\Nodes;
 use ClanCats\Container\ContainerParser\{
     Nodes\ParameterDefinitionNode,
     Nodes\ValueNode,
+    Nodes\ServiceReferenceNode,
+    Nodes\ParameterReferenceNode,
     Token
 };
 
@@ -41,5 +43,21 @@ class ParameterDefinitionNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($node->isOverride());
         $node->setIsOverride(true);
         $this->assertTrue($node->isOverride());
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
+     */
+    public function testParameterReferenceError()
+    {
+        $node = new ParameterDefinitionNode('test', new ServiceReferenceNode('not possible'));
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
+     */
+    public function testServiceReferenceError()
+    {
+        $node = new ParameterDefinitionNode('test', new ParameterReferenceNode('not possible'));
     }
 }

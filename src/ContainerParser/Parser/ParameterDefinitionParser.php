@@ -53,6 +53,9 @@ class ParameterDefinitionParser extends ContainerParser
         // at this point we can skip the name and assign character
         $this->skipToken(2);
 
+        // we do allow skipping linebreaks here
+        $this->skipTokenOfType([T::TOKEN_LINE]);
+
         $parameterValue = null;
 
         // Parameters can contain an array so we need to check 
