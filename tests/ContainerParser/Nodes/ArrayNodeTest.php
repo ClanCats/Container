@@ -106,4 +106,24 @@ class ArrayNodeTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(['A' => [1 => 10, 'test' => 20], 'B' => [1 => 10, 'test' => 20]], $parent->convertToNativeArray());
     }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
+     */
+    public function testConvertToNativeWithRef()
+    {
+        $node = new ArrayNode();
+        $node->push(new ParameterReferenceNode('foo'));
+        $node->convertToNativeArray();
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
+     */
+    public function testConvertToNativeWithRefService()
+    {
+        $node = new ArrayNode();
+        $node->push(new ServiceReferenceNode('bar'));
+        $node->convertToNativeArray();
+    }
 }
