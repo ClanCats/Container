@@ -79,6 +79,9 @@ class ArrayParser extends ContainerParser
             }
 
             $this->skipToken(2); // skip the key & assign token
+
+            // there might be a linebreak between the key and value
+            $this->skipTokenOfType([T::TOKEN_LINE]);
         }
 
         // placeholder for the elements value

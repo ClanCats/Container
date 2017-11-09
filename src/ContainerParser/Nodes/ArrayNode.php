@@ -8,6 +8,8 @@
  */
 namespace ClanCats\Container\ContainerParser\Nodes;
 
+use ClanCats\Container\Exceptions\LogicalNodeException;
+
 use ClanCats\Container\ContainerParser\{
     Nodes\BaseNode as Node
 };
@@ -81,6 +83,35 @@ class ArrayNode extends BaseNode implements AssignableNode
         }
 
         $this->addElement(new ArrayElementNode($this->index, $value));
+    }
+
+    /**
+     * Converts the current array to a PHP array
+     * This will throw an exception when the array contains a reference
+     * to a service or parameter
+     *
+     * @return array
+     */
+    public function convertToNativeArray() : array
+    {
+        $array = [];
+
+        foreach($this->getElements() as $element)
+        {
+            $value = $element->getValue();
+
+            if ($value instanceof ValueNode) {
+                $array[$element->getKey()] = $value->getRawValue();
+            } 
+            elseif ($value instanceof ArrayNode) {
+                $array[$element->getKey()] = $value->convertToNativeArray();
+            }
+            else {
+                throw new LogicalNodeException("You cannot convert a ctn array to PHP that contains a reference to a service or parameter.");
+            }
+        }
+
+        return $array;
     }
 }
 

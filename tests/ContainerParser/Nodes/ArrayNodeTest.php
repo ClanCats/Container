@@ -80,4 +80,30 @@ class ArrayNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([0, 1, 2, 3, 4], $keys);
 
     }
+
+    public function testConvertToNative()
+    {
+        // simple array
+        $node = new ArrayNode();
+
+        $node->push(new ValueNode(1, ValueNode::TYPE_NUMBER));
+        $node->push(new ValueNode(2, ValueNode::TYPE_NUMBER));
+        $node->push(new ValueNode(3, ValueNode::TYPE_NUMBER));
+
+        $this->assertEquals([1, 2, 3], $node->convertToNativeArray());
+
+        // assoc
+        $node = new ArrayNode();
+        $node->addElement(new ArrayElementNode(1, new ValueNode(10, ValueNode::TYPE_NUMBER)));
+        $node->addElement(new ArrayElementNode('test', new ValueNode(20, ValueNode::TYPE_NUMBER)));
+
+        $this->assertEquals([1 => 10, 'test' => 20], $node->convertToNativeArray());
+
+        // multidimensional
+        $parent = new ArrayNode();
+        $parent->addElement(new ArrayElementNode('A', $node));
+        $parent->addElement(new ArrayElementNode('B', $node));
+
+        $this->assertEquals(['A' => [1 => 10, 'test' => 20], 'B' => [1 => 10, 'test' => 20]], $parent->convertToNativeArray());
+    }
 }

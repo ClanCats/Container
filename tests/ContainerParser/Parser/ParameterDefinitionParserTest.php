@@ -7,6 +7,7 @@ use ClanCats\Container\ContainerParser\{
     Parser\ParameterDefinitionParser,
     Nodes\ParameterDefinitionNode,
     Nodes\ValueNode,
+    Nodes\ArrayNode,
     Token as T
 };
 
@@ -72,6 +73,26 @@ class ParameterDefinitionParserTest extends ParserTestCase
         $this->assertEquals('enable.this', $def->getName());
         $this->assertEquals(ValueNode::TYPE_BOOL_FALSE, $def->getValue()->getType());
         $this->assertEquals(false, $def->getValue()->getRawValue());
+    }
+
+    public function testArrayAssign()
+    {
+        $def = $this->parameterDefnitionNodeFromCode(':tokens: {"A", "B", "C"}');
+
+        $this->assertInstanceOf(ParameterDefinitionNode::class, $def);
+        $this->assertEquals('tokens', $def->getName());
+        $this->assertInstanceOf(ArrayNode::class, $def->getValue());
+
+        // var_dump($def); die;
+
+        // $this->assertEquals(true, $def->getValue()->getRawValue());
+
+        // $def = $this->parameterDefnitionNodeFromCode(':enable.this: false');
+
+        // $this->assertInstanceOf(ParameterDefinitionNode::class, $def);
+        // $this->assertEquals('enable.this', $def->getName());
+        // $this->assertEquals(ValueNode::TYPE_BOOL_FALSE, $def->getValue()->getType());
+        // $this->assertEquals(false, $def->getValue()->getRawValue());
     }
 
     public function testOverride()

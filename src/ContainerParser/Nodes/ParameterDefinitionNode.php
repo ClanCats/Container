@@ -8,8 +8,12 @@
  */
 namespace ClanCats\Container\ContainerParser\Nodes;
 
+use ClanCats\Container\Exceptions\LogicalNodeException;
+
 use ClanCats\Container\ContainerParser\{
-    Nodes\ValueNode
+    Nodes\ArrayNode,
+    Nodes\ValueNode,
+    Nodes\AssignableNode
 };
 
 class ParameterDefinitionNode extends BaseNode
@@ -41,7 +45,7 @@ class ParameterDefinitionNode extends BaseNode
      * @param string        $node
      * @param ValueNode     $value
      */
-    public function __construct(string $name, ValueNode $value)
+    public function __construct(string $name, AssignableNode $value)
     {
         $this->setName($name);
         $this->setValue($value);
@@ -62,7 +66,7 @@ class ParameterDefinitionNode extends BaseNode
      * 
      * @return ValueNode
      */
-    public function getValue() : ValueNode 
+    public function getValue() : AssignableNode 
     {
         return $this->value;
     }
@@ -84,8 +88,14 @@ class ParameterDefinitionNode extends BaseNode
      * @param ValueNode             $value
      * @return void
      */
-    public function setValue(ValueNode $value)
+    public function setValue(AssignableNode $value)
     {
+        // we currently only allow Arrays & scalar values
+        // it not yet possible assign a reference to a parameter
+        if (!($value instanceof ValueNode || $value instanceof ArrayNode)) {
+            throw new LogicalNodeException("It is not possible to pass a reference of a parameter or service to a parameter definition.");
+        }
+
         $this->value = $value;
     }
 

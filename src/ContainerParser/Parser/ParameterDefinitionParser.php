@@ -53,18 +53,36 @@ class ParameterDefinitionParser extends ContainerParser
         // at this point we can skip the name and assign character
         $this->skipToken(2);
 
-        // the next token must therefor be the value
-        if (!$this->currentToken()->isValue())
+        $parameterValue = null;
+
+        // Parameters can contain an array so we need to check 
+        // for an open scope here
+        if ($this->currentToken()->isType(T::TOKEN_SCOPE_OPEN)) 
+        {
+            $parameterValue = $this->parseChild(
+                ArrayParser::class, 
+                $this->getTokensUntilClosingScope(
+                    false, 
+                    T::TOKEN_SCOPE_OPEN, 
+                    T::TOKEN_SCOPE_CLOSE
+                ), 
+                false
+            );
+        }
+        // otherwise we expect a scalar value
+        elseif ($this->currentToken()->isValue())
+        {
+            $parameterValue = ValueNode::fromToken($this->currentToken());
+            $this->skipToken();
+        }
+        else 
         {
             throw $this->errorUnexpectedToken($this->currentToken());
         }
 
         // create the definition node
-        $definition = new ParameterDefinitionNode($parameterName, ValueNode::fromToken($this->currentToken()));
+        $definition = new ParameterDefinitionNode($parameterName, $parameterValue);
         $definition->setIsOverride($isOverride);
-
-        // skip the token
-        $this->skipToken();
 
         // return the paramter definition
         return $definition;

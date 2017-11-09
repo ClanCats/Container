@@ -131,8 +131,11 @@ class ArrayParserTest extends ParserTestCase
 
     public function testArraySuperNested()
     {
-        $array = $this->arrayNodeFromCode('title: "Cookies", ingredients: {{name: "Milk", amount: "1L"}, {name: "chocolate", amount: "12gramm"}}');
+        $array = $this->arrayNodeFromCode('title: "Cookies", ingredients: {{name: "Milk", amount: "1L"}, {name: "chocolate", amount: "12gramm"}}, 34, "B": "A"');
         $elements = $array->getElements();
+
+        $this->assertCount(4, $elements);
+
         $elements = $elements[1]->getValue()->getElements();
 
         foreach ([['name', 'Milk', 'amount', '1L'], ['name', 'chocolate', 'amount', '12gramm']] as $k => list($key1, $value1, $key2, $value2)) 
@@ -145,5 +148,21 @@ class ArrayParserTest extends ParserTestCase
             $this->assertEquals($value1, $ingredient[0]->getValue()->getRawValue());
             $this->assertEquals($value2, $ingredient[1]->getValue()->getRawValue());
         }
+    }
+
+    public function testArrayMultiline()
+    {
+        $array = $this->arrayNodeFromCode("1,\n\n2,   \n3");
+        $elements = $array->getElements();
+
+        $this->assertCount(3, $elements);
+
+        // line between key & value
+        $array = $this->arrayNodeFromCode("hello: \n 'World'");
+        $elements = $array->getElements();
+
+        $this->assertCount(1, $elements);
+        $this->assertEquals('hello', $elements[0]->getKey());
+        $this->assertEquals('World', $elements[0]->getValue()->getRawValue());
     }
 }
