@@ -24,6 +24,7 @@ use ClanCats\Container\ContainerParser\Nodes\{
 
     // the nodes
     ValueNode,
+    ArrayNode,
     ScopeNode,
     ScopeImportNode,
     ParameterDefinitionNode,
@@ -125,7 +126,15 @@ class ContainerInterpreter
             throw new ContainerInterpreterException("A parameter named \"{$definition->getName()}\" is already defined, you can prefix the definition with \"override\" to get around this error.");
         }
 
-        $this->namespace->setParameter($definition->getName(), $definition->getValue()->getRawValue());
+        if ($definition->getValue() instanceof ValueNode) {
+            $this->namespace->setParameter($definition->getName(), $definition->getValue()->getRawValue());
+        } 
+        elseif ($definition->getValue() instanceof ArrayNode) {
+            $this->namespace->setParameter($definition->getName(), $definition->getValue()->convertToNativeArray());
+        }
+        else {
+            throw new ContainerInterpreterException("Invalid parameter value given for key \"{$definition->getName()}\".");
+        }
     }
 
     /**

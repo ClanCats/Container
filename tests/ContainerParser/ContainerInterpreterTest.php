@@ -9,6 +9,7 @@ use ClanCats\Container\ContainerParser\{
     ContainerInterpreter,
 
     // nodes
+    Nodes\ArrayNode,
     Nodes\ScopeNode,
     Nodes\ScopeImportNode,
     Nodes\ParameterDefinitionNode,
@@ -102,13 +103,20 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
     	$song2 = new ParameterDefinitionNode('song', new ValueNode('DAYONE', ValueNode::TYPE_STRING));
     	$song2->setIsOverride(true);
 
+        $array = new ArrayNode();
+        $array->push(new ValueNode('Edgar Wasser', ValueNode::TYPE_STRING));
+        $array->push(new ValueNode('Fatoni', ValueNode::TYPE_STRING));
+        $features = new ParameterDefinitionNode('features', $array);
+
     	$interpreter->handleParameterDefinition($artist);
     	$interpreter->handleParameterDefinition($song);
     	$interpreter->handleParameterDefinition($song2);
+        $interpreter->handleParameterDefinition($features);
 
     	$this->assertEquals([
     		'artist' => 'Juse Ju',
-    		'song' => 'DAYONE'
+    		'song' => 'DAYONE',
+            'features' => ['Edgar Wasser', 'Fatoni']
     	], $ns->getParameters());
     }
 
