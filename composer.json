@@ -15,6 +15,10 @@
         	"ClanCats\\Container\\Tests\\": "tests/"
         }
     },
-	"minimum-stability": "dev"
+	"minimum-stability": "dev",
+    "scripts": {
+        "post-autoload-dump": [
+            "ClanCats\\Container\\ComposerContainerFileLoader::generateMap"
+        ]
+    }
 }
-
