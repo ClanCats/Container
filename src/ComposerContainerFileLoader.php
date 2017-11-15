@@ -14,6 +14,13 @@ use Composer\IO\ConsoleIO;
 
 class ComposerContainerFileLoader 
 {
+    /**
+     * This method will generate a mapping file 
+     * of container files found in required composer packages.
+     * This mapping file can be imported into a container namespace.
+     *
+     * @param Event             $event
+     */
     public static function generateMap(Event $event)
     {
         // prepare the container file mapping array

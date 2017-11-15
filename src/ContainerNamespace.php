@@ -66,6 +66,25 @@ class ContainerNamespace
     }
 
     /**
+     * Import paths from vendor container map
+     *
+     * @param string                $vendorDir
+     * @return void
+     */
+    public function importFromVendor(string $vendorDir)
+    {
+        $mappingFile = $vendorDir . '/container_map.php';
+
+        if (!(file_exists($mappingFile) && is_readable($mappingFile)))
+        {
+            throw new ContainerNamespaceException("Could not find the the container map file at: " . $mappingFile);
+        }
+
+        $vendorPaths = require $mappingFile;
+        $this->paths = array_merge($vendorPaths, $this->paths);
+    }
+
+    /**
      * Does the container namespace have a parameter with the given name?
      * 
      * @param string            $name The parameter name.
