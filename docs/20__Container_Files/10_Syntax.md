@@ -19,6 +19,16 @@ The language supports the following scalar types:
 
 ### Numbers
 
+Container files do not differenciate between diffrent number types because it would be an unessesary overhead, we forward that job directly to PHP.
+
+```
+42 # Int
+42.01 # Float
+-42.12345678912345 # Double
+```
+
+That means that also the floating point precision is handled by PHP. All values are interpreted means large doubles might be stored rounded.
+
 ### Strings
 
 Strings must always be encapsulated with a single `'` or double `"` quote. This serves mainly a comfort purpose when having many quotes inside your string not having to escape them all.
@@ -34,6 +44,20 @@ Beloved or Hated emojis will also work just fine.
 ```
 :snails: '🐌🐌🐌'
 ```
+
+### Booleans and Null
+
+There is not much to say about them:
+
+```
+:nothing: null
+```
+
+```
+:positive: true
+:negative: false
+```
+
 
 ### Arrays
 
