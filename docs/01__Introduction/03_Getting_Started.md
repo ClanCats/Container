@@ -23,7 +23,7 @@ Just like in the README the target directory structure will look like this:
 ```
 app.php
 app.ctn # this will be our container file.
-app_config.ctn
+config.ctn # this will be our configuration file.
 composer.json
 cache/ # make sure this is writable
 src/
@@ -43,7 +43,7 @@ $container = $factory->create('AppContainer', function($builder)
 {
     // create a new container file namespace and parse our `app.ctn` file.
     $namespace = new \ClanCats\Container\ContainerNamespace([
-        'config' => __DIR__ . '/app_config.ctn',
+        'config' => __DIR__ . '/config.ctn',
     ]);
     $namespace->parse(__DIR__ . '/app.ctn');
 
@@ -74,7 +74,7 @@ Read more about this here: [Container Factory](docs://@todo/)
 
 ```php 
 $namespace = new \ClanCats\Container\ContainerNamespace([
-    'config' => __DIR__ . '/app_config.ctn',
+    'config' => __DIR__ . '/config.ctn',
 ]);
 ```
 
@@ -117,9 +117,9 @@ echo $container->getParameter('firstname');
 
 ## Importing 
 
-You might have noticed that in the setup there are two `ctn` files mentioned. Let's go on and create the `app_config.ctn`.
+You might have noticed that in the setup there are two `ctn` files mentioned. Let's go on and create the `config.ctn`.
 
-Inside the `app_config.ctn` we define another parameter:
+Inside the `config.ctn` we define another parameter:
 
 ```ctn
 :missions.available: {
@@ -128,6 +128,7 @@ Inside the `app_config.ctn` we define another parameter:
 }
 ```
 
+If we know would try to access `missions.available`, we would get `null`. That's because we need to import our `config.ctn` into our main `app.ctn`. doing so is simple:
 
 ```ctn
 import config
@@ -137,7 +138,7 @@ import config
 :code: 007
 ```
 
-Remember where we constructed the container namespace? We defined the name of the `app_config.ctn` to be simply `config`.
+Remember where we constructed the container namespace? We defined the name of the `config.ctn` to be simply `config`.
 
 This particular example (with firstname, lastname) might seem a bit useless, well ok, it is useless.
 I like to separate configuration from the service definitions using imports are a neat way to do so.
