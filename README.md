@@ -147,7 +147,7 @@ The variable `$container` contains now a class instance named `AppContainer`.
 echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
 ```
 
-## ToDo
+## ToDo / feature whishlist
 
 - Container Files
   - [ ] Metadata support
@@ -164,7 +164,7 @@ echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
   - [ ] Parameter concatination
   - [ ] Input Parameters (used for env detection)
   - [ ] Late service override (allow for adding meta or arguments) 
-  - [ ] Binding macros
+  - [ ] macros
 - Container
   - [ ] Metadata support
   - [ ] Property injection
