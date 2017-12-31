@@ -181,6 +181,10 @@ $container->release('db.connection');
 
 ### Remove service
 
+```php
+$container->remove('kernel'); // dangerous?
+```
+
 This will if possible release the resolevd instance and remove the service definition from the container. 
 
 > Note: This will also work for compiled service definitions!
