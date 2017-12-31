@@ -85,6 +85,14 @@ prefix log.
 	@mongo.adapter: MongoDB
 }
 
+macro ControllerAction(name, service_class)
+{
+	@action.{name}: {service_class}(@payload)
+		=> tags: "Action"
+		- setContainer(@container)
+}
+
+ControllerAction(login, Actions/Auth/Login)
 
 when using DBTrait
 	- setMysql(@mysql)
