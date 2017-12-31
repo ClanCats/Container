@@ -155,7 +155,7 @@ echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
   - [ ] Use PHP namespace support
   - [ ] Prototype service support
   - [ ] Factory Support
-  - [ ] Array Support
+  - [x] Array Support
   - [ ] Override stack (meta and calls)
   - [ ] Autowiring by "using trait"
   - [ ] Autowiring by "instance of"
@@ -164,6 +164,7 @@ echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
   - [ ] Parameter concatination
   - [ ] Input Parameters (used for env detection)
   - [ ] Late service override (allow for adding meta or arguments) 
+  - [ ] Binding macros
 - Container
   - [ ] Metadata support
   - [ ] Property injection

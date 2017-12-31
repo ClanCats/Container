@@ -99,7 +99,7 @@ Finally we feed our namespace into the builder object.
 
 ## Parameters
 
-Parameters are always prefixed with a `:` character and can be defined in any order. They can hold scalar values (array support is also planned.) when defined inside of a `ctn` file. Technically there is no limitation on what a parameter can contain, you can set a parameter containing anything you want manually with the `setParamter` method.
+Parameters are always prefixed with a `:` character and can be defined in any order. They can hold scalar values and arrays when defined inside of a `ctn` file. Technically the container has no limitation on what a parameter can contain, you can set a parameter containing anything you want manually with the `setParamter` method.
 
 Now in the `app.ctn` define some parameter like this:
 
@@ -122,10 +122,13 @@ You might have noticed that in the setup there are two `ctn` files mentioned. Le
 Inside the `app_config.ctn` we define another parameter:
 
 ```ctn
-:active: true
+:missions.available: {
+    'Goldeneye',
+    'Goldfinger',    
+}
 ```
 
-If we know would try to access `active`, we would get `null`. That's because we need to import our `app_config.ctn` into our main `app.ctn`. doing so is simple:
+If we know would try to access `missions.available`, we would get `null`. That's because we need to import our `app_config.ctn` into our main `app.ctn`. doing so is simple:
 
 ```ctn
 import config
