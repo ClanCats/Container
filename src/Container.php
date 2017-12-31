@@ -116,7 +116,7 @@ class Container
     }
 
     /**
-     * Returns an array of all available servic keys.
+     * Returns an array of all available service keys.
      * 
      * @return array[string]
      */
