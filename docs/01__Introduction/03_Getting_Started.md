@@ -128,7 +128,6 @@ Inside the `app_config.ctn` we define another parameter:
 }
 ```
 
-If we know would try to access `missions.available`, we would get `null`. That's because we need to import our `app_config.ctn` into our main `app.ctn`. doing so is simple:
 
 ```ctn
 import config
