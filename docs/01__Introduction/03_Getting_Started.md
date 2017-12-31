@@ -70,7 +70,8 @@ $container = $factory->create('AppContainer', function($builder)
 
 The `create` method as you probably already guessed is where the container instance is being created. The first argument is the class name. Namespaces are supported so you could also set it to something like `Acme\MainBundle\MainContainer`. As a second parameter, we have a callback where we define what the container should actually contain.
 
-Read more about this here: [Container Factory](docs://@todo/) & [Container Builder](docs://@todo/)
+> Note: Read more about this here: [Container Factory](docs://@todo/) &
+> [Container Factory](docs://@todo/)
 
 ```php 
 $namespace = new \ClanCats\Container\ContainerNamespace([
