@@ -70,7 +70,7 @@ $container = $factory->create('AppContainer', function($builder)
 
 The `create` method as you probably already guessed is where the container instance is being created. The first argument is the class name. Namespaces are supported so you could also set it to something like `Acme\MainBundle\MainContainer`. As a second parameter, we have a callback where we define what the container should actually contain.
 
-Read more about this here: [Container Factory](docs://@todo/)
+Read more about this here: [Container Factory](docs://@todo/) & [Container Builder](docs://@todo/)
 
 ```php 
 $namespace = new \ClanCats\Container\ContainerNamespace([
@@ -81,11 +81,13 @@ $namespace = new \ClanCats\Container\ContainerNamespace([
 Okay so what the hell is a container namespace? 
 Well, look at it as a little application with its own file structure. The container namespace defines this file structure. `config` is not a special key, it's just a name we assign to a file that should be accessible in your container files/scripts.
 
+Now we have to parse the main file.
+
 ```php
 $namespace->parse(__DIR__ . '/app.ctn');
 ```
 
-Now we have to parse the main file. All parsed data is now assigned to our namespace instance.
+All parsed data (servies, parameters) is now assigned to our namespace instance.
 
 Read more about this here: [Container Namepsace](docs://@todo/)
 
@@ -95,11 +97,11 @@ $builder->importNamespace($namespace);
 
 Finally we feed our namespace into the builder object.
 
-> Note: Before we continue here, check out **[Container File Syntax](docs://container-files/syntax)**. There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
+> Note: Before we continue here, you might want to check out **[Container File Syntax](docs://container-files/syntax)**. There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
 
 ## Parameters
 
-Parameters are always prefixed with a `:` character and can be defined in any order. They can hold scalar values and arrays when defined inside of a `ctn` file. Technically the container has no limitation on what a parameter can contain, you can set a parameter containing anything you want manually with the `setParamter` method.
+Parameters are always prefixed with a `:` character and can be defined in any order. When defined inside of a `ctn` file, they can hold scalar values and arrays. Technically the container has no limitation on what a parameter can contain, you can set a parameter containing anything you want manually with the `setParamter` method.
 
 Now in the `app.ctn` define some parameter like this:
 
@@ -140,8 +142,8 @@ import config
 
 Remember where we constructed the container namespace? We defined the name of the `config.ctn` to be simply `config`.
 
-This particular example (with firstname, lastname) might seem a bit useless, well ok, it is useless.
-I like to separate configuration from the service definitions using imports are a neat way to do so.
+This particular example (with firstname, lastname) might seem a bit useless.
+I like to separate configuration from the service definitions, using imports are a neat way to do so.
 
 ## Service definitions
 
