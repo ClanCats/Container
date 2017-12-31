@@ -6,17 +6,61 @@ Container files are written in very simple meta language.
 
 The language supports the following scalar types:
 
- * **strings** Single and double quoted. 
+ * **Strings** Single and double quoted. <br>
    `'hello'` & `"world"`
- * **numbers** float / double, int.
+ * **Numbers** float / double, int. <br>
     `3.14`, `42`
- * **booleans** `true` and `false`.
- * **null**
+ * **Booleans** <br>
+ 	`true` and `false`.
+ * **Null** <br>
     `null`
+ * **Arrays** list and associative. <br>
+   `{'A', 'B', 'C'}`, `{'A': 10, 'B': 20}`
+
+### Numbers
+
+### Strings
+
+Strings must always be encapsulated with a single `'` or double `"` quote. This serves mainly a comfort purpose when having many quotes inside your string not having to escape them all.
+
+Escaping of special characters works just the usual way. 
+
+```
+:say: 'Hello it\'s me!'`
+```
+
+Beloved or Hated emojis will also work just fine. 
+
+```
+:snails: '🐌🐌🐌'
+```
+
+### Arrays
+
+Its important to notice that all arrays are internally associative. When defining a simple list the associative key is automatically generated and represents the items index.
+
+This means that the array `{'A', 'B'}` equals `{0: 'A', 1: 'B'}`.
+
+Arrays can be defined multidimensional:
+
+```yml
+{
+	'title': 'Some catchy title with Star Wars',
+	'tags': {'top10', 'movies', 'space'},
+	'body': 'Lorem ipsum ...',
+	'comments': 
+	{
+		{
+			'text': 'Awesome!',
+			'by': 'Some Dude',
+		}
+	}
+}
+```
 
 ## Parameters
 
-Parameters or configuration values can also be defined inside the container files. Currently its only possible to assign scalar values to a parameter. Array will probably follow in a future release.
+Parameters or configuration values can also be defined inside the container files. 
 
 A parameter is always prefixed with a `:` character.
 
