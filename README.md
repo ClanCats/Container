@@ -16,7 +16,7 @@ _Requires PHP >= 7.0_
 **Features:**
 
  * **Singleton** and **prototype** service resolvers.
- * A container builder allowing to **compile** your service definitions.
+ * A container builder allowing to **compile/serialize** your service definitions.
  * _Container files_ featuring a **meta language** to define your services.
  * **Composer** integration, allowing you to import default service definitions from your dependencies.
  * **Lazy service providers** for big and dynamic class graphs.
@@ -24,8 +24,10 @@ _Requires PHP >= 7.0_
 **Cons:**
 
  * Container allows **only** named services.
- * Currently **no** auto wiring.
+ * Currently **no** auto wiring support.
  * Obviously **no** IDE Support for _container files_.
+ * Having a meta language might not meet everyones taste.
+ * Does not depend on the PSR-11 dependency, you also might take this as a Pro.
 
 ## Why should I use this? 
 
@@ -33,7 +35,7 @@ Don't, at least not at this stage. The container is not battle tested and is onl
 
 ## Performance
 
-This package might seem very heavy for a service container, but after a short warmup the compiled container is blazing fast and has almost no overhead (3 Classes). Binding and resolving services dynamically is slower but still won't impact performance in real world application.
+This package might seem very heavy for a service container, but after a short warmup the compiled container is blazing fast and has almost no overhead (3 classes/files). Binding and resolving services dynamically is slower but still won't impact performance in real world application.
 
 ## Installation
 
