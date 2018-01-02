@@ -47,11 +47,11 @@ $ composer require clancats/container
 
 ## Documentation 💡
 
-The full documentation can be found on [clancats.io](http://clancats.io/container/master/introduction/getting-started)
+The full documentation can be found on [clancats.io](https://clancats.io/container/master/introduction/getting-started)
 
 ## Quick Start ⚡️
 
-Following is just a really rough example, a much more detailed and explained guide can be found here: [Getting Started](http://clancats.io/container/master/introduction/getting-started)
+Following is just a really rough example, a much more detailed and explained guide can be found here: [Getting Started](https://clancats.io/container/master/introduction/getting-started)
 
 ### Setup 
 
@@ -105,7 +105,7 @@ class SpaceShip
 
 A container file allows you to bind your services & parameters using a simple meta language. 
 
-> Note: This feature is entirely optional if you prefer binding your services in PHP itself read: [Service Binding](http://clancats.io/container/master/service-binding/basics)
+> Note: This feature is entirely optional if you prefer binding your services in PHP itself read: [Service Binding](https://clancats.io/container/master/advanced/service-binding)
 
 Create a new file called `app.container` in your applications root folder. 
 

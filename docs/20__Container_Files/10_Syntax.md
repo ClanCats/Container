@@ -128,7 +128,7 @@ Arguments can reference a parameter or service.
 ```yml
 @mysql: MySQLAdapter('localhost', 'root', '')
 
-@repository.posts: Repositories/Post(@mysql);
+@repository.posts: Repositories/Post(@mysql)
 ```
 
 ### Method calls
