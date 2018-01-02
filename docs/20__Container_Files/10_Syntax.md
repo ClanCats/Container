@@ -58,7 +58,6 @@ There is not much to say about them:
 :negative: false
 ```
 
-
 ### Arrays
 
 Its important to notice that all arrays are internally associative. When defining a simple list the associative key is automatically generated and represents the items index.
@@ -108,31 +107,61 @@ The class name can contain the full namespace.
 ```yml
 @log.adapter: Acme\Log\FileAdapter
 ```
-
-When having really long namespaces this can get messy. Just like in PHP you can `use` namespaces.
-
-```yml
-use Acme\Log\FileAdapter
-
-@log.adapter: FileAdapter
-```
-
-To keep things clean you can `use` multiple classes from one namespace just like in PHP7. _(Note the diffrent braces.)_
-
-```yml
-use Acme\Log\(
-    Logger,
-    FileAdapter
-)
-
-@log: Logger
-@log.adapter: FileAdapter
-````
-
 ### Constructor
 
 Constructor arguments can be passed after the class name. 
 
 ```yml
 @dude: Person("Jeffery Lebowski")
+```
+
+#### Referenced arguments
+
+Arguments can reference a parameter or service.
+
+```yml
+:name: 'Jeffery Lebowski'
+
+@dude: Person(:name)
+```
+
+```yml
+@mysql: MySQLAdapter('localhost', 'root', '')
+
+@repository.posts: Repositories/Post(@mysql);
+```
+
+### Method calls
+
+Method calls can be assigned to a service definition.
+
+```yml
+@jones: Person('Duncan Jones')
+@sam: Person('Sam Rockwell')
+
+@movie.moon: Movie('Moon')
+  - setDirector(@jones)
+  - addCast(@sam)
+  - setTags({'Sci-fi', 'Space'})
+```
+
+## Imports
+
+Other container files can be imported from the container namespace.
+
+```yml
+import config
+import app/dashboard
+import app/user
+import app/shop
+```
+
+## Overriding 
+
+Services and Parameters have been explicit overwritten if they have already been defined.
+
+```
+:ship: 'Star Destroyer'
+
+override :ship: 'X-Wing'
 ```
