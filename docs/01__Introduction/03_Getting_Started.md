@@ -6,7 +6,7 @@ Hey there, this is the more detailed version of the Quick Start found in the [RE
 
 ## Choosing the implementation
 
-Of course how you implement the service container is completely up to you but you should at least decide if you want to compile the dependency graph or not. It is possible to mix a compiled container with dynamic service definitions but for the love of consistent structuring things, your really should stick with one way.
+Of course how you implement the service container is completely up to you but you should at least decide if you want to compile the dependency graph or not. It is possible to mix a compiled container with dynamic service definitions but for the love of consistent structuring things, you really should stick with one way.
 
 You can read more about different types of implementations here:
 
@@ -23,7 +23,7 @@ Just like in the README the target directory structure will look like this:
 ```
 app.php
 app.ctn # this will be our container file.
-config.ctn # this will be our configuration file.
+config.ctn # this will be our configuration file.
 composer.json
 cache/ # make sure this is writable
 src/
@@ -79,7 +79,7 @@ $namespace = new \ClanCats\Container\ContainerNamespace([
 ]);
 ```
 
-Okay so what the hell is a container namespace? 
+Okay, so what the hell is a container namespace? 
 Well, look at it as a little application with its own file structure. The container namespace defines this file structure. `config` is not a special key, it's just a name we assign to a file that should be accessible in your container files/scripts.
 
 Now we have to parse the main file.
@@ -88,15 +88,15 @@ Now we have to parse the main file.
 $namespace->parse(__DIR__ . '/app.ctn');
 ```
 
-All parsed data (servies, parameters) is now assigned to our namespace instance.
+All parsed data (services, parameters) is now assigned to our namespace instance.
 
-Read more about this here: [Container Namepsace](docs://@todo/)
+Read more about this here: [Container Namespace](docs://@todo/)
 
 ```php 
 $builder->importNamespace($namespace);
 ```
 
-Finally we feed our namespace into the builder object.
+Finally, we feed our namespace into the builder object.
 
 > Note: Before we continue here, you might want to check out **[Container File Syntax](docs://container-files/syntax)**. There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
 
@@ -143,7 +143,7 @@ import config
 
 Remember where we constructed the container namespace? We defined the name of the `config.ctn` to be simply `config`.
 
-This particular example (with firstname, lastname) might seem a bit useless.
+This particular example (with first name, last name) might seem a bit useless.
 I like to separate configuration from the service definitions, using imports are a neat way to do so.
 
 ## Service definitions
@@ -212,7 +212,7 @@ Often we don't want to hardcode the constructor arguments, that's where paramete
 
 But we still can not refuel our engine without a mechanic. This brings us to the next example.
 
-### Example Setup – Human
+### Example Set Up – Human
 
 The second example class will be a Human with only one argument in the constructor which represents the name. 
 
@@ -257,125 +257,3 @@ $hyperdrive->refuel(1000);
 echo 'current fuel: ' . $hyperdrive->getFuel() . PHP_EOL; // 8500
 ```
 
-## Choosing the implementation
-
-Of course how you implement the service container is completely up to you but you should at least decide if you want to compile the dependency graph or not. It is possible to mix a compiled container with dynamic service definitions but for the love of structuring things you really should stick with one way.
-
-
-The key difference between 
-
-please consider the following setup.
-
-We have 3 _Classes_: `SpaceShip`, `Engine` and `Company`:
-
-```php
-class SpaceShip 
-{
-    public $engine;
-    public $producer;
-
-    public function __construct(Engine $engine, Company $producer)
-    {
-        $this->engine = $engine;
-        $this->producer = $producer;
-    }
-}
-```
-
-Our beautiful `SpaceShip` knows two dependencies, _1._ Its engine and _2._ The company who built it.
-
-```php
-class Engine 
-{
-    public $power = 10;
-
-    public function setPower(int $power) : void
-    {
-        $this->power = $power;
-    }
-}
-```
-
-The engine object has no constructor arguments, but is able to mutate its power using the `setPower` method.
-
-```php
-class Company 
-{
-    public $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
-}
-```
-And finally the company object constructs with a _string_ which represents the company's name.
-
-## Usage
-
-Create a new instance of the base container:
-
-```php
-use ClanCats\Container\Container;
-
-$contanier = new Container();
-```
-
-Note: Use the `ContainerFactory` to make use of the compilable `ContainerBuilder`.
-
-```php
-$contanier->bind('producer', Company::class)
-    ->arguments(['Massive Industries']);
-```
-
-Binds the company service under the name `producer` and add the constructor argument "Massive Industries".
-
-```php
-echo $container->get('producer')->name; // "Massive Industries"
-```
-
-Bind the rest.
-
-```php
-// bind the pulsedrive engine and set the power
-// the boolean flag at the end indicated that this is 
-// NOT a shared service.
-$contanier->bind('pulsedrive', Engine::class, false)
-    ->calls('setPower', [20]);
-
-// bind a "shuttle" spaceship, inject the pulsedrive and 
-// set the producer company 
-$contanier->bind('shuttle', SpaceShip::class, false)
-    ->arguments(['@pulsedrive', '@producer']);
-```
-
-When we are all set we can start creating shuttles:
-
-```php
-$jumper1 = $container->get('shuttle');
-$jumper2 = $container->get('shuttle');
-
-// note: the producer is binded as
-$jumper1->producer === $jumper1->producer; // true
-```
-
-Bind the captain to the service container.
-
-```php
-$contanier->bind('malcolm', \Human::class)
-    ->calls('setName', ['Reynolds']);
-
-$container->get('malcolm'); // returns \Human instance
-```
-And what is a captain without his ship?..
-
-```php
-$contanier->bind('firefly', \SpaceShip::class)
-    ->arguments(['@malcolm']);
-```
-
-The `@` character tells the container to resolve the dependency named *malcolm*.
-
-```php
-echo $container->get('firefly')->ayeAye(); // aye aye captain Reynolds
-```
