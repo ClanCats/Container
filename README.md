@@ -31,7 +31,7 @@ _Requires PHP >= 7.0_
 
 ## Why should I use this? 
 
-Don't, at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or brake functionality. Feel free to try this out on small side projects. Obviously, I really appreciate everyone who wants to sacrifice their time to contribute.
+Don't, at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or break functionality. Feel free to try this out on small side projects. Obviously, I really appreciate everyone who wants to sacrifice their time to contribute.
 
 ## Performance
 
