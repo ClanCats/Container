@@ -4,7 +4,7 @@
 
 # ClanCats Container
 
-A PHP Service Container featuring a simple meta language with fast and compilable dependency injection. 
+A PHP Service Container featuring a simple meta-language with fast and compilable dependency injection. 
 
 [![Build Status](https://travis-ci.org/ClanCats/Container.svg?branch=master)](https://travis-ci.org/ClanCats/Container)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/container.svg)](https://packagist.org/packages/clancats/container)
@@ -26,16 +26,16 @@ _Requires PHP >= 7.0_
  * Container allows **only** named services.
  * Currently **no** auto wiring support.
  * Obviously **no** IDE Support for _container files_.
- * Having a meta language might not meet everyones taste.
+ * Having a meta-language might not meet everyone's taste.
  * Does not depend on the PSR-11 dependency, you also might take this as a Pro.
 
 ## Why should I use this? 
 
-Don't, at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or break functionality. Feel free to try this out on small side projects. Obviously, I really appreciate everyone who wants to sacrifice their time to contribute.
+Don't, at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or break functionality. Feel free to try this out on small side projects. Obviously, I appreciate everyone who wants to sacrifice their time to contribute.
 
 ## Performance
 
-This package might seem very heavy for a service container, but after a short warmup the compiled container is blazing fast and has almost no overhead (3 classes/files). Binding and resolving services dynamically is slower but still won't impact performance in real world application.
+This package might seem very heavy for a service container, but after a short warmup the compiled container is blazing fast and has almost no overhead (3 classes/files). Binding and resolving services dynamically is slower but still won't impact performance in real-world application.
 
 ## Installation
 
@@ -51,11 +51,11 @@ The full documentation can be found on [clancats.io](https://clancats.io/contain
 
 ## Quick Start ⚡️
 
-Following is just a really rough example, a much more detailed and explained guide can be found here: [Getting Started](https://clancats.io/container/master/introduction/getting-started)
+Following is just a rough example, a much more detailed and explained guide can be found here: [Getting Started](https://clancats.io/container/master/introduction/getting-started)
 
 ### Setup 
 
-Our target directy structure will look like this:
+Our target directory structure will look like this:
 
 ```
 app.php
@@ -69,7 +69,7 @@ src/
 
 ### Services
 
-To demenstrate how to use this service container we need to create two classes a `SpaceShip` and a `Human`.
+To demonstrate how to use this service container we need to create two classes a `SpaceShip` and a `Human`.
 
 Create a new php file `src/Human.php`:
 
@@ -103,7 +103,7 @@ class SpaceShip
 
 ### Container file
 
-A container file allows you to bind your services & parameters using a simple meta language. 
+A container file allows you to bind your services & parameters using a simple meta-language. 
 
 > Note: This feature is entirely optional if you prefer binding your services in PHP itself read: [Service Binding](https://clancats.io/container/master/advanced/service-binding)
 
@@ -118,7 +118,7 @@ Create a new file called `app.container` in your applications root folder.
 
 ### Container factory
 
-Now we need to parse the container file and compile it as a new class. For this task we create the `app.php` file. There you need to **require the composer autoloader** and require your source files or configure composer to autload the classes from the `src/` directory.
+Now we need to parse the container file and compile it as a new class. For this task, we create the `app.php` file. There you need to **require the composer autoloader** and require your source files or configure composer to autoload the classes from the `src/` directory.
 
 ```php
 require "vendor/autoload.php";
