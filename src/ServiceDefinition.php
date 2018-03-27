@@ -99,6 +99,13 @@ class ServiceDefinition implements ServiceDefinitionInterface
     protected $methodCallers = [];
 
     /**
+     * Meta data for this service definition
+     *
+     * @var array[string => array]  
+     */
+    protected $metaData = [];
+
+    /**
      * Construct a new service definition with the given classname and optional arguments as array.
      * 
      * @param string            $className The full class name of the desired service.
@@ -206,5 +213,31 @@ class ServiceDefinition implements ServiceDefinitionInterface
     public function getMethodCalls() : array
     {
         return $this->methodCallers;
+    }
+
+    /**
+     * Sets meta data for the given key
+     *
+     * @param string        $key
+     * @param array         $values
+     * @return self
+     */
+    public function addMetaData(string $key, array $values)
+    {
+        if (!isset($this->metaData[$key])) {
+            $this->metaData[$key] = [];
+        }
+
+        $this->metaData[$key][] = $values; return $this;
+    }
+
+    /**
+     * Get all metadata of the service definition
+     *
+     * @return array 
+     */
+    public function getMetaData() : array
+    {
+        return $this->metaData;
     }
 }   

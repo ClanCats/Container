@@ -137,5 +137,22 @@ class ServiceFactoryTest extends \PHPUnit\Framework\TestCase
         $container->bind('demo', new CarFactory('t8'), true);
 
         $this->assertEquals(300, $container->get('diesel')->engine->power);
-    } 
+    }
+
+    public function testMetaData()
+    {
+        $factory = new ServiceFactory('\\Acme\\Demo');
+
+        $factory->addMetaData('tags', ['Foo']);
+        $factory->addMetaData('tags', ['Bar']);
+        $factory->addMetaData('tags', ['Another Tag']);
+
+        $factory->addMetaData('routing', ['GET', '/demo']);
+
+        $this->assertCount(2, $factory->getMetaData());
+        $this->assertEquals([
+            'tags' => [['Foo'], ['Bar'], ['Another Tag']],
+            'routing' => [['GET', '/demo']]
+        ], $factory->getMetaData());
+    }
 }
