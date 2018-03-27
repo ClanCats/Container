@@ -327,6 +327,7 @@ class ContainerBuilder
         $buffer .= "class $this->containerClassName extends $aliasContainerName {\n\n";
 
         $buffer .= $this->generateParameters() . "\n";
+        $buffer .= $this->generateMetaData() . "\n";
         $buffer .= $this->generateResolverTypes() . "\n";
         $buffer .= $this->generateResolverMappings() . "\n";
         $buffer .= $this->generateResolverMethods() . "\n";
@@ -414,6 +415,40 @@ class ContainerBuilder
     private function generateParameters() : string
     {
         return "protected \$parameters = " . var_export($this->parameters, true) . ";\n";
+    }
+
+    /**
+     * Generate the containers parameter property
+     * 
+     * @return string 
+     */
+    private function generateMetaData() : string
+    {
+        $metaData = [];
+        $metaDataService = [];
+
+        foreach($this->services as $serviceName => $serviceDefinition)
+        {
+            foreach($serviceDefinition->getMetaData() as $key => $serviceMetaData)
+            {
+                if (!isset($metaData[$key])) {
+                    $metaData[$key] = [];
+                }
+
+                $metaData[$key][$serviceName] = $serviceMetaData;
+
+                // mapping for the service centered
+                if (!isset($metaDataService[$serviceName])) {
+                    $metaDataService[$serviceName] = [];
+                }
+
+                if (!in_array($key, $metaDataService[$serviceName])) {
+                    $metaDataService[$serviceName][] = $key;
+                }
+            }
+        }
+
+        return "protected \$metadata = " . var_export($metaData, true) . ";\nprotected \$metadataService = " . var_export($metaDataService, true) . ";\n";
     }
 
     /**

@@ -32,6 +32,7 @@ use ClanCats\Container\ContainerParser\Nodes\{
     ParameterReferenceNode,
     ServiceReferenceNode,
     ServiceMethodCallNode,
+    MetaDataAssignmentNode,
     ArgumentArrayNode
 };
 
@@ -239,6 +240,24 @@ class ContainerInterpreter
             else 
             {
                 throw new ContainerInterpreterException("Invalid construction action of type \"" . get_class($action) . "\" given.");
+            }
+        }
+
+        // handle meta data
+        foreach($definition->getMetaDataAssignemnts() as $meta)
+        {
+            if ($meta instanceof MetaDataAssignmentNode)
+            {
+                if ($meta->hasData()) 
+                {
+                    $service->addMetaData($meta->getKey(), $meta->getData()->convertToNativeArray());
+                } else {
+                    $service->addMetaData($meta->getKey(), []);
+                }
+            }
+            else 
+            {
+                throw new ContainerInterpreterException("Invalid meta data assignment \"" . get_class($meta) . "\" given.");
             }
         }
 
