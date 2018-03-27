@@ -229,12 +229,12 @@ class ContainerParser
         }
 
         while (!$this->parserIsDone() && !in_array($this->currentToken()->getType(), $type)) 
-        { 
+        {
             // if scopes should be ignored, we need to check if the current 
             // token opens one an then get all tokens inside the scope
-            if ($ignoreScopes && $this->currentToken()->isType(T::TOKEN_BRACE_OPEN)) 
+            if ($ignoreScopes && $this->currentToken()->isType(T::TOKEN_SCOPE_OPEN)) 
             {
-                foreach($this->getTokensUntilClosingScope(true) as $token) {
+                foreach($this->getTokensUntilClosingScope(true, T::TOKEN_SCOPE_OPEN, T::TOKEN_SCOPE_CLOSE) as $token) {
                     $tokens[] = $token;
                 }
             } else {
