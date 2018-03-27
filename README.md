@@ -168,7 +168,7 @@ echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
   - [ ] Late service override (allow for adding meta or arguments) 
   - [ ] macros
 - Container
-  - [ ] Metadata support
+  - [x] Metadata support
   - [ ] Property injection
   - [ ] Call stacks
 
