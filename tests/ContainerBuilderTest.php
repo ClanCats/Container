@@ -230,6 +230,24 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
 ))", $builder->generate());
     }
 
+    /**
+     * @todo optimize this test...
+     */
+    public function testGenerateMetaData()
+    {
+        $builder = new ContainerBuilder('TestContainer');
+
+        $engineDefinition = ServiceDefinition::for(Engine::class);
+        $engineDefinition->addMetaData('tags', ['Foo']);
+        $engineDefinition->addMetaData('tags', ['Bar']);
+        $builder->addService('engine', $engineDefinition);
+
+        $this->assertContains("\$metadata = array", $builder->generate());
+        $this->assertContains("'tags' =>", $builder->generate());
+        $this->assertContains("'engine' =>", $builder->generate());
+        $this->assertContains("0 => 'Foo',", $builder->generate());
+    }
+
     public function testGenerateResolverTypes()
     {
         $builder = new ContainerBuilder('TestContainer');
