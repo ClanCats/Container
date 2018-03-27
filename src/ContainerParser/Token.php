@@ -56,6 +56,7 @@ class Token
     const TOKEN_SEPERATOR = 19;
     const TOKEN_PROTOTYPE = 20;
     const TOKEN_IDENTIFIER = 21;
+    const TOKEN_EQUAL = 22;
 
     /**
      * The constructor
