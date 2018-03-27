@@ -69,6 +69,24 @@ class Container
     protected $resolvedSharedServices = [];
 
     /**
+     * The actual metadata by key & service name
+     *
+     *    [metakey][service] = [[meta array], [meta array]]
+     * 
+     * @var array[string => array]
+     */
+    protected $metadata = [];
+
+    /**
+     * List of metadata keys by service name
+     *
+     *    [service] = [metakey array]
+     *
+     * @var string[array]
+     */
+    protected $metadataService = [];
+
+    /**
      * Construct a new container instance with inital parameters.
      * 
      * @param array                 $initalParameters Array of inital parameters.
@@ -114,6 +132,123 @@ class Container
     {
         $this->parameters[$name] = $value;
     }
+
+    /**
+     * Get the metadata of a specific service
+     *
+     * @param string            $serviceName
+     */
+    public function getMetaData(string $serviceName, string $key) : array
+    {
+        return $this->metadata[$key][$serviceName] ?? [];
+    }
+
+    /**
+     * Get the metadata keys of the given service
+     *
+     * @param string            $serviceName
+     */
+    public function getMetaDataKeys(string $serviceName) : array
+    {
+        return $this->metadataService[$serviceName];
+    }
+
+    /**
+     * Make sure the metadata and key are linked both ways.
+     *
+     * @param string            $serviceName
+     * @param string            $key
+     * @return void 
+     */
+    private function linkMetaService(string $serviceName, string $key) 
+    {
+        // make sure the service link is there
+        if (!isset($this->metadataService[$serviceName])) {
+            $this->metadataService[$serviceName] = [];
+        }
+
+        if (!in_array($key, $this->metadataService[$serviceName])) {
+            $this->metadataService[$serviceName][] = $key; 
+        }
+    }
+
+    /**
+     * Set metadata for a specific service
+     * This will override all meta data matching service and key.
+     *
+     * @param string            $serviceName
+     * @param string            $key
+     * @param array             $values multidimensional array
+     *
+     * @return void
+     */
+    public function setMetaData(string $serviceName, string $key, array $values)
+    {
+        // make sure the service exists
+        if (!$this->has($serviceName)) { 
+            throw new UnknownServiceException('There is no service named "' . $serviceName . '" specified.'); 
+        }
+
+        // make sure all elements are arrays
+        foreach($values as $value) 
+        {
+            if (!is_array($value)) {
+                throw new ContainerException('Every meta data value must be an array. "' . gettype($value) . '" given.');
+            }
+        }
+
+        // make sure the metadata key is allocated
+        if (!isset($this->metadata[$key])) {
+            $this->metadata[$key] = [];
+        }
+
+        // write
+        $this->metadata[$key][$serviceName] = $values;
+        $this->linkMetaService($serviceName, $key);
+    }
+
+    /**
+     * Same as `setMetaData` but will append the data instead of overriding.
+     *
+     * @param string            $serviceName
+     * @param string            $key
+     * @param array             $values
+     *
+     * @return void
+     */
+    public function addMetaData(string $serviceName, string $key, array $values)
+    {
+        // make sure the service exists
+        if (!$this->has($serviceName)) {
+            throw new UnknownServiceException('There is no service named "' . $serviceName . '" specified.'); 
+        }
+
+        // make sure the metadata key is allocated
+        if (!isset($this->metadata[$key])) {
+            $this->metadata[$key] = [];
+        }
+
+        // make sure the service key is allocated
+        if (!isset($this->metadata[$key][$serviceName])) {
+            $this->metadata[$key][$serviceName] = [];
+        }
+
+        // append
+        $this->metadata[$key][$serviceName][] = $values;
+        $this->linkMetaService($serviceName, $key);
+    }
+
+    /**
+     * Get an array of service names that have metadata with the given key
+     *
+     * @param string            $key The metadata key
+     * @return array
+     */
+    public function serviceNamesWithMetaData(string $key) : array
+    {
+        return $this->metadata[$key] ?? []; 
+    }
+
 
     /**
      * Returns an array of all available service keys.

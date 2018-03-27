@@ -355,4 +355,115 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($container->has('car'));
 
     }
+
+    public function testSetMetaData() 
+    {
+        $container = new Container();
+
+        $container->bind('car', function($c) 
+        {
+            return new Car($c->get('engine'));
+        });
+
+        $container->setMetaData('car', 'tags', [['Cars']]);
+
+        $this->assertEquals([['Cars']], $container->getMetaData('car', 'tags'));
+
+        // make sure data is beeing overridden
+
+        $container->setMetaData('car', 'tags', [['Ships']]);
+
+        $this->assertEquals([['Ships']], $container->getMetaData('car', 'tags'));
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\ContainerException
+     */
+    public function testSetMetaDataInvalidArray() 
+    {
+        $container = new Container();
+
+        $container->bind('car', function($c) 
+        {
+            return new Car($c->get('engine'));
+        });
+
+        $container->setMetaData('car', 'tags', ['this', 'is', 'not', 'an', 'array']);   
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\UnknownServiceException
+     */
+    public function testSetMetaDataInvalidService() 
+    {
+        $container = new Container();
+        $container->setMetaData('car', 'tags', [['Cars']]);
+    }
+
+    public function testAddMetaData() 
+    {
+        $container = new Container();
+
+        $container->bind('car', function($c) 
+        {
+            return new Car($c->get('engine'));
+        });
+
+        $container->addMetaData('car', 'tags', ['Cars']);
+        $container->addMetaData('car', 'tags', ['Objects']);
+
+        $this->assertEquals([['Cars'], ['Objects']], $container->getMetaData('car', 'tags'));
+
+        // make sure data is beeing added
+        $container->addMetaData('car', 'tags', ['Ships']);
+
+        $this->assertEquals([['Cars'], ['Objects'], ['Ships']], $container->getMetaData('car', 'tags'));
+    }
+
+    /**
+     * @expectedException ClanCats\Container\Exceptions\UnknownServiceException
+     */
+    public function testAddMetaDataInvalidService() 
+    {
+        $container = new Container();
+        $container->addMetaData('car', 'tags', [['Cars']]);
+    }
+
+    public function testGetMetaDataKeys() 
+    {
+        $container = new Container();
+
+        $container->bind('car', function($c) 
+        {
+            return new Car($c->get('engine'));
+        });
+
+        $container->addMetaData('car', 'tags', ['Cars']);
+        $container->addMetaData('car', 'routing', ['GET', '/car']);
+
+        $this->assertEquals(['tags', 'routing'], $container->getMetaDataKeys('car'));
+    }
+
+    public function testServiceNamesWithMetaData() 
+    {
+        $container = new Container();
+
+        $container->bind('car', function($c) 
+        {
+            return new Car($c->get('engine'));
+        });
+
+        $container->bind('bmw', function($c) 
+        {
+            return new Car($c->get('engine'));
+        });
+
+        $container->addMetaData('car', 'tags', ['Cars']);
+        $container->addMetaData('bmw', 'tags', ['Cars']);
+
+        $this->assertEquals([
+            'car' => [['Cars']],
+            'bmw' => [['Cars']]
+        ], $container->serviceNamesWithMetaData('tags'));
+    }
 }
