@@ -4,7 +4,8 @@ namespace ClanCats\Container\Tests\ContainerParser\Nodes;
 use ClanCats\Container\ContainerParser\Nodes\{
     ServiceDefinitionNode,
     ArgumentArrayNode,
-    ServiceMethodCallNode
+    ServiceMethodCallNode,
+    MetaDataAssignmentNode
 };
 
 class ServiceDefinitionNodeTest extends \PHPUnit\Framework\TestCase
@@ -77,5 +78,22 @@ class ServiceDefinitionNodeTest extends \PHPUnit\Framework\TestCase
     {
         $node = new ServiceDefinitionNode();
         $node->getArguments();
+    }
+
+    public function testMetaDataAssignemnts()
+    {
+        $node = new ServiceDefinitionNode();
+        $meta = new MetaDataAssignmentNode('foo');
+
+        $this->assertEmpty($node->getMetaDataAssignemnts());
+
+        $node->addMetaDataAssignemnt($meta);
+
+        $this->assertEquals([$meta], $node->getMetaDataAssignemnts());
+
+        // test another one
+        $node->addMetaDataAssignemnt($meta);
+
+        $this->assertEquals([$meta, $meta], $node->getMetaDataAssignemnts());
     }
 }

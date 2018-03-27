@@ -92,6 +92,47 @@ class ServiceDefinitionParserTest extends ParserTestCase
         $this->assertEquals('setLevel', $actions[1]->getName());
     }
 
+    public function testMetaDataAssignments()
+    {
+        $def = $this->serviceDefnitionNodeFromCode("@logger: Acme\\Log\n= listen: 'kernel.exception'");
+
+        $meta = $def->getMetaDataAssignemnts();
+
+        $this->assertCount(1, $meta);
+
+        $this->assertEquals('listen', $meta[0]->getKey());
+    }
+
+    public function testMetaDataAssignmentsMultiple()
+    {
+        $def = $this->serviceDefnitionNodeFromCode("@logger: Acme\\Log\n= listen: 'kernel.exception', method: 'handle'\n= tag: 'logger'");
+
+        $meta = $def->getMetaDataAssignemnts();
+        
+        $this->assertCount(2, $meta);
+
+        $this->assertEquals('listen', $meta[0]->getKey());
+        $this->assertEquals('tag', $meta[1]->getKey());
+
+        $this->assertEquals(['kernel.exception', 'method' => 'handle'], $meta[0]->getData()->convertToNativeArray());
+        $this->assertEquals(['logger'], $meta[1]->getData()->convertToNativeArray());
+    }
+
+    public function testMetaDataAssignmentsMultiline()
+    {
+        $def = $this->serviceDefnitionNodeFromCode("@logger: Acme\\Log\n= listen: 'kernel.exception', {'A', 'B'}\n= tag: {'logger', 'event'}");
+
+        $meta = $def->getMetaDataAssignemnts();
+        
+        $this->assertCount(2, $meta);
+
+        $this->assertEquals('listen', $meta[0]->getKey());
+        $this->assertEquals('tag', $meta[1]->getKey());
+
+        $this->assertEquals(['kernel.exception', ['A', 'B']], $meta[0]->getData()->convertToNativeArray());
+        $this->assertEquals([['logger', 'event']], $meta[1]->getData()->convertToNativeArray());
+    }
+
     /**
      * @expectedException ClanCats\Container\Exceptions\ContainerParserException
      */

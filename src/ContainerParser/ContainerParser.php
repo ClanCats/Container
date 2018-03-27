@@ -196,7 +196,7 @@ class ContainerParser
      * @param string                    $skip
      * @return array[T]
      */
-    protected function getRemainingTokens($skip = false)
+    protected function getRemainingTokens(bool $skip = false) : array
     {
         $tokens = array();
 
@@ -216,22 +216,31 @@ class ContainerParser
     /**
      * Get all tokens until the next token with given type
      *
-     * @param string                     $type
+     * @param int                $type
+     * @param bool                  $ignoreScopes if enabled, if the token is inside a new scope its ignored. 
      * @return array[T]
      */
-    protected function getTokensUntil($type)
+    protected function getTokensUntil(int $type, bool $ignoreScopes = false) : array
     {
         $tokens = array();
 
-        if (!is_array($type))
-        {
+        if (!is_array($type)) {
             $type = array($type);
         }
 
-        while (!$this->parserIsDone() && !in_array($this->currentToken()->type, $type)) 
-        {
-            $tokens[] = $this->currentToken();
-            $this->skipToken();
+        while (!$this->parserIsDone() && !in_array($this->currentToken()->getType(), $type)) 
+        { 
+            // if scopes should be ignored, we need to check if the current 
+            // token opens one an then get all tokens inside the scope
+            if ($ignoreScopes && $this->currentToken()->isType(T::TOKEN_BRACE_OPEN)) 
+            {
+                foreach($this->getTokensUntilClosingScope(true) as $token) {
+                    $tokens[] = $token;
+                }
+            } else {
+                $tokens[] = $this->currentToken();
+                $this->skipToken();
+            }
         }
 
         return $tokens;
@@ -242,7 +251,7 @@ class ContainerParser
      * 
      * @return array[T]
      */
-    protected function getTokensUntilClosingScope($includeScope = false, $openToken = T::TOKEN_BRACE_OPEN, $closeToken = T::TOKEN_BRACE_CLOSE)
+    protected function getTokensUntilClosingScope(bool $includeScope = false, int $openToken = T::TOKEN_BRACE_OPEN, int $closeToken = T::TOKEN_BRACE_CLOSE) : array
     {
         if ($this->currentToken()->getType() !== $openToken)
         {

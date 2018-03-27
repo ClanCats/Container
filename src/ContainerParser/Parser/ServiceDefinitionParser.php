@@ -85,6 +85,10 @@ class ServiceDefinitionParser extends ContainerParser
             {
                 $definition->addConstructionAction($this->parseChild(ServiceMethodCallParser::class));
             }
+            elseif (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_EQUAL))
+            {
+                $definition->addMetaDataAssignemnt($this->parseChild(ServiceMetaDataParser::class));
+            }
         }
 
         return $definition;

@@ -30,4 +30,11 @@ interface ServiceDefinitionInterface
      * @return array[string => ServiceArguments]
      */
     public function getMethodCalls() : array;
+
+    /**
+     * Get all metadata of the service definition
+     *
+     * @return array 
+     */
+    public function getMetaData() : array;
 }   

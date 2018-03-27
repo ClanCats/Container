@@ -12,7 +12,8 @@ use ClanCats\Container\Exceptions\LogicalNodeException;
 
 use ClanCats\Container\ContainerParser\{
     Nodes\ValueNode,
-    Nodes\ConstructionActionNode
+    Nodes\ConstructionActionNode,
+    Nodes\MetaDataAssignmentNode
 };
 
 class ServiceDefinitionNode extends BaseNode
@@ -51,6 +52,13 @@ class ServiceDefinitionNode extends BaseNode
      * @var [ConstructionActionNode]
      */
     protected $constructionActions = [];
+
+    /**
+     * An array of actions to take place after construction
+     * 
+     * @var [MetaDataAssignmentNode]
+     */
+    protected $metaDataAssignments = [];
 
     /**
      * Service definition constructor
@@ -181,6 +189,27 @@ class ServiceDefinitionNode extends BaseNode
     public function getConstructionActions() : array
     {
         return $this->constructionActions;
+    }
+
+    /**
+     * Add meta data assignment
+     * 
+     * @param MetaDataAssignmentNode                $meta
+     * @return void
+     */
+    public function addMetaDataAssignemnt(MetaDataAssignmentNode $meta)
+    {
+        $this->metaDataAssignments[] = $meta;
+    }
+
+    /**
+     * Get all meta data assignemnts
+     * 
+     * @return array[MetaDataAssignmentNode]
+     */
+    public function getMetaDataAssignemnts() : array
+    {
+        return $this->metaDataAssignments;
     }
 }
 
