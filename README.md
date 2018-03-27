@@ -152,7 +152,7 @@ echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
 ## ToDo / feature whishlist
 
 - Container Files
-  - [ ] Metadata support
+  - [x] Metadata support
   - [ ] Container file Namespace support
   - [ ] Use PHP namespace support
   - [ ] Prototype service support
