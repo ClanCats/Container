@@ -507,7 +507,7 @@ class ContainerBuilder
 
             $buffer .= "\t\$instance = new " . $serviceClassName . "(". $this->generateArgumentsCode($serviceDefinition->getArguments()) .");\n";
 
-            foreach($serviceDefinition->getMethodCalls() as $callName => $callArguments)
+            foreach($serviceDefinition->getMethodCalls() as list($callName, $callArguments))
             {
                 $buffer .= "\t\$instance->" . $callName . '('. $this->generateArgumentsCode($callArguments) .");\n";
             }

@@ -61,8 +61,20 @@ class ServiceFactoryTest extends \PHPUnit\Framework\TestCase
         $factory->calls('init', [':name']);
 
         $this->assertCount(3, $factory->getMethodCalls());
-        $this->assertEquals('setSomething', key($factory->getMethodCalls()));
-        $this->assertInstanceOf(ServiceArguments::class, $factory->getMethodCalls()['setSomething']);
+        $this->assertEquals('setSomething', $factory->getMethodCalls()[0][0]);
+        $this->assertInstanceOf(ServiceArguments::class, $factory->getMethodCalls()[0][1]);
+    }
+
+    public function testAddCallsToSameMethod()
+    {
+        $factory = new ServiceFactory('\\Acme\\Demo');
+
+        $factory->calls('setSomething', ['foo']);
+        $factory->calls('setSomething', ['bar']);
+
+        $this->assertCount(2, $factory->getMethodCalls());
+        $this->assertEquals('setSomething', $factory->getMethodCalls()[0][0]);
+        $this->assertEquals('setSomething', $factory->getMethodCalls()[1][0]);
     }
 
     public function testCreate()

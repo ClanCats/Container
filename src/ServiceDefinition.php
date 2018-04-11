@@ -94,7 +94,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
     /**
      * An array of method calls after service construction
      * 
-     * @var array[string => ServiceArguments]
+     * @var array[[<method name>, ServiceArguments]]
      */
     protected $methodCallers = [];
 
@@ -202,7 +202,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
      */
     public function addMethodCall(string $methodName, ServiceArguments $arguments) : ServiceDefinition
     {
-        $this->methodCallers[$methodName] = $arguments; return $this;
+        $this->methodCallers[] = [$methodName, $arguments]; return $this;
     }
 
     /**

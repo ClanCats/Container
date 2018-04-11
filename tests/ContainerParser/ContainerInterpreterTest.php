@@ -54,6 +54,10 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
     {
         // mock the namespace
         $ns = $this->createMock(ContainerNamespace::class);
+
+        $ns->expects($this->once())
+            ->method('setParameter');
+
         $interpreter = new ContainerInterpreter($ns);
 
         // and return some simple code

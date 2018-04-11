@@ -20,7 +20,7 @@ class ServiceFactory extends ServiceDefinition implements ServiceFactoryInterfac
     {
         $instance = new $this->className(...$this->constructorArguments->resolve($container)); 
 
-        foreach($this->methodCallers as $method => $arguments)
+        foreach($this->methodCallers as list($method, $arguments))
         {
             $instance->{$method}(... $arguments->resolve($container));
         }
