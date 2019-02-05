@@ -29,10 +29,6 @@ _Requires PHP >= 7.0_
  * Having a meta-language might not meet everyone's taste.
  * Does not depend on the PSR-11 dependency, you also might take this as a Pro.
 
-## Why should I use this? 
-
-Don't, at least not at this stage. The container is not battle tested and is only in use on some small production systems. At this point, I still might change the public API or break functionality. Feel free to try this out on small side projects. Obviously, I appreciate everyone who wants to sacrifice their time to contribute.
-
 ## Performance
 
 This package might seem very heavy for a service container, but after a short warmup the compiled container is blazing fast and has almost no overhead (3 classes/files). Binding and resolving services dynamically is slower but still won't impact performance in real-world application.
