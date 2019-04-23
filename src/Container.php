@@ -3,7 +3,7 @@
  * ClanCats Container
  *
  * @link      https://github.com/ClanCats/Container/
- * @copyright Copyright (c) 2016-2018 Mario Döring
+ * @copyright Copyright (c) 2016-2019 Mario Döring
  * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
  */
 namespace ClanCats\Container;
@@ -95,6 +95,16 @@ class Container
     public function __construct(array $initalParameters = [])
     {
         $this->parameters = array_merge($this->parameters, $initalParameters);
+    }
+
+    /**
+     * Returns all container parameters 
+     *
+     * @return array
+     */
+    public function allParameters() : array
+    {
+        return $this->parameters;
     }
 
     /**
