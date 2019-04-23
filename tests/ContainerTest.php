@@ -53,29 +53,23 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(Container::RESOLVE_SHARED, $container->getServiceResolverType('test2'));
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\InvalidServiceException
-     */
-    public function testInvalidServiceFactoryBinding()
+    public function testInvalidServiceFactoryBinding() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\InvalidServiceException::class);
         $container = new Container();
         $container->bind('test', 42);
         $container->get('test');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\UnknownServiceException
-     */
-    public function testUnknownService()
+    public function testUnknownService() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
         (new Container())->get('unknown');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\UnknownServiceException
-     */
-    public function testServiceTypeUnknown()
+    public function testServiceTypeUnknown() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
         (new Container())->getServiceResolverType('unknown');
     }
 
@@ -171,11 +165,9 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(300, $container->get('volvo.s90')->engine->power);
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\UnknownServiceException
-     */
-    public function testBrokenCustomContainerFactoryType()
+    public function testBrokenCustomContainerFactoryType() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
         (new CustomContainer())->get('broken');
     }
 
@@ -231,11 +223,9 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('bar', $container->get('foo'));
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerException
-     */
-    public function testContainerSetSelfError()
+    public function testContainerSetSelfError() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerException::class);
         (new Container())->set('container', 'shouldNotWork');
     }
 
@@ -381,11 +371,9 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([['Ships']], $container->getMetaData('car', 'tags'));
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerException
-     */
-    public function testSetMetaDataInvalidArray() 
+    public function testSetMetaDataInvalidArray()  
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerException::class);
         $container = new Container();
 
         $container->bind('car', function($c) 
@@ -396,11 +384,9 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $container->setMetaData('car', 'tags', ['this', 'is', 'not', 'an', 'array']);   
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\UnknownServiceException
-     */
-    public function testSetMetaDataInvalidService() 
+    public function testSetMetaDataInvalidService()  
     {
+        $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
         $container = new Container();
         $container->setMetaData('car', 'tags', [['Cars']]);
     }
@@ -425,11 +411,9 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([['Cars'], ['Objects'], ['Ships']], $container->getMetaData('car', 'tags'));
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\UnknownServiceException
-     */
-    public function testAddMetaDataInvalidService() 
+    public function testAddMetaDataInvalidService()  
     {
+        $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
         $container = new Container();
         $container->addMetaData('car', 'tags', [['Cars']]);
     }

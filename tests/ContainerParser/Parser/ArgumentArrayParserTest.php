@@ -135,19 +135,15 @@ class ArgumentArrayParserTest extends ParserTestCase
         $this->assertEquals([1, 2, 3], $argument->convertToNativeArray());
     }
 
-    /**
-     * @expectedException \ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testInvalid()
+    public function testInvalid() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $arguments = $this->argumentsArrayNodeFromCode('@foo,,');
     }
 
-    /**
-     * @expectedException \ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testInvalidIdentifier()
+    public function testInvalidIdentifier() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $arguments = $this->argumentsArrayNodeFromCode('@foo,bar');
     }
 }

@@ -21,11 +21,9 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('TestContainer', $builder->getContainerName());
     }
 
-    /**
-     * @expectedException TypeError
-     */
-    public function testContainerNameInvalidType()
+    public function testContainerNameInvalidType() 
     {
+        $this->expectException(\TypeError::class);
         new ContainerBuilder(null);
     }
 
@@ -46,11 +44,11 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerBuilderException
      * @dataProvider invalidContainerNameProvider
      */
     public function testContainerNameEmpty($name)
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerBuilderException::class);
         new ContainerBuilder($name);
     }
 
@@ -109,11 +107,9 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['engine', 'car'], array_values($builder->getSharedNames()));
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerBuilderException
-     */
-    public function testAddServiceInvalid()
+    public function testAddServiceInvalid() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerBuilderException::class);
         $builder = new ContainerBuilder('TestContainer');
         $builder->addService('.engine', ServiceDefinition::for(Engine::class));
     }
@@ -405,11 +401,9 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
         $this->assertGetResolverMethodName('resolveFooBar3', 'foo__bar', $builder);
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerBuilderException
-     */
-    public function testGenerateNormalizedServiceNameWithoutService()
+    public function testGenerateNormalizedServiceNameWithoutService() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerBuilderException::class);
         $this->executePrivateMethod('getResolverMethodName', ['foo']);
     }
 

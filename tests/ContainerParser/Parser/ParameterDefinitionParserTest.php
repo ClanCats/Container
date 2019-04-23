@@ -127,27 +127,21 @@ class ParameterDefinitionParserTest extends ParserTestCase
         $this->assertTrue($def->isOverride());
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testInvalidDefinition()
+    public function testInvalidDefinition() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $def = $this->parameterDefnitionNodeFromCode('the_parameter_indicator_is_missing');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testMissingAssign()
+    public function testMissingAssign() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $def = $this->parameterDefnitionNodeFromCode(':foo 42');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testInvalidAssignValue()
+    public function testInvalidAssignValue() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $def = $this->parameterDefnitionNodeFromCode(':foo: @bar'); // actually i want this in the feature
     }
 }

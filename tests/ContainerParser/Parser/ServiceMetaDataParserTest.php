@@ -70,35 +70,27 @@ class ServiceMetaDataParserTest extends ParserTestCase
         $this->assertEquals([['This', 'is', 'Working']], $def->getData()->convertToNativeArray());
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testMissingIndicator()
+    public function testMissingIndicator() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->serviceDefnitionNodeFromCode('foo: "Should generate an error"');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testInvalidIdentifier()
+    public function testInvalidIdentifier() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->serviceDefnitionNodeFromCode('= "nope": 42');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testNoIdentifier()
+    public function testNoIdentifier() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->serviceDefnitionNodeFromCode('- : 1');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testSomethingSrangeInsteadOfAssignment()
+    public function testSomethingSrangeInsteadOfAssignment() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->serviceDefnitionNodeFromCode('= nah()');
     }
 }

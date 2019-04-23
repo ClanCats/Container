@@ -72,35 +72,27 @@ class ServiceMethodCallParserTest extends ParserTestCase
         $this->assertFalse($def->hasArguments());
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testMissingIndicator()
+    public function testMissingIndicator() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->serviceDefnitionNodeFromCode('foo("This should not work")');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testInvalidIdentifier()
+    public function testInvalidIdentifier() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->serviceDefnitionNodeFromCode('- "nope"');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testNoIdentifier()
+    public function testNoIdentifier() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->serviceDefnitionNodeFromCode('- (42)');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testSomethingSrangeInsteadOfArguments()
+    public function testSomethingSrangeInsteadOfArguments() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->serviceDefnitionNodeFromCode('- hello, world(nope)');
     }
 }

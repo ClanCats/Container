@@ -35,19 +35,15 @@ class ScopeImportParserTest extends ParserTestCase
         $this->assertEquals('acme\\test', $import->getPath());
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testInvalidKeyword()
+    public function testInvalidKeyword() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $import = $this->scopeImportParserFromCode('importt test')->parse();
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testInvalidAssign()
+    public function testInvalidAssign() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $import = $this->scopeImportParserFromCode('import 42')->parse();
     }
 }

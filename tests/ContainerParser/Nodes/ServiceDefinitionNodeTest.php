@@ -71,11 +71,9 @@ class ServiceDefinitionNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([$call, $call], $node->getConstructionActions());
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
-     */
-    public function testArgumentAccessWithoutArguments()
+    public function testArgumentAccessWithoutArguments() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\LogicalNodeException::class);
         $node = new ServiceDefinitionNode();
         $node->getArguments();
     }

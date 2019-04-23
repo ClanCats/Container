@@ -64,20 +64,16 @@ class ContainerNamespaceTest extends \PHPUnit\Framework\TestCase
         $this->assertNotEmpty($namespace->getCode('phpunit'));
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerNamespaceException
-     */
-    public function testGetCodeUndefinedPath()
+    public function testGetCodeUndefinedPath() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerNamespaceException::class);
         $namespace = new ContainerNamespace();
         $namespace->getCode('nope');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerNamespaceException
-     */
-    public function testGetCodeInvalidPath()
+    public function testGetCodeInvalidPath() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerNamespaceException::class);
         $namespace = new ContainerNamespace([
             'phpunit' => __DIR__ . '/wrong.container',
         ]);
