@@ -34,7 +34,7 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
     protected function assertStringNotContainsStringProxy(string $needle, string $haystack)
     {
         if (PHP_VERSION_ID >= 70300 && method_exists(get_parent_class($this), 'assertStringNotContainsString')) {
-            return $this->assertStringNotContainsStringProxy($needle, $haystack);
+            return $this->assertStringNotContainsString($needle, $haystack);
         }
 
         return $this->assertNotContains($needle, $haystack);
