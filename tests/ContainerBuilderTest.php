@@ -14,6 +14,33 @@ use ClanCats\Container\Tests\TestServices\{
 
 class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
 {
+
+    /**
+     * PHPUnit 6 to 9 Compatibilty
+     * @todo remove as soon as we deprecate php 7.0
+     */
+    protected function assertStringNotContainsString(string $needle, string $haystack, string $message = '')
+    {
+        if (!method_exists(get_parent_class($this), 'assertStringNotContainsString')) {
+            return $this->assertNotContains($needle, $haystack, $message);
+        }
+
+        return parent::assertStringNotContainsString($needle, $haystack, $message);
+    }
+
+    /**
+     * PHPUnit 6 to 9 Compatibilty
+     * @todo remove as soon as we deprecate php 7.0
+     */
+    protected function assertStringContainsString(string $needle, string $haystack, string $message = '')
+    {
+        if (!method_exists(get_parent_class($this), 'assertStringContainsString')) {
+            return $this->assertContains($needle, $haystack, $message);
+        }
+
+        return parent::assertStringContainsString($needle, $haystack, $message);
+    }
+
     public function testContainerName()
     {
         $builder = new ContainerBuilder('TestContainer');
@@ -158,18 +185,18 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
 
         $code = $builder->generate();
 
-        $this->assertNotContains('namespace', $code);
-        $this->assertContains('use ' . Container::class . ' as ClanCatsContainer', $code);
-        $this->assertContains('class TestContainer', $code);
-        $this->assertContains('extends ClanCatsContainer', $code);
+        $this->assertStringNotContainsString('namespace', $code);
+        $this->assertStringContainsString('use ' . Container::class . ' as ClanCatsContainer', $code);
+        $this->assertStringContainsString('class TestContainer', $code);
+        $this->assertStringContainsString('extends ClanCatsContainer', $code);
 
         // Now test the behaviour with a namespace
         $builder->setContainerName('\\PHPUnit\\Test\\ExampleContainer');
         $code = $builder->generate();
 
-        $this->assertContains('namespace PHPUnit\\Test;', $code);
-        $this->assertContains('class ExampleContainer', $code);
-        $this->assertContains('extends ClanCatsContainer', $code);
+        $this->assertStringContainsString('namespace PHPUnit\\Test;', $code);
+        $this->assertStringContainsString('class ExampleContainer', $code);
+        $this->assertStringContainsString('extends ClanCatsContainer', $code);
     }
 
     public function testGenerateArgumentsCode()
@@ -178,48 +205,48 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
         $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', ['@bar']);
         $builder->add('bar', 'Bar', []);
-        $this->assertContains("\Test(\$this->resolvedSharedServices['bar'] ?? \$this->resolvedSharedServices['bar'] = \$this->resolveBar())", $builder->generate());
+        $this->assertStringContainsString("\Test(\$this->resolvedSharedServices['bar'] ?? \$this->resolvedSharedServices['bar'] = \$this->resolveBar())", $builder->generate());
 
         // test prototype dependency
         $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', ['@bar']);
         $builder->add('bar', 'Bar', [], false);
-        $this->assertContains("\Test(\$this->resolveBar())", $builder->generate());
+        $this->assertStringContainsString("\Test(\$this->resolveBar())", $builder->generate());
 
         // Test Unknown dependency
         $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', ['@bar']);
-        $this->assertContains("\Test(\$this->get('bar'))", $builder->generate());
+        $this->assertStringContainsString("\Test(\$this->get('bar'))", $builder->generate());
 
          // Test Container dependency
         $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', ['@container']);
-        $this->assertContains("\Test(\$this)", $builder->generate());
+        $this->assertStringContainsString("\Test(\$this)", $builder->generate());
 
         // Test parameter
         $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', [':foo']);
-        $this->assertContains("Test(\$this->getParameter('foo'))", $builder->generate());
+        $this->assertStringContainsString("Test(\$this->getParameter('foo'))", $builder->generate());
 
         // Test string
         $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', ['foo']);
-        $this->assertContains("Test('foo')", $builder->generate());
+        $this->assertStringContainsString("Test('foo')", $builder->generate());
 
         // Test number
         $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', [42]);
-        $this->assertContains("Test(42)", $builder->generate());
+        $this->assertStringContainsString("Test(42)", $builder->generate());
 
         // Test bool
         $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', [true]);
-        $this->assertContains("Test(true)", $builder->generate());
+        $this->assertStringContainsString("Test(true)", $builder->generate());
 
         // Test array
         $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', [['a', 2, 'c' => 'b']]);
-        $this->assertContains("Test(array (
+        $this->assertStringContainsString("Test(array (
   0 => 'a',
   1 => 2,
   'c' => 'b',
@@ -238,10 +265,10 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
         $engineDefinition->addMetaData('tags', ['Bar']);
         $builder->addService('engine', $engineDefinition);
 
-        $this->assertContains("\$metadata = array", $builder->generate());
-        $this->assertContains("'tags' =>", $builder->generate());
-        $this->assertContains("'engine' =>", $builder->generate());
-        $this->assertContains("0 => 'Foo',", $builder->generate());
+        $this->assertStringContainsString("\$metadata = array", $builder->generate());
+        $this->assertStringContainsString("'tags' =>", $builder->generate());
+        $this->assertStringContainsString("'engine' =>", $builder->generate());
+        $this->assertStringContainsString("0 => 'Foo',", $builder->generate());
     }
 
     public function testGenerateResolverTypes()
@@ -249,10 +276,10 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
         $builder = new ContainerBuilder('TestContainer');
 
         $builder->add('foo', 'Test');
-        $this->assertContains("\$serviceResolverType = ['foo' => 0];", $builder->generate());
+        $this->assertStringContainsString("\$serviceResolverType = ['foo' => 0];", $builder->generate());
         
         $builder->add('bar', 'Test');
-        $this->assertContains("\$serviceResolverType = ['foo' => 0, 'bar' => 0];", $builder->generate());
+        $this->assertStringContainsString("\$serviceResolverType = ['foo' => 0, 'bar' => 0];", $builder->generate());
     }
 
     public function testGenerateResolverMapping()
@@ -260,12 +287,12 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
         $builder = new ContainerBuilder('TestContainer');
 
         $builder->add('foo', 'Test');
-        $this->assertContains("protected \$resolverMethods = ['foo' => 'resolveFoo'];", $builder->generate());
+        $this->assertStringContainsString("protected \$resolverMethods = ['foo' => 'resolveFoo'];", $builder->generate());
 
         $builder = new ContainerBuilder('TestContainer');
 
         $builder->add('foo.bar_test', 'Test');
-        $this->assertContains("protected \$resolverMethods = ['foo.bar_test' => 'resolveFooBarTest'];", $builder->generate());
+        $this->assertStringContainsString("protected \$resolverMethods = ['foo.bar_test' => 'resolveFooBarTest'];", $builder->generate());
     }
 
     public function testGenerateResolverMethods()
@@ -274,31 +301,31 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
 
         // test method name
         $builder->add('foo', 'Test');
-        $this->assertContains("protected function resolveFoo()", $builder->generate());
+        $this->assertStringContainsString("protected function resolveFoo()", $builder->generate());
 
         $builder->add('foo.bar', 'Test');
-        $this->assertContains("protected function resolveFooBar()", $builder->generate());
+        $this->assertStringContainsString("protected function resolveFooBar()", $builder->generate());
 
         $builder->add('fooBar', 'Test');
-        $this->assertContains("protected function resolveFooBar1()", $builder->generate());
+        $this->assertStringContainsString("protected function resolveFooBar1()", $builder->generate());
 
         // test instance creation
         $builder = new ContainerBuilder('TestContainer');
 
         $builder->add('foo', '\\Test');
-        $this->assertContains("\$instance = new \\Test();", $builder->generate());
+        $this->assertStringContainsString("\$instance = new \\Test();", $builder->generate());
 
         // without full namespace
         $builder->add('foo', 'Test');
-        $this->assertContains("\$instance = new \\Test();", $builder->generate());
+        $this->assertStringContainsString("\$instance = new \\Test();", $builder->generate());
 
         // test shared instance
         $builder = new ContainerBuilder('TestContainer');
         $builder->add('foo', 'Test', [], false);
-        $this->assertNotContains("\$this->resolvedSharedServices['foo'] = \$instance;", $builder->generate());
+        $this->assertStringNotContainsString("\$this->resolvedSharedServices['foo'] = \$instance;", $builder->generate());
 
         $builder->add('bar', 'Test', [], true);
-        $this->assertContains("\$this->resolvedSharedServices['bar'] = \$instance;", $builder->generate());
+        $this->assertStringContainsString("\$this->resolvedSharedServices['bar'] = \$instance;", $builder->generate());
 
         // test method calls
         $builder = new ContainerBuilder('TestContainer');
@@ -307,8 +334,8 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
             ->calls('setName', ['Mario'])
             ->calls('setAge', [42]);
 
-        $this->assertContains("\$instance->setName('Mario');", $builder->generate());
-        $this->assertContains("\$instance->setAge(42);", $builder->generate());
+        $this->assertStringContainsString("\$instance->setName('Mario');", $builder->generate());
+        $this->assertStringContainsString("\$instance->setAge(42);", $builder->generate());
     }
 
     /**
@@ -421,8 +448,8 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
         $builder = new ContainerBuilder('TestContainer');
         $builder->importNamespace($namespace);
 
-        $this->assertContains("'plane' => 'A320'", $builder->generate());
-        $this->assertContains("'airport' => 'TXL'", $builder->generate());
+        $this->assertStringContainsString("'plane' => 'A320'", $builder->generate());
+        $this->assertStringContainsString("'airport' => 'TXL'", $builder->generate());
     }
 
     public function testImportNamespaceServices()
