@@ -26,6 +26,11 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(1234, $container->getParameter('pass'));
         $container->setParameter('pass', '12345');
         $this->assertEquals(12345, $container->getParameter('pass'));
+
+        $this->assertEquals([
+            'foo' => 'bar',
+            'pass' => 12345
+        ], $container->allParameters());
     }
 
     public function testServiceTypeFactory()

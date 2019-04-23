@@ -98,6 +98,16 @@ class Container
     }
 
     /**
+     * Returns all container parameters 
+     *
+     * @return array
+     */
+    public function allParameters() : array
+    {
+        return $this->parameters;
+    }
+
+    /**
      * Does the container contain the parameter with the given name?
      * 
      * @param string            $name The parameter name.
