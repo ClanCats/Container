@@ -133,27 +133,21 @@ class ServiceDefinitionParserTest extends ParserTestCase
         $this->assertEquals([['logger', 'event']], $meta[1]->getData()->convertToNativeArray());
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testMissingDependencyIndicator()
+    public function testMissingDependencyIndicator() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->serviceDefnitionNodeFromCode('logger: Acme\\Log');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testMissingAssignIndicator()
+    public function testMissingAssignIndicator() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->serviceDefnitionNodeFromCode('@logger Acme\\Log');
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\ContainerParserException
-     */
-    public function testWrongAssignment()
+    public function testWrongAssignment() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->serviceDefnitionNodeFromCode('@logger: @antoherone');
     }
 }

@@ -47,11 +47,9 @@ class MetaDataAssignmentNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($node->hasData());
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
-     */
-    public function testArgumentAccessWithoutArguments()
+    public function testArgumentAccessWithoutArguments() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\LogicalNodeException::class);
         $node = new MetaDataAssignmentNode();
         $node->getData();
     }

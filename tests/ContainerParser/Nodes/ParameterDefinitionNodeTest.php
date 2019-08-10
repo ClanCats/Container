@@ -45,19 +45,15 @@ class ParameterDefinitionNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($node->isOverride());
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
-     */
-    public function testParameterReferenceError()
+    public function testParameterReferenceError() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\LogicalNodeException::class);
         $node = new ParameterDefinitionNode('test', new ServiceReferenceNode('not possible'));
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
-     */
-    public function testServiceReferenceError()
+    public function testServiceReferenceError() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\LogicalNodeException::class);
         $node = new ParameterDefinitionNode('test', new ParameterReferenceNode('not possible'));
     }
 }

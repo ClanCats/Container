@@ -124,12 +124,10 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
     	], $ns->getParameters());
     }
 
-    /**
-     * @expectedException \ClanCats\Container\Exceptions\ContainerInterpreterException
-     */
-    public function testHandleParameterDefinitionWithoutOverride()
+    public function testHandleParameterDefinitionWithoutOverride() 
     {
-    	$ns = new ContainerNamespace();
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerInterpreterException::class);
+        	$ns = new ContainerNamespace();
     	$interpreter = new ContainerInterpreter($ns);
 
     	$testA = new ParameterDefinitionNode('test', new ValueNode('foo', ValueNode::TYPE_STRING));
@@ -162,11 +160,9 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
         $interpreter->handleScopeImport($import);
     }
 
-    /**
-     * @expectedException \ClanCats\Container\Exceptions\ContainerInterpreterException
-     */
-    public function testHandleScopeImportEmptyPath()
+    public function testHandleScopeImportEmptyPath() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerInterpreterException::class);
         $ns = new ContainerNamespace();
         $interpreter = new ContainerInterpreter($ns);
 
@@ -244,11 +240,9 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(ServiceArguments::RAW, $loggerArguments[3][1]);
     }
 
-    /**
-     * @expectedException \ClanCats\Container\Exceptions\ContainerInterpreterException
-     */
-    public function testHandleServiceDefinitionWithoutOverride()
+    public function testHandleServiceDefinitionWithoutOverride() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerInterpreterException::class);
         $ns = new ContainerNamespace();
         $interpreter = new ContainerInterpreter($ns);
 

@@ -44,11 +44,9 @@ class ValueNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(ValueNode::TYPE_NULL, $node->getType());
     }
 
-     /**
-     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
-     */
-    public function testNodeFromInvalidToken()
+    public function testNodeFromInvalidToken() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\LogicalNodeException::class);
         ValueNode::fromToken(new Token(0, Token::TOKEN_USE, "null"));
     }
 
@@ -69,11 +67,9 @@ class ValueNodeTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
-     */
-    public function testSetTypeUnknown()
+    public function testSetTypeUnknown() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\LogicalNodeException::class);
         $node = new ValueNode(null, ValueNode::TYPE_NULL);
         $node->setType(234234);
     }

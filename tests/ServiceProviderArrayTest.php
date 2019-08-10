@@ -52,21 +52,17 @@ class ServiceProviderArrayTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['foo', 'bar'], $provider->provides());
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\InvalidServiceException
-     */
-    public function testResolveWithoutClass()
+    public function testResolveWithoutClass() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\InvalidServiceException::class);
         $this->resolveWithArray('foo', [
             'foo' => [],
         ]);
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\UnknownServiceException
-     */
-    public function testResolveUnknown()
+    public function testResolveUnknown() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
         $this->resolveWithArray('bar', [
             'foo' => [],
         ]);
@@ -83,11 +79,9 @@ class ServiceProviderArrayTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(415, $engine->power);
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\InvalidServiceException
-     */
-    public function testResolveCallsMissingArguments()
+    public function testResolveCallsMissingArguments() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\InvalidServiceException::class);
         $this->resolveWithArray('engine', [
             'engine' => ['class' => Engine::class, 'shared' => false, 'calls' => [
                 ['method' => 'setPower'],
@@ -95,11 +89,9 @@ class ServiceProviderArrayTest extends \PHPUnit\Framework\TestCase
         ]);
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\InvalidServiceException
-     */
-    public function testResolveCallsMissingMethod()
+    public function testResolveCallsMissingMethod() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\InvalidServiceException::class);
         $this->resolveWithArray('engine', [
             'engine' => ['class' => Engine::class, 'shared' => false, 'calls' => [
                 ['arguments' => [123]],

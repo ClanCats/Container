@@ -44,11 +44,9 @@ class ServiceMethodCallNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($node->hasArguments());
     }
 
-    /**
-     * @expectedException ClanCats\Container\Exceptions\LogicalNodeException
-     */
-    public function testArgumentAccessWithoutArguments()
+    public function testArgumentAccessWithoutArguments() 
     {
+        $this->expectException(\ClanCats\Container\Exceptions\LogicalNodeException::class);
         $node = new ServiceMethodCallNode();
         $node->getArguments();
     }
