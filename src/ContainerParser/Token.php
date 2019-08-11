@@ -61,7 +61,7 @@ class Token
     const TOKEN_SCOPE_CLOSE = 17;
     const TOKEN_MINUS = 18;
     const TOKEN_SEPERATOR = 19;
-    const TOKEN_PROTOTYPE = 20;
+    const TOKEN_OPTIONAL = 20;
     const TOKEN_IDENTIFIER = 21;
     const TOKEN_EQUAL = 22;
 
