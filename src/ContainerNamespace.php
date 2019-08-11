@@ -200,7 +200,7 @@ class ContainerNamespace
     public function parse(string $containerFilePath)
     {
         // create a lexer from the given file
-        $lexer = new ContainerLexer($this->getCodeFromFile($containerFilePath));
+        $lexer = new ContainerLexer($this->getCodeFromFile($containerFilePath), $containerFilePath);
 
         // parse the file
         $parser = new ScopeParser($lexer->tokens());

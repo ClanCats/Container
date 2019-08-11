@@ -308,7 +308,7 @@ class ContainerParser
         $class = new \ReflectionClass($token);
         $constants = array_flip($class->getConstants());
 
-        return new ContainerParserException('unexpected "' . $constants[$token->getType()] . '" given at line ' . $token->getLine());
+        return new ContainerParserException('unexpected "' . $constants[$token->getType()] . '" given at line ' . $token->getLine() . ' in file ' . $token->getFilename());
     }
 
     /**
