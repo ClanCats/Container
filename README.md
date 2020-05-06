@@ -360,6 +360,7 @@ import app.env
 - Container Files
   - [x] Metadata support
   - [x] Array Support
+  - [x] Alias Support
   - [ ] Container file Namespace support
   - [ ] Autowiring by "using trait"
   - [ ] Autowiring by "instance of"
