@@ -101,6 +101,7 @@ class ContainerLexer
         // syntax
         "/^(\:)/" => T::TOKEN_ASSIGN,
         "/^(\-)/" => T::TOKEN_MINUS,
+        "/^(\+)/" => T::TOKEN_PLUS,
         "/^(\=)/" => T::TOKEN_EQUAL,
         "/^(\,)/" => T::TOKEN_SEPERATOR,
         "/^(\?)/" => T::TOKEN_OPTIONAL,

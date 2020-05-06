@@ -187,4 +187,23 @@ class ContainerLexerTest extends LexerTestCase
             T::TOKEN_DEPENDENCY, 
         ]);
     }
+
+    public function testConcat()
+    {
+        $this->assertTokenTypes("+", [T::TOKEN_PLUS]);
+
+        $this->assertTokenTypes(":foo + :bar", [
+            T::TOKEN_PARAMETER,
+            T::TOKEN_SPACE,
+            T::TOKEN_PLUS,
+            T::TOKEN_SPACE,
+            T::TOKEN_PARAMETER
+        ]);
+
+        $this->assertTokenTypes(":foo+:bar", [
+            T::TOKEN_PARAMETER,
+            T::TOKEN_PLUS,
+            T::TOKEN_PARAMETER
+        ]);
+    }
 }
