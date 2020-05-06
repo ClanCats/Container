@@ -145,6 +145,33 @@ Method calls can be assigned to a service definition.
   - setTags({'Sci-fi', 'Space'})
 ```
 
+### Service metadata
+
+Metadata can be assigned to every service definition.
+
+Its then possible to fetch the services matching a metadata key.
+
+```yml
+@controller.auth.sign_in: Controller\Auth\SignInController(@auth)
+  = route: {'GET', 'POST'}, '/signin'
+```
+
+The metadata key is always a vector / array so you can add multiple of the same type:
+
+```yml
+@controller.auth.sign_in: Controller\Auth\SignInController(@auth)
+  = route: {'GET', 'POST'}, '/signin'
+  = tag: 'users'
+  = tag: 'auth'
+```
+
+The elements inside the metadata definition can have named keys:
+
+```yml
+@app.bootstrap: Bootstrap()
+  = on: 'app.start' call: 'onAppStart'
+```
+
 ## Imports
 
 Other container files can be imported from the container namespace.
