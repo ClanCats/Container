@@ -17,7 +17,7 @@ _Requires PHP >= 7.0_
 
  * Minimal overhead and therefore very fast. 
  * Has no additional dependencies.
- * Battle-tested in production serving millions of requests every day.
+ * In production serving millions of requests every day.
  * Singleton and Factory service resolvers.
  * Metadata system allowing very intuitive service lookups.
  * A container builder allowing to compile / serialize your service definitions.
@@ -43,8 +43,10 @@ _Requires PHP >= 7.0_
     + [Container file](#container-file)
     + [Container factory](#container-factory)
   * [Usage Examples](#usage-examples)
+    + [App Config with Environment](#app-config-with-environment)
+    + [Aliases / Services Definitions / Parameters Example](#aliases---services-definitions---parameters-example)
     + [HTTP Routing using Metadata](#http-routing-using-metadata)
-    + [Eventlistener definition](#eventlistener-definition)
+    + [Eventlisteners using Metadata](#eventlisteners-using-metadata)
     + [Logging handler discovery](#logging-handler-discovery)
   * [Example App](#example-app)
     + [Bootstrap (Container Builder)](#bootstrap--container-builder)
@@ -229,6 +231,28 @@ In PHP these values are then accessible as parameters. For this, to work you nee
 echo $container->getParameter('app.name'); // 'My Awesome application'
 echo $container->getParameter('env'); // 'dev'
 echo $container->getParameter('debug'); // true
+```
+
+### Aliases / Services Definitions / Parameters Example
+
+```
+# Parameters can be defined erverywhere
+:pipeline.prefix: 'myapp.'
+
+// you can define aliases to services
+@pipeline.queue: @queue.redis
+@pipeline.storage: @db.repo.pipeline.mysql
+
+@pipeline: Pipeline\PipelineManager(@pipeline.queue, @pipeline.storage, @pipeline.executor)
+  - setPrefix(:pipeline.prefix)
+  - bind(@pipeline_handler.image.downloader)
+  - bind(@pipeline_handler.image.process)
+
+@pipeline_handler.image.downloader: PipelineHandler\Images\DownloadHandler(@client.curl)
+@pipeline_handler.image.process: PipelineHandler\Images\ProcessHandler(@image.processor, { 
+  'temp_dir': '/tmp/', 
+  'backend': 'imagick'
+})
 ```
 
 ### HTTP Routing using Metadata
