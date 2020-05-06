@@ -46,6 +46,14 @@ class ContainerLexer
     protected $line = 0;
 
     /**
+     * The filename 
+     * This is mainly used for error messages. 
+     *
+     * @var string
+     */
+    protected $filename = 'unknown';
+
+    /**
      * Token map
      *
      * @var array
@@ -95,7 +103,7 @@ class ContainerLexer
         "/^(\-)/" => T::TOKEN_MINUS,
         "/^(\=)/" => T::TOKEN_EQUAL,
         "/^(\,)/" => T::TOKEN_SEPERATOR,
-        "/^(\?)/" => T::TOKEN_PROTOTYPE,
+        "/^(\?)/" => T::TOKEN_OPTIONAL,
 
         // ids
         "/^([\w\-\/\\\\.]+)/" => T::TOKEN_IDENTIFIER,
@@ -107,7 +115,7 @@ class ContainerLexer
      * @var string         $code
      * @return void
      */
-    public function __construct(string $code)
+    public function __construct(string $code, $filename = null)
     {
         // there is never a need for tabs or multiple whitespaces 
         // so we remove them before assigning the code
@@ -115,6 +123,11 @@ class ContainerLexer
 
         // we need to know the codes length
         $this->length = strlen($this->code);
+
+        // assign the filename
+        if ($filename) {
+            $this->filename = $filename;
+        }
     }
 
     /**
@@ -151,11 +164,11 @@ class ContainerLexer
 
                 $this->offset += strlen($matches[0]);
 
-                return new T($this->line + 1, $token, $matches[0]);
+                return new T($this->line + 1, $token, $matches[0], $this->filename);
             }
         }
 
-        throw new ContainerLexerException(sprintf('Unexpected character "%s" on line %s', $this->code[$this->offset], $this->line));
+        throw new ContainerLexerException(sprintf('Unexpected character "%s" on line %s in file %s', $this->code[$this->offset], $this->line, $this->filename));
     }
 
     /**

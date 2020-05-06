@@ -1,21 +1,28 @@
 language: php
 
-php:
- - 7.0
- - 7.1
- - 7.2
- - 7.3
- - hhvm
- - nightly
-
 before_script:
- - composer self-update
+ - composer self-update 
+ - 'php -r "file_put_contents(''composer.json'', str_replace(''phpunit/phpunit\": \"^8.0'', ''phpunit/phpunit\": \"$PHPUNIT_VERSION'', file_get_contents(''composer.json'')));"'
  - composer install --prefer-source --no-interaction --dev
 
 script:
- - phpunit --coverage-text
+ - ./vendor/bin/phpunit --coverage-text
 
 matrix:
+ include:
+  - php: 7.1
+    env:
+      - PHPUNIT_VERSION="^7.0"
+  - php: 7.2
+    env:
+      - PHPUNIT_VERSION="^8.0"
+  - php: 7.3
+    env:
+      - PHPUNIT_VERSION="^8.0"
+  - php: 7.4
+    env:
+      - PHPUNIT_VERSION="^9.0"
+
  allow_failures:
   - php: hhvm
   - php: nightly

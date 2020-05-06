@@ -33,6 +33,13 @@ class ContainerNamespace
     protected $parameters = [];
 
     /**
+     * The container service aliases
+     * 
+     * @var array
+     */
+    protected $aliases = [];
+
+    /**
      * The container namespaces service defintions
      * 
      * @param array[string => Service]
@@ -118,6 +125,39 @@ class ContainerNamespace
     }
 
     /**
+     * Does the container namespace have an alias with the given name?
+     * 
+     * @param string            $name The alias name.
+     * @return bool
+     */
+    public function hasAlias(string $name) : bool
+    {
+        return array_key_exists($name, $this->aliases);
+    }
+
+    /**
+     * Set the given alias and target
+     * 
+     * @param string            $name The alias name.
+     * @param mixed             $target The alias target.
+     * @return void
+     */
+    public function setAlias(string $name, $target) 
+    {
+        $this->aliases[$name] = $target;
+    }
+
+    /**
+     * Get all aliases from the container namespace
+     * 
+     * @return array
+     */
+    public function getAliases() : array
+    {
+        return $this->aliases;
+    }
+
+    /**
      * Does the container namespace have a service with the given name?
      * 
      * @param string            $name
@@ -200,7 +240,7 @@ class ContainerNamespace
     public function parse(string $containerFilePath)
     {
         // create a lexer from the given file
-        $lexer = new ContainerLexer($this->getCodeFromFile($containerFilePath));
+        $lexer = new ContainerLexer($this->getCodeFromFile($containerFilePath), $containerFilePath);
 
         // parse the file
         $parser = new ScopeParser($lexer->tokens());

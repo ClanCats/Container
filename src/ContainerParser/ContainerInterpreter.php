@@ -188,7 +188,13 @@ class ContainerInterpreter
     {
         if ($this->namespace->hasService($definition->getName()) && $definition->isOverride() === false)
         {
-            throw new ContainerInterpreterException("A service named \"{$definition->getName()}\" is already defined, you can prefix the definition with \"override\" to get around this error.");
+            throw new ContainerInterpreterException("A service / alias named \"{$definition->getName()}\" is already defined, you can prefix the definition with \"override\" to get around this error.");
+        }
+
+        // special case if an alias is beeing defined
+        if ($definition->isAlias()) {
+            $this->namespace->setAlias($definition->getName(), $definition->getAliasTarget()->getName());
+            return;
         }
 
         // create a service definition from the node

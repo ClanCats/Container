@@ -114,7 +114,7 @@ class ContainerLexerTest extends LexerTestCase
     {
         $this->assertTokenTypes("@router?: Acme\\Router", [
             T::TOKEN_DEPENDENCY,
-            T::TOKEN_PROTOTYPE,
+            T::TOKEN_OPTIONAL,
             T::TOKEN_ASSIGN,
             T::TOKEN_SPACE,
             T::TOKEN_IDENTIFIER

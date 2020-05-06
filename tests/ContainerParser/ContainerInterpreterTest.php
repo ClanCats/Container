@@ -124,6 +124,22 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
     	], $ns->getParameters());
     }
 
+    public function testHandleAliasDefinition()
+    {
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+
+        $aliasdef = new ServiceDefinitionNode('foo');
+        $aliasdef->setIsAlias(true);
+        $aliasdef->setAliasTarget(new ServiceReferenceNode('bar'));
+
+        $interpreter->handleServiceDefinition($aliasdef);
+
+        $this->assertEquals([
+            'foo' => 'bar'
+        ], $ns->getAliases());
+    }
+
     public function testHandleParameterDefinitionWithoutOverride() 
     {
         $this->expectException(\ClanCats\Container\Exceptions\ContainerInterpreterException::class);

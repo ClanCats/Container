@@ -41,6 +41,15 @@ class ServiceDefinitionNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($node->isOverride());
     }
 
+    public function testAlias()
+    {
+        $node = new ServiceDefinitionNode();
+
+        $this->assertFalse($node->isAlias());
+        $node->setIsAlias(true);
+        $this->assertTrue($node->isAlias());
+    }
+
     public function testArguments()
     {
         $node = new ServiceDefinitionNode();

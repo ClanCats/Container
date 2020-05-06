@@ -57,18 +57,29 @@ class ServiceDefinitionParser extends ContainerParser
         // at this point we can skip the name and assign character
         $this->skipToken(2);
 
+        // we might have a alias assignment here
+        if ($this->currentToken()->isType(T::TOKEN_DEPENDENCY))
+        {
+            $definition->setIsAlias(true);
+        }
+
         // the next token must therefor be a identifier
-        if (!$this->currentToken()->isType(T::TOKEN_IDENTIFIER))
+        elseif (!$this->currentToken()->isType(T::TOKEN_IDENTIFIER))
         {
             throw $this->errorUnexpectedToken($this->currentToken());
         }
 
         // assign the class name from the identifiers value
-        $definition->setClassName($this->currentToken()->getValue());
+        if ($definition->isAlias()) {
+            $definition->setAliasTarget($this->parseChild(ReferenceParser::class));
+        } else {
+            $definition->setClassName($this->currentToken()->getValue());
+        }
+        
         $this->skipToken();
 
         // try to parse service constructor arguments
-        if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_BRACE_OPEN))
+        if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_BRACE_OPEN) && (!$definition->isAlias()))
         {
             $arguments = $this->parseChild(ArgumentArrayParser::class, $this->getTokensUntilClosingScope(), false);
             $definition->setArguments($arguments);
@@ -81,11 +92,11 @@ class ServiceDefinitionParser extends ContainerParser
             $this->skipTokenOfType([T::TOKEN_LINE]);
 
             // parse servide definiton caller
-            if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_MINUS))
+            if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_MINUS) && (!$definition->isAlias()))
             {
                 $definition->addConstructionAction($this->parseChild(ServiceMethodCallParser::class));
             }
-            elseif (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_EQUAL))
+            elseif (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_EQUAL) && (!$definition->isAlias()))
             {
                 $definition->addMetaDataAssignemnt($this->parseChild(ServiceMetaDataParser::class));
             }

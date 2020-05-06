@@ -36,6 +36,7 @@ class Container
     const RESOLVE_FACTORY = 2;
     const RESOLVE_SHARED = 3;
     const RESOLVE_SETTER = 4;
+    const RESOLVE_ALIAS = 5;
     protected $serviceResolverType = [];
 
     /**
@@ -60,6 +61,13 @@ class Container
      * @var array[ServiceFactoryInterface|Closure]
      */
     private $resolverFactories = [];
+
+    /**
+     * An array of service name aliases
+     *
+     * @var array[string => string]
+     */
+    protected $serviceAliases = [];
 
     /**
      * Array of already resolved shared factories
@@ -341,6 +349,9 @@ class Container
         if (isset($this->resolverFactories[$serviceName])) {
             unset($this->resolverFactories[$serviceName]);
         }
+        if (isset($this->serviceAliases[$serviceName])) {
+            unset($this->serviceAliases[$serviceName]);
+        }
 
         return true;
     }
@@ -364,6 +375,10 @@ class Container
 
         if ($this->serviceResolverType[$serviceName] === static::RESOLVE_FACTORY) {
             return false;
+        }
+
+        if ($this->serviceResolverType[$serviceName] === static::RESOLVE_ALIAS) {
+            return $this->isResolved($this->serviceAliases[$serviceName]);
         }
 
         return isset($this->resolvedSharedServices[$serviceName]);
@@ -436,6 +451,10 @@ class Container
 
             case static::RESOLVE_SHARED:
                 return $this->resolveServiceShared($serviceName);
+            break;
+
+            case static::RESOLVE_ALIAS:
+                return $this->get($this->serviceAliases[$serviceName]);
             break;
 
             default:
@@ -601,6 +620,21 @@ class Container
     {
         $this->setServiceResolverType($name, static::RESOLVE_SHARED);
         $this->resolverFactories[$name] = $factory;
+    }
+
+    /**
+     * Creates an alias to another service
+     * Aliases act a bit special. They are able to hold alias specific meta data 
+     * But things like their resolved status will be forwarded from their target.
+     * 
+     * @param string                $name
+     * @param string                $targetService
+     * @return void
+     */
+    public function alias(string $name, string $targetService)
+    {
+        $this->setServiceResolverType($name, static::RESOLVE_ALIAS);
+        $this->serviceAliases[$name] = $targetService;
     }
 
     /**

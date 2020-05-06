@@ -46,6 +46,13 @@ class ContainerBuilder
     protected $parameters = [];
 
     /**
+     * An array of service aliases to be defined.
+     * 
+     * @var array
+     */
+    protected $aliases = [];
+
+    /**
      * An array of binded services
      * 
      * @param array[string => Service]
@@ -230,6 +237,9 @@ class ContainerBuilder
         // import the parameters
         $this->parameters = array_merge($this->parameters, $namespace->getParameters());
 
+        // import aliases
+        $this->aliases = array_merge($this->aliases, $namespace->getAliases());
+
         // import the service definitions
         foreach($namespace->getServices() as $name => $service)
         {
@@ -327,6 +337,7 @@ class ContainerBuilder
         $buffer .= "class $this->containerClassName extends $aliasContainerName {\n\n";
 
         $buffer .= $this->generateParameters() . "\n";
+        $buffer .= $this->generateAliases() . "\n";
         $buffer .= $this->generateMetaData() . "\n";
         $buffer .= $this->generateResolverTypes() . "\n";
         $buffer .= $this->generateResolverMappings() . "\n";
@@ -418,6 +429,16 @@ class ContainerBuilder
     }
 
     /**
+     * Generate the containers aliases property
+     * 
+     * @return string 
+     */
+    private function generateAliases() : string
+    {
+        return "protected \$serviceAliases = " . var_export($this->aliases, true) . ";\n";
+    }
+
+    /**
      * Generate the containers parameter property
      * 
      * @return string 
@@ -463,6 +484,12 @@ class ContainerBuilder
         foreach($this->services as $serviceName => $serviceDefinition)
         {
             $types[] = var_export($serviceName, true) . ' => ' . Container::RESOLVE_METHOD;
+        }
+
+        // also add the aliases
+        foreach($this->aliases as $serviceName => $targetService)
+        {
+            $types[] = var_export($serviceName, true) . ' => ' . Container::RESOLVE_ALIAS;
         }
 
         return "protected \$serviceResolverType = [" . implode(', ', $types) . "];\n";

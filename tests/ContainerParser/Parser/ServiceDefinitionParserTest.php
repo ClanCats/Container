@@ -69,6 +69,37 @@ class ServiceDefinitionParserTest extends ParserTestCase
         $this->assertTrue($def->isOverride());
     }
 
+    public function testAlias()
+    {
+        $def = $this->serviceDefnitionNodeFromCode('@logger: Acme\\Log');
+        $this->assertFalse($def->isAlias());
+
+        $this->assertEquals(null, $def->getAliasTarget());
+
+        $def = $this->serviceDefnitionNodeFromCode('@logger: @logger.default');
+        $this->assertTrue($def->isAlias());
+
+        $this->assertEquals('logger.default', $def->getAliasTarget()->getName());
+    }
+
+    public function testInvalidAliasDefinitionArguments() 
+    {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
+        $this->serviceDefnitionNodeFromCode('logger: @logger.default("foo")');
+    }
+
+    public function testInvalidAliasDefinitionFunctionCall() 
+    {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
+        $this->serviceDefnitionNodeFromCode("logger: @logger.default\n- setSomething()");
+    }
+
+    public function testInvalidAliasDefinitionMetaAssign() 
+    {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
+        $this->serviceDefnitionNodeFromCode("logger: @logger.default\n= data");
+    }
+
     public function testMethodCalls()
     {
         $def = $this->serviceDefnitionNodeFromCode("@logger: Acme\\Log\n- setName('app')");
@@ -148,6 +179,6 @@ class ServiceDefinitionParserTest extends ParserTestCase
     public function testWrongAssignment() 
     {
         $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
-        $this->serviceDefnitionNodeFromCode('@logger: @antoherone');
+        $this->serviceDefnitionNodeFromCode('@logger: :foo');
     }
 }

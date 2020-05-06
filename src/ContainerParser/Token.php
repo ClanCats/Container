@@ -32,6 +32,13 @@ class Token
     protected $line = 0;
 
     /**
+     * The tokens filename
+     * 
+     * @var string  
+     */
+    protected $filename;
+
+    /**
      * The token types
      */
     const TOKEN_STRING = 0;
@@ -54,7 +61,7 @@ class Token
     const TOKEN_SCOPE_CLOSE = 17;
     const TOKEN_MINUS = 18;
     const TOKEN_SEPERATOR = 19;
-    const TOKEN_PROTOTYPE = 20;
+    const TOKEN_OPTIONAL = 20;
     const TOKEN_IDENTIFIER = 21;
     const TOKEN_EQUAL = 22;
 
@@ -64,13 +71,15 @@ class Token
      * @param int       $line The line the token is on.
      * @param int       $type The type of the token represented by an int.
      * @param mixed     $value The Value of the token.
+     * @param string     $filename The filename the token belongs to
      * @return void
      */
-    public function __construct(int $line, int $type, $value)
+    public function __construct(int $line, int $type, $value, ?string $filename = null)
     {
         $this->line = $line;
         $this->type = $type;
         $this->value = $value;
+        $this->filename = $filename;
     }
 
     /**
@@ -81,6 +90,16 @@ class Token
     public function getLine() : int
     {
         return $this->line;
+    }
+
+    /**
+     * Get the filename of the token
+     * 
+     * @return int
+     */
+    public function getFilename() : ?string
+    {
+        return $this->filename;
     }
 
     /**

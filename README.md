@@ -13,25 +13,48 @@ A PHP Service Container featuring a simple meta-language with fast and compilabl
 
 _Requires PHP >= 7.0_
 
-**Features:**
+**Pros:**
 
- * **Singleton** and **prototype** service resolvers.
- * A container builder allowing to **compile/serialize** your service definitions.
- * _Container files_ featuring a **meta language** to define your services.
- * **Composer** integration, allowing you to import default service definitions from your dependencies.
- * **Lazy service providers** for big and dynamic class graphs.
+ * Minimal overhead and therefore very fast. 
+ * Has no additional dependencies.
+ * Battle-tested in production serving millions of requests every day.
+ * Singleton and Factory service resolvers.
+ * Metadata system allowing very intuitive service lookups.
+ * A container builder allowing to compile / serialize your service definitions.
+ * _Container files_ a simple language to define your services and manage your application config.
+ * Composer integration, allowing you to import service definitions from diffrent packages.
+ * Lazy service providers for big and dynamic class graphs.
 
-**Cons:**
+**Things you might not like:**
 
  * Container allows **only** named services.
  * Currently **no** auto wiring support.
- * Obviously **no** IDE Support for _container files_.
+ * Currently **no** IDE Support for _container files_.
  * Having a meta-language might not meet everyone's taste.
- * Does not depend on the PSR-11 dependency, you also might take this as a Pro.
+
+## Table of Contents
+
+  * [Performance](#performance)
+  * [Installation](#installation)
+  * [Documentation 💡](#documentation-)
+  * [Quick Start ⚡️](#quick-start-)
+    + [Setup](#setup)
+    + [Services](#services)
+    + [Container file](#container-file)
+    + [Container factory](#container-factory)
+  * [Usage Examples](#usage-examples)
+    + [HTTP Routing using Metadata](#http-routing-using-metadata)
+  * [Example App](#example-app)
+    + [Bootstrap (Container Builder)](#bootstrap--container-builder)
+    + [App Container Files](#app-container-files)
+  * [ToDo / feature whishlist](#todo-feature-whishlist)
+  * [Credits](#credits)
+  * [License](#license)
 
 ## Performance
 
 This package might seem very heavy for a service container, but after a short warmup the compiled container is blazing fast and has almost no overhead (3 classes/files). Binding and resolving services dynamically is slower but still won't impact performance in real-world application.
+
 
 ## Installation
 
@@ -55,7 +78,7 @@ Our target directory structure will look like this:
 
 ```
 app.php
-app.container
+app.ctn
 composer.json
 cache/ # make sure this is writable
 src/
@@ -103,7 +126,7 @@ A container file allows you to bind your services & parameters using a simple me
 
 > Note: This feature is entirely optional if you prefer binding your services in PHP itself read: [Service Binding](https://clancats.io/container/master/advanced/service-binding)
 
-Create a new file called `app.container` in your applications root folder. 
+Create a new file called `app.ctn` in your applications root folder. 
 
 ```
 @malcolm: Human
@@ -128,9 +151,9 @@ $factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
 
 $container = $factory->create('AppContainer', function($builder)
 {
-    // create a new container file namespace and parse our `app.container` file.
+    // create a new container file namespace and parse our `app.ctn` file.
     $namespace = new \ClanCats\Container\ContainerNamespace();
-    $namespace->parse(__DIR__ . '/app.container');
+    $namespace->parse(__DIR__ . '/app.ctn');
 
     // import the namespace data into the builder
     $builder->importNamespace($namespace);
@@ -145,16 +168,199 @@ The variable `$container` contains now a class instance named `AppContainer`.
 echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
 ```
 
+## Usage Examples
+
+### HTTP Routing using Metadata
+
+Your can use the container metadata to define routes directly with your service definitions:
+
+```
+@controller.dashboard.home: App\Controller\Dashboard\HomepageAction
+    = route: {'GET'}, '/dashboard/home'
+
+@controller.dashboard.sign_in: App\Controller\Dashboard\SignInAction
+    = route: {'GET', 'POST'}, '/dashboard/signin'
+
+@controller.dashboard.sign_out: App\Controller\Dashboard\SignOutAction
+    = route: {'GET'}, '/logout'
+
+@controller.dashboard.client: App\Controller\Dashboard\ClientDetailAction
+    = route: {'GET'}, '/dashboard/clients/me'
+    = route: {'GET'}, '/dashboard/clients/{clientId}'
+```
+
+Now obviously depending on your routing implementation you are able to fetch all servies with a rounting definition like so:
+
+Example using FastRoute:
+
+```php
+$dispatcher = \FastRoute\cachedDispatcher(function(RouteCollector $r) use($container)
+{
+    foreach($container->serviceNamesWithMetaData('route') as $serviceName => $routeMetaData)
+    {
+        // an action can have multiple routes handle all of them
+        foreach($routeMetaData as $routeData)
+        {
+            $r->addRoute($routeData[0], $routeData[1], $serviceName);
+        }
+    }
+}, [
+    'cacheFile' => PATH_CACHE . '/RouterCache.php',
+    'cacheDisabled' => $container->getParameter('env') === 'dev',
+]);
+```
+
+
+## Example App
+
+This should showcase a possible structure of an application build using the CCContiner. This is a simplified version of what we use in our private service framework.
+
+Folder structure:
+
+```
+# The main entry point for our container application
+app.ctn
+
+# A per environment defined config. This file
+# is beeing generated by our deployment process 
+# individually for each node.
+app.ctn.env 
+
+# We like to but all other container files in one directory
+app/
+  # Most configuration parameters go here
+  config.ctn
+
+  # Commnad line commands are defined here
+  commands.ctn
+
+  # Application routes (HTTP), actions and controllers 
+  routes.ctn
+
+  # General application servies. Dependening on the size of 
+  # the project we split the services into more files to keep
+  # things organized. 
+  services.ctn
+
+# PHP Bootstrap
+bootstrap.php
+
+# Composer file
+composer.json
+
+# A writable directory for storing deployment 
+# depndent files.
+var/
+  cache/
+
+# PHP Source 
+src/
+  Controller/
+    ListBlogPostController.php
+    GetBlogPostController.php
+
+  Commands/
+    CreateUserCommand.php
+
+  Servies/
+    UserService.php
+    BlogService.php
+```
+
+### Bootstrap (Container Builder)
+
+This container builder does a few things:
+
+ * Imports container namespaces from packages installed using composer.
+ * Scans the `./app` directory for ctn files.
+ * Adds the env container file to the namespace.
+
+```php
+<?php 
+if (!defined('DS')) { define('DS', DIRECTORY_SEPARATOR); }
+
+define('PATH_ROOT',         __DIR__);
+define('PATH_CACHE',        PATH_ROOT . DS . 'var' . DS . 'cache');
+define('PATH_APPCONFIG',    PATH_ROOT . DS . 'app');
+
+$factory = new \ClanCats\Container\ContainerFactory(PATH_CACHE);
+
+$container = $factory->create('AppContainer', function($builder)
+{
+    $importPaths = [
+        'app.env' => PATH_ROOT . '/app.ctn.env',
+    ];
+
+    // find available container files
+    $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(PATH_APPCONFIG));
+
+    foreach ($rii as $file) 
+    {
+        // skip directories
+        if ($file->isDir()) continue;
+
+        // skip non ctn files
+        if (substr($file->getPathname(), -4) !== '.ctn') continue;
+
+        // get the import name
+        $importName = 'app' . substr($file->getPathname(), strlen(PATH_APPCONFIG), -4);
+
+        // add the file
+        $importPaths[$importName] = $file->getPathname();
+    }
+
+    // create a new container file namespace and parse our `app.ctn` file.
+    $namespace = new \ClanCats\Container\ContainerNamespace($importPaths);
+    $namespace->importFromVendor(PATH_ROOT . '/vendor');
+
+    // start with the app file
+    $namespace->parse(__DIR__ . '/app.ctn');
+
+    // import the namespace data into the builder
+    $builder->importNamespace($namespace);
+});
+```
+
+### App Container Files
+
+The first file `app.ctn` has mainly one job. That is simply to include other files and therefore define the order they are being read.
+
+`app.ctn`:
+
+```
+/**
+ * Import the configuration
+ */
+import app/config
+
+/**
+ * Import the services
+ */
+import app/services
+
+/**
+ * Import the actions & routes
+ */
+import app/routes
+
+/**
+ * Import the commands
+ */
+import app/commands
+
+/**
+ * Load the environment config last so it is
+ * able to override most configs.
+ */
+import app.env
+```
+
 ## ToDo / feature whishlist
 
 - Container Files
   - [x] Metadata support
-  - [ ] Container file Namespace support
-  - [ ] Use PHP namespace support
-  - [ ] Prototype service support
-  - [ ] Factory Support
   - [x] Array Support
-  - [ ] Override stack (meta and calls)
+  - [ ] Container file Namespace support
   - [ ] Autowiring by "using trait"
   - [ ] Autowiring by "instance of"
   - [ ] Autowiring by "has method"
@@ -166,7 +372,6 @@ echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
 - Container
   - [x] Metadata support
   - [ ] Property injection
-  - [ ] Call stacks
 
 ## Credits
 

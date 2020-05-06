@@ -451,6 +451,19 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsStringProxy("'airport' => 'TXL'", $builder->generate());
     }
 
+    public function testImportAliases()
+    {
+        $namespace = new ContainerNamespace();
+        $namespace->setAlias('logger', 'logger.default');
+        $namespace->setAlias('db', 'db.connector.mysql');
+
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->importNamespace($namespace);
+
+        $this->assertStringContainsStringProxy("'logger' => 'logger.default'", $builder->generate());
+        $this->assertStringContainsStringProxy("'db' => 'db.connector.mysql'", $builder->generate());
+    }
+
     public function testImportNamespaceServices()
     {
         $namespace = new ContainerNamespace();

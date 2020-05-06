@@ -455,4 +455,63 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
             'bmw' => [['Cars']]
         ], $container->serviceNamesWithMetaData('tags'));
     }
+
+    public function testServiceAliases()
+    {
+        $container = new Container();
+        $container->register(new CustomServiceProviderArray());
+
+        $container->bind('car.default', function($c) {
+            return new Car($c->get('engine'));
+        });
+        $container->alias('car.main', 'car.default');
+
+        $this->assertTrue($container->has('car.default'));
+        $this->assertTrue($container->has('car.main'));
+
+        // try to resolve it 
+        $this->assertInstanceOf(Car::class, $container->get('car.default'));
+        $this->assertInstanceOf(Car::class, $container->get('car.main'));
+
+        // make sure they are the same
+        $this->assertSame($container->get('car.default'), $container->get('car.main'));
+
+        // test resolve status
+        $this->assertTrue($container->isResolved('car.default'));
+        $this->assertTrue($container->isResolved('car.main'));
+
+        // test removing an alias
+        $container->remove('car.main');
+        $this->assertFalse($container->has('car.main'));
+        $this->assertTrue($container->has('car.default'));
+
+        // test resolve status
+        $this->assertTrue($container->isResolved('car.default'));
+        $this->assertFalse($container->isResolved('car.main'));
+    }
+
+    public function testServiceAliasesRecursion()
+    {
+        $container = new Container();
+        $container->register(new CustomServiceProviderArray());
+
+        $container->alias('volvo', 'car');
+        $container->alias('volvo.s60', 'volvo');
+        $container->alias('my_car', 'volvo.s60');
+
+        $this->assertInstanceOf(Car::class, $container->get('my_car'));
+    }
+
+    public function testServiceAliasMetaData()
+    {
+        $container = new Container();
+        $container->register(new CustomServiceProviderArray());
+        $container->addMetaData('car', 'test', ['foo']);
+
+        $container->alias('car_alias', 'car');
+        $container->addMetaData('car_alias', 'test', ['foo_alias']); 
+
+        $this->assertEquals([['foo']], $container->getMetaData('car', 'test'));
+        $this->assertEquals([['foo_alias']], $container->getMetaData('car_alias', 'test'));
+    }
 }
