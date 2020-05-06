@@ -177,6 +177,60 @@ echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
 
 ## Usage Examples
 
+### App Config with Environment
+
+Container parameters are nothing more then values that are globally available in your container.
+We use them to store most static config values and also to handle diffrent environments.
+
+For this we usally create two files. In this example:
+  
+  * `config.ctn` The main configuration file.
+  * `config.ctn.env` Environment specific overrides.
+
+
+`config.ctn`:
+
+```
+// default environment
+:env: 'stage'
+
+// debug mode
+:debug: false
+
+// Firewall whitelist
+:firewall.whitelisted_ips: {
+    '127.0.0.1': 'Local',
+    '1.2.3.4': 'Some Office',
+    '4.3.2.1': 'Another Office',
+}
+
+// application name
+:app.name: 'My Awesome application'
+
+import config.env
+```
+
+`config.ctn.env`:
+
+```
+override :env: 'dev'
+override :debug: true
+
+// Firewall whitelist
+override :firewall.whitelisted_ips: {
+    '127.0.0.1': 'Local',
+    '192.168.33.1': 'MyComputer',
+}
+```
+
+In PHP these values are then accessable as parameters. For this to work you need to configure the correct import paths in your container namespace. You find an example of that in the [Example App](#example-app).
+
+```php
+echo $container->getParameter('app.name'); // 'My Awesome application'
+echo $container->getParameter('env'); // 'dev'
+echo $container->getParameter('debug'); // true
+```
+
 ### HTTP Routing using Metadata
 
 Your can use the container metadata to define routes directly with your service definitions:
@@ -217,7 +271,7 @@ $dispatcher = \FastRoute\cachedDispatcher(function(RouteCollector $r) use($conta
 ]);
 ```
 
-### Eventlistener definition
+### Eventlisteners using Metadata
 
 Just like with the routing you can use the meta data system to define eventlisteners:
 
