@@ -82,6 +82,24 @@ class ServiceDefinitionParserTest extends ParserTestCase
         $this->assertEquals('logger.default', $def->getAliasTarget()->getName());
     }
 
+    public function testInvalidAliasDefinitionArguments() 
+    {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
+        $this->serviceDefnitionNodeFromCode('logger: @logger.default("foo")');
+    }
+
+    public function testInvalidAliasDefinitionFunctionCall() 
+    {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
+        $this->serviceDefnitionNodeFromCode("logger: @logger.default\n- setSomething()");
+    }
+
+    public function testInvalidAliasDefinitionMetaAssign() 
+    {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
+        $this->serviceDefnitionNodeFromCode("logger: @logger.default\n= data");
+    }
+
     public function testMethodCalls()
     {
         $def = $this->serviceDefnitionNodeFromCode("@logger: Acme\\Log\n- setName('app')");
