@@ -44,6 +44,8 @@ _Requires PHP >= 7.0_
     + [Container factory](#container-factory)
   * [Usage Examples](#usage-examples)
     + [HTTP Routing using Metadata](#http-routing-using-metadata)
+    + [Eventlistener definition](#eventlistener-definition)
+    + [Logging handler discovery](#logging-handler-discovery)
   * [Example App](#example-app)
     + [Bootstrap (Container Builder)](#bootstrap--container-builder)
     + [App Container Files](#app-container-files)
@@ -63,6 +65,11 @@ The container follows `PSR-4` autoloading and can be installed using composer:
 ```
 $ composer require clancats/container
 ```
+
+**Syntax Highlighting**
+
+I've created a basic tmLanguage definition here:
+https://github.com/ClanCats/container-tmLanguage
 
 ## Documentation 💡
 
@@ -229,7 +236,7 @@ Just like with the routing you can use the meta data system to define eventliste
     = on: 'bootstrap.post', call: 'onBootstrapPost'
 ```
 
-And then in your event dispatcher register all services that have the matching meta data.
+And then in your event dispatcher register all services that have the matching metadata.
 
 The following example shows how the implementation could look like. Copy pasting this will not just work.
 
