@@ -2,7 +2,7 @@ language: php
 
 before_script:
  - composer self-update
- - if [[ $LEGACY_DEPS != '' ]]; then travis_retry composer update --with-dependencies $LEGACY_DEPS ; fi
+ - php -r "file_put_contents('composer.json', str_replace('phpunit/phpunit\": \"^8.0', 'phpunit/phpunit\": \"$PHPUNIT_VERSION', file_get_contents('composer.json')));"
  - composer install --prefer-source --no-interaction --dev
 
 script:
@@ -12,7 +12,7 @@ matrix:
  include:
   - php: 7.1
     env:
-      - LEGACY_DEPS="phpunit/phpunit=^7"
+      - PHPUNIT_VERSION="^7.0"
   - php: 7.2
   - php: 7.3
   - php: 7.4
