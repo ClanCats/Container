@@ -27,6 +27,19 @@ class ContainerNamespaceTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['foo' => 'bar'], $namespace->getParameters());
     }
 
+    public function testAlias()
+    {
+        $namespace = new ContainerNamespace();
+
+        $this->assertEquals([], $namespace->getAliases());
+        $this->assertFalse($namespace->hasAlias('foo'));
+
+        $namespace->setAlias('foo', 'bar');
+
+        $this->assertTrue($namespace->hasAlias('foo'));
+        $this->assertEquals(['foo' => 'bar'], $namespace->getAliases());
+    }
+
     public function testServices()
     {
         $namespace = new ContainerNamespace();

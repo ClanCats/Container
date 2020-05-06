@@ -13,7 +13,8 @@ use ClanCats\Container\Exceptions\LogicalNodeException;
 use ClanCats\Container\ContainerParser\{
     Nodes\ValueNode,
     Nodes\ConstructionActionNode,
-    Nodes\MetaDataAssignmentNode
+    Nodes\MetaDataAssignmentNode,
+    Nodes\ServiceReferenceNode
 };
 
 class ServiceDefinitionNode extends BaseNode
@@ -33,11 +34,25 @@ class ServiceDefinitionNode extends BaseNode
     protected $className;
 
     /**
+     * The services alias target
+     * 
+     * @param ServiceReferenceNode
+     */
+    protected $aliasTarget = null;
+
+    /**
      * Does this definition override existing ones?
      * 
      * @var bool
      */
     protected $isOverride = false;
+
+    /**
+     * In case of an alias the className hold the alias target
+     * 
+     * @var bool
+     */
+    protected $isAlias = false;
 
     /**
      * An array of arguments to be passed on the services construction
@@ -104,13 +119,33 @@ class ServiceDefinitionNode extends BaseNode
     }
 
     /**
-     * Get the services class name
+     * Set the services class name
      * 
      * @return string
      */
     public function setClassName(string $className) 
     {
         $this->className = $className;
+    }
+
+    /**
+     * Get the services alias target name
+     * 
+     * @return ServiceReferenceNode
+     */
+    public function getAliasTarget() : ?ServiceReferenceNode 
+    {
+        return $this->aliasTarget;
+    }
+
+    /**
+     * Set the services alias target name
+     * 
+     * @return ServiceReferenceNode
+     */
+    public function setAliasTarget(ServiceReferenceNode $aliasTarget) 
+    {
+        $this->aliasTarget = $aliasTarget;
     }
 
     /**
@@ -132,6 +167,27 @@ class ServiceDefinitionNode extends BaseNode
     public function setIsOverride(bool $isOverride)
     {
         $this->isOverride = $isOverride;
+    }
+
+    /**
+     * Get if this definition is an alias to another one
+     * 
+     * @return bool 
+     */
+    public function isAlias() : bool
+    {
+        return $this->isAlias;
+    }
+
+    /**
+     * Set if this definition is an alias to another one
+     * 
+     * @param bool          $isAlias
+     * @return void
+     */
+    public function setIsAlias(bool $isAlias)
+    {
+        $this->isAlias = $isAlias;
     }
 
     /**

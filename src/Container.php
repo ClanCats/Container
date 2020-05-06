@@ -67,7 +67,7 @@ class Container
      *
      * @var array[string => string]
      */
-    private $serviceAliases = [];
+    protected $serviceAliases = [];
 
     /**
      * Array of already resolved shared factories
