@@ -150,7 +150,7 @@ A container file allows you to bind your services & parameters using a simple me
 
 Create a new file called `app.ctn` in your applications root folder. 
 
-```
+```php
 @malcolm: Human
     - setName('Reynolds')
 
@@ -205,7 +205,7 @@ For this, we usually create two files. In this example:
 
 `config.ctn`:
 
-```
+```php
 // default environment
 :env: 'stage'
 
@@ -227,7 +227,7 @@ import config.env
 
 `config.ctn.env`:
 
-```
+```php
 override :env: 'dev'
 override :debug: true
 
@@ -248,7 +248,7 @@ echo $container->getParameter('debug'); // true
 
 ### Aliases / Services Definitions / Parameters Example
 
-```
+```php
 # Parameters can be defined erverywhere
 :pipeline.prefix: 'myapp.'
 
@@ -273,7 +273,7 @@ echo $container->getParameter('debug'); // true
 
 Your can use the container metadata to define routes directly with your service definitions:
 
-```
+```php
 @controller.dashboard.home: App\Controller\Dashboard\HomepageAction
     = route: {'GET'}, '/dashboard/home'
 
@@ -313,7 +313,7 @@ $dispatcher = \FastRoute\cachedDispatcher(function(RouteCollector $r) use($conta
 
 Just like with the routing you can use the meta data system to define eventlisteners:
 
-```
+```php
 @signal.exception.http404: App\ExceptionHandler\NotFoundExceptionHandler
   = on: 'http.exception', call: 'onHTTPException'
 
@@ -361,7 +361,7 @@ foreach($container->serviceNamesWithMetaData('on') as $serviceName => $signalHan
 
 Or maybe you have a custom framework that comes with a monolog logger and you want to make it easy to add custom log handlers per integration:
 
-```
+```php
 /**
  * Log to Graylog
  */
@@ -415,7 +415,7 @@ The language supports the following scalar types:
 
 Container files do not differentiate between different number types because it would be an unnecessary overhead, we forward that job directly to PHP.
 
-```
+```php
 42 # Int
 42.01 # Float
 -42.12345678912345 # Double
@@ -429,13 +429,13 @@ Strings must always be encapsulated with a single `'` or double `"` quote. This 
 
 Escaping of special characters works just the usual way. 
 
-```
+```php
 :say: 'Hello it\'s me!'`
 ```
 
 Beloved or Hated emojis will also work just fine. 
 
-```
+```php
 :snails: '🐌🐌🐌'
 ```
 
@@ -443,11 +443,11 @@ Beloved or Hated emojis will also work just fine.
 
 There is not much to say about them:
 
-```
+```php
 :nothing: null
 ```
 
-```
+```php
 :positive: true
 :negative: false
 ```
@@ -491,21 +491,21 @@ A parameter is always prefixed with a `:` character.
 
 A service definition is always named and must be prefixed with a `@` character. 
 
-```yml
+```php
 ## <service name>: <class name>
 @log.adapter: FileAdapter
 ```
 
 The class name can contain the full namespace.
 
-```yml
+```php
 @log.adapter: Acme\Log\FileAdapter
 ```
 #### Constructor
 
 Constructor arguments can be passed after the class name. 
 
-```yml
+```php
 @dude: Person("Jeffery Lebowski")
 ```
 
@@ -513,13 +513,13 @@ Constructor arguments can be passed after the class name.
 
 Arguments can reference a parameter or service.
 
-```yml
+```php
 :name: 'Jeffery Lebowski'
 
 @dude: Person(:name)
 ```
 
-```yml
+```php
 @mysql: MySQLAdapter('localhost', 'root', '')
 
 @repository.posts: Repositories/Post(@mysql)
@@ -529,7 +529,7 @@ Arguments can reference a parameter or service.
 
 Method calls can be assigned to a service definition.
 
-```yml
+```php
 @jones: Person('Duncan Jones')
 @sam: Person('Sam Rockwell')
 
@@ -545,14 +545,14 @@ Metadata can be assigned to every service definition.
 
 Its then possible to fetch the services matching a metadata key.
 
-```yml
+```php
 @controller.auth.sign_in: Controller\Auth\SignInController(@auth)
   = route: {'GET', 'POST'}, '/signin'
 ```
 
 The metadata key is always a vector / array so you can add multiple of the same type:
 
-```yml
+```php
 @controller.auth.sign_in: Controller\Auth\SignInController(@auth)
   = route: {'GET', 'POST'}, '/signin'
   = tag: 'users'
@@ -561,7 +561,7 @@ The metadata key is always a vector / array so you can add multiple of the same 
 
 The elements inside the metadata definition can have named keys:
 
-```yml
+```php
 @app.bootstrap: Bootstrap()
   = on: 'app.start' call: 'onAppStart'
 ```
@@ -570,7 +570,7 @@ The elements inside the metadata definition can have named keys:
 
 Other container files can be imported from the container namespace.
 
-```yml
+```java
 import config
 import app/dashboard
 import app/user
@@ -581,7 +581,7 @@ import app/shop
 
 Services and Parameters have been explicit overwritten if they have already been defined.
 
-```
+```php
 :ship: 'Star Destroyer'
 
 override :ship: 'X-Wing'
