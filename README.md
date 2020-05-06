@@ -179,10 +179,10 @@ echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
 
 ### App Config with Environment
 
-Container parameters are nothing more then values that are globally available in your container.
-We use them to store most static config values and also to handle diffrent environments.
+Container parameters are nothing more than values that are globally available in your container.
+We use them to store most static config values and also to handle different environments.
 
-For this we usally create two files. In this example:
+For this, we usually create two files. In this example:
   
   * `config.ctn` The main configuration file.
   * `config.ctn.env` Environment specific overrides.
@@ -223,7 +223,7 @@ override :firewall.whitelisted_ips: {
 }
 ```
 
-In PHP these values are then accessable as parameters. For this to work you need to configure the correct import paths in your container namespace. You find an example of that in the [Example App](#example-app).
+In PHP these values are then accessible as parameters. For this, to work you need to configure the correct import paths in your container namespace. You find an example of that in the [Example App](#example-app).
 
 ```php
 echo $container->getParameter('app.name'); // 'My Awesome application'
