@@ -490,6 +490,18 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($container->isResolved('car.main'));
     }
 
+    public function testServiceAliasesRecursion()
+    {
+        $container = new Container();
+        $container->register(new CustomServiceProviderArray());
+
+        $container->alias('volvo', 'car');
+        $container->alias('volvo.s60', 'volvo');
+        $container->alias('my_car', 'volvo.s60');
+
+        $this->assertInstanceOf(Car::class, $container->get('my_car'));
+    }
+
     public function testServiceAliasMetaData()
     {
         $container = new Container();
