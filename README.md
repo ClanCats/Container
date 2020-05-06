@@ -177,7 +177,7 @@ echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
 
 ## Usage Examples
 
-### App Config with Environment
+### App Config with Environment
 
 Container parameters are nothing more than values that are globally available in your container.
 We use them to store most static config values and also to handle different environments.
