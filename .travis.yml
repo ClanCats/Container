@@ -2,7 +2,7 @@ language: php
 
 before_script:
  - composer self-update
- - if [[ $LEGACY_DEPS != '' ]]; then travis_retry composer update--with-dependencies $LEGACY_DEPS ; fi
+ - if [[ $LEGACY_DEPS != '' ]]; then travis_retry composer update --with-dependencies $LEGACY_DEPS ; fi
  - composer install --prefer-source --no-interaction --dev
 
 script:
