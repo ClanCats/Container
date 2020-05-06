@@ -2,7 +2,7 @@ language: php
 
 before_script:
  - composer self-update 
- - php -r "file_put_contents('composer.json', str_replace('phpunit/phpunit\": \"^8.0', 'phpunit/phpunit\": \"$PHPUNIT_VERSION', file_get_contents('composer.json')));"
+ - 'php -r "file_put_contents(''composer.json'', str_replace(''phpunit/phpunit\":\"^8.0'', ''phpunit/phpunit\": \"$PHPUNIT_VERSION'', file_get_contents(''composer.json'')));"'
  - composer install --prefer-source --no-interaction --dev
 
 script:
