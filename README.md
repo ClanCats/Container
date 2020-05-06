@@ -210,6 +210,88 @@ $dispatcher = \FastRoute\cachedDispatcher(function(RouteCollector $r) use($conta
 ]);
 ```
 
+### Eventlistener definition
+
+Just like with the routing you can use the meta data system to define eventlisteners:
+
+```
+@signal.exception.http404: App\ExceptionHandler\NotFoundExceptionHandler
+  = on: 'http.exception', call: 'onHTTPException'
+
+@signal.exception.http400: App\ExceptionHandler\BadRequestExceptionHandler
+  = on: 'http.exception', call: 'onHTTPException'
+
+@signal.exception.http401: App\ExceptionHandler\UnauthorizedAccessExceptionHandler
+  = on: 'http.exception', call: 'onHTTPException'
+
+@signal.bootstrap_handler: App\Bootstrap
+    = on: 'bootstrap.pre', call: 'onBootstrapPre'
+    = on: 'bootstrap.post', call: 'onBootstrapPost'
+```
+
+And then in your event dispatcher register all services that have the matching meta data.
+
+The following example shows how the implementation could look like. Copy pasting this will not just work.
+
+```php
+foreach($container->serviceNamesWithMetaData('on') as $serviceName => $signalHandlerMetaData)
+{
+    // a action can have multiple routes handle all of them
+    foreach($signalHandlerMetaData as $singalHandler)
+    {
+        if (!is_string($singalHandler[0] ?? false)) {
+            throw new RegisterHandlerException('The signal handler event key must be a string.');
+        }
+
+        if (!isset($singalHandler['call']) || !is_string($singalHandler['call'])) {
+            throw new RegisterHandlerException('You must define the name of the function you would like to call.');
+        }
+
+        $priority = $singalHandler['priority'] ?? 0;
+
+        // register the signal handler
+        $eventdispatcher->register($singalHandler[0], function(Signal $signal) use($container, $singalHandler, $serviceName)
+        {
+            $container->get($serviceName)->{$singalHandler['call']}($signal);
+        }, $priority);
+    }
+}
+```
+
+### Logging handler discovery
+
+Or maybe you have a custom framework that comes with a monolog logger and you want to make it easy to add custom log handlers per integration:
+
+```
+/**
+ * Log to Graylog
+ */
+:gelf.host: 'monitoring.example.com'
+:gelf.port: 12201
+
+@gelf.transport: Gelf\Transport\UdpTransport(:gelf.host, :gelf.port)
+@gelf.publisher: Gelf\Publisher(@gelf.transport)
+@logger.error.gelf_handler: Monolog\Handler\GelfHandler(@gelf.publisher)
+  = log_handler
+
+/**
+ * Also send a slack notification 
+ */
+@logger.,error.slack_handler: Example\MyCustom\SlackWebhookHandler('https://hooks.slack.com/services/...', '#logs')
+    = log_handler
+```
+
+And your framework can simply look for services exposing a `log_handler` meta key:
+
+```php
+// gather the log handlers
+$logHandlerServices = array_keys($container->serviceNamesWithMetaData('log_handler'));
+
+// bind the log hanlers
+foreach($logHandlerServices as $serviceName) {
+    $logger->pushHandler($container->get($serviceName));
+}
+```
 
 ## Example App
 
