@@ -4,12 +4,14 @@ php:
  - 7.1
  - 7.2
  - 7.3
+ - 7.4
  - hhvm
  - nightly
 
 before_script:
  - composer self-update
  - composer install --prefer-source --no-interaction --dev
+ - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.1" ]]; then composer require --dev --no-update phpunit/phpunit ~7; fi
 
 script:
  - ./vendor/bin/phpunit --coverage-text
