@@ -14,8 +14,14 @@ matrix:
     env:
       - PHPUNIT_VERSION="^7.0"
   - php: 7.2
+    env:
+      - PHPUNIT_VERSION="^8.0"
   - php: 7.3
+    env:
+      - PHPUNIT_VERSION="^8.0"
   - php: 7.4
+    env:
+      - PHPUNIT_VERSION="^9.0"
 
  allow_failures:
   - php: hhvm
