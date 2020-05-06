@@ -243,6 +243,7 @@ echo $container->getParameter('debug'); // true
 @pipeline.queue: @queue.redis
 @pipeline.storage: @db.repo.pipeline.mysql
 
+// add function calls that will be run directly after construction of the service
 @pipeline: Pipeline\PipelineManager(@pipeline.queue, @pipeline.storage, @pipeline.executor)
   - setPrefix(:pipeline.prefix)
   - bind(@pipeline_handler.image.downloader)
