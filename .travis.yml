@@ -2,8 +2,8 @@ language: php
 
 before_script:
  - composer self-update
- - composer install --prefer-source --no-interaction --dev
  - if [[ $LEGACY_DEPS != '' ]]; then travis_retry composer update--with-dependencies $LEGACY_DEPS ; fi
+ - composer install --prefer-source --no-interaction --dev
 
 script:
  - ./vendor/bin/phpunit --coverage-text
