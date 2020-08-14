@@ -779,7 +779,7 @@ import app.env
   - [ ] Property injection
   - [ ] Parameter concatination
   - [ ] Input Parameters (used for env detection)
-  - [х] Late service override (allow for adding meta or calls) 
+  - [x] Late service override (allow for adding meta or calls) 
   - [ ] macros
 - Container
   - [x] Metadata support
