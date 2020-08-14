@@ -186,7 +186,7 @@ class ContainerInterpreter
      */
     public function handleServiceDefinition(ServiceDefinitionNode $definition) 
     {
-        if ($this->namespace->hasService($definition->getName()) && $definition->isOverride() === false)
+        if ($this->namespace->hasService($definition->getName()) && $definition->isOverride() === false && $definition->isUpdate() === false)
         {
             throw new ContainerInterpreterException("A service / alias named \"{$definition->getName()}\" is already defined, you can prefix the definition with \"override\" to get around this error.");
         }
@@ -197,8 +197,21 @@ class ContainerInterpreter
             return;
         }
 
-        // create a service definition from the node
-        $service = new ServiceDefinition($definition->getClassName());
+        // create a new service or fetch an existing 
+        // one in case of an update
+        if ($definition->isUpdate()) 
+        {
+            if (!$this->namespace->hasService($definition->getName())) {
+                throw new ContainerInterpreterException("A service named \"{$definition->getName()}\" is beeing updated, but the service has not been defined yet.");
+            }
+
+            // fetch the existing service
+            $service = $this->namespace->getServices()[$definition->getName()];
+
+        } else  {
+            // create a service definition from the node
+            $service = new ServiceDefinition($definition->getClassName());
+        }
 
         if ($definition->hasArguments()) 
         {

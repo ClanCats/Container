@@ -55,6 +55,13 @@ class ServiceDefinitionNode extends BaseNode
     protected $isAlias = false;
 
     /**
+     * The node only updates an already present service
+     *
+     * @var bool
+     */
+    protected $isUpdate = false;
+
+    /**
      * An array of arguments to be passed on the services construction
      * 
      * @var ArgumentArrayNode
@@ -188,6 +195,27 @@ class ServiceDefinitionNode extends BaseNode
     public function setIsAlias(bool $isAlias)
     {
         $this->isAlias = $isAlias;
+    }
+
+    /**
+     * Get if this definition is a service update
+     * 
+     * @return bool 
+     */
+    public function isUpdate() : bool
+    {
+        return $this->isUpdate;
+    }
+
+    /**
+     * Set if this definition is a service update
+     * 
+     * @param bool          $isUpdate
+     * @return void
+     */
+    public function setIsUpdate(bool $isUpdate)
+    {
+        $this->isUpdate = $isUpdate;
     }
 
     /**

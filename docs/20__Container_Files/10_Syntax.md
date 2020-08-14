@@ -172,6 +172,28 @@ The elements inside the metadata definition can have named keys:
   = on: 'app.start' call: 'onAppStart'
 ```
 
+### Service Updates
+
+It is possible to update already defined services with more construction calls and metadata. 
+This is quite handy to organize large amount of dependencies with a dynamic lookups.
+
+You could for example define your logger in one file.
+
+```yml
+@logger.main: Acme\Logger
+```
+
+And add observers using a construction call where you need them.
+
+```yml
+@logger.observers.email_devs: Acme\EmailLogObserver('dev@example.com')
+@logger.observers.email_support: Acme\EmailLogObserver('support@example.com')
+
+@logger.main
+  - addObserver(@logger.observers.email_devs)
+  - addObserver(@logger.observers.email_support)
+```
+
 ## Imports
 
 Other container files can be imported from the container namespace.

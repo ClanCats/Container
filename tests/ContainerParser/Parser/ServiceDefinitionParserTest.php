@@ -123,6 +123,18 @@ class ServiceDefinitionParserTest extends ParserTestCase
         $this->assertEquals('setLevel', $actions[1]->getName());
     }
 
+    public function testMultipleMethodCallsServiceUpdate()
+    {
+        $def = $this->serviceDefnitionNodeFromCode("@logger\n- setName('app')\n- setLevel(1)");
+
+        $actions = $def->getConstructionActions();
+
+        $this->assertCount(2, $actions);
+        $this->assertTrue($def->isUpdate());
+        $this->assertEquals('setName', $actions[0]->getName());
+        $this->assertEquals('setLevel', $actions[1]->getName());
+    }
+
     public function testMetaDataAssignments()
     {
         $def = $this->serviceDefnitionNodeFromCode("@logger: Acme\\Log\n= listen: 'kernel.exception'");
@@ -131,6 +143,17 @@ class ServiceDefinitionParserTest extends ParserTestCase
 
         $this->assertCount(1, $meta);
 
+        $this->assertEquals('listen', $meta[0]->getKey());
+    }
+
+    public function testMetaDataAssignmentsServiceUpdate()
+    {
+        $def = $this->serviceDefnitionNodeFromCode("@logger\n= listen: 'kernel.exception'");
+
+        $meta = $def->getMetaDataAssignemnts();
+
+        $this->assertCount(1, $meta);
+        $this->assertTrue($def->isUpdate());
         $this->assertEquals('listen', $meta[0]->getKey());
     }
 
@@ -170,10 +193,13 @@ class ServiceDefinitionParserTest extends ParserTestCase
         $this->serviceDefnitionNodeFromCode('logger: Acme\\Log');
     }
 
-    public function testMissingAssignIndicator() 
+    public function testServiceIsUpdate() 
     {
-        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
-        $this->serviceDefnitionNodeFromCode('@logger Acme\\Log');
+        $def = $this->serviceDefnitionNodeFromCode('@logger');
+        $this->assertTrue($def->isUpdate());
+
+        $def = $this->serviceDefnitionNodeFromCode('@logger: Acme\\Log');
+        $this->assertFalse($def->isUpdate());
     }
 
     public function testWrongAssignment() 
