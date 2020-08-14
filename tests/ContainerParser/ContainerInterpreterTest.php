@@ -286,4 +286,40 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
 
         $this->assertCount(2, $calls);
     }
+
+    public function testHandleUpdateServiceDefinitionConstructionArguments()
+    {
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+
+        // first definition
+        $logger = new ServiceDefinitionNode('logger', 'Log');
+        $logger->addConstructionAction(new ServiceMethodCallNode('wake'));
+        $interpreter->handleServiceDefinition($logger);
+
+        // update
+        $loggerUpdate = new ServiceDefinitionNode('logger');
+        $loggerUpdate->setIsUpdate(true);
+        $loggerUpdate->addConstructionAction(new ServiceMethodCallNode('sleep'));
+        $interpreter->handleServiceDefinition($loggerUpdate);
+
+        $services = $ns->getServices();
+
+        $calls = $services['logger']->getMethodCalls();
+
+        $this->assertCount(2, $calls);
+        $this->assertEquals(['wake', 'sleep'], array_map(function($v) { return $v[0]; }, $calls));
+    }
+
+    public function testHandleUpdateServiceDefinitionNotInUniverse()
+    {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerInterpreterException::class);
+        
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+        $loggerUpdate = new ServiceDefinitionNode('logger');
+        $loggerUpdate->setIsUpdate(true);
+        $loggerUpdate->addConstructionAction(new ServiceMethodCallNode('sleep'));
+        $interpreter->handleServiceDefinition($loggerUpdate);
+    }
 }
