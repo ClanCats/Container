@@ -48,41 +48,44 @@ class ServiceDefinitionParser extends ContainerParser
         // set the name
         $definition->setName($serviceName);
 
-        // now a assign ":" character must follow
-        if (!$this->nextToken()->isType(T::TOKEN_ASSIGN))
+        // if an assign token is present we have a real definition 
+        // or alias in front of us. Otherwise it is just an update
+        if ($this->nextToken()->isType(T::TOKEN_ASSIGN))
         {
-            throw $this->errorUnexpectedToken($this->nextToken());
+            // at this point we can skip the name and assign character
+            $this->skipToken(2);
+
+            // we might have a alias assignment here
+            if ($this->currentToken()->isType(T::TOKEN_DEPENDENCY))
+            {
+                $definition->setIsAlias(true);
+            }
+
+            // the next token must therefor be a identifier
+            elseif (!$this->currentToken()->isType(T::TOKEN_IDENTIFIER))
+            {
+                throw $this->errorUnexpectedToken($this->currentToken());
+            }
+
+            // assign the class name from the identifiers value
+            if ($definition->isAlias()) {
+                $definition->setAliasTarget($this->parseChild(ReferenceParser::class));
+            } else {
+                $definition->setClassName($this->currentToken()->getValue());
+            }
+            
+            $this->skipToken();
+
+            // try to parse service constructor arguments
+            if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_BRACE_OPEN) && (!$definition->isAlias()))
+            {
+                $arguments = $this->parseChild(ArgumentArrayParser::class, $this->getTokensUntilClosingScope(), false);
+                $definition->setArguments($arguments);
+            }
         }
-
-        // at this point we can skip the name and assign character
-        $this->skipToken(2);
-
-        // we might have a alias assignment here
-        if ($this->currentToken()->isType(T::TOKEN_DEPENDENCY))
+        else 
         {
-            $definition->setIsAlias(true);
-        }
-
-        // the next token must therefor be a identifier
-        elseif (!$this->currentToken()->isType(T::TOKEN_IDENTIFIER))
-        {
-            throw $this->errorUnexpectedToken($this->currentToken());
-        }
-
-        // assign the class name from the identifiers value
-        if ($definition->isAlias()) {
-            $definition->setAliasTarget($this->parseChild(ReferenceParser::class));
-        } else {
-            $definition->setClassName($this->currentToken()->getValue());
-        }
-        
-        $this->skipToken();
-
-        // try to parse service constructor arguments
-        if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_BRACE_OPEN) && (!$definition->isAlias()))
-        {
-            $arguments = $this->parseChild(ArgumentArrayParser::class, $this->getTokensUntilClosingScope(), false);
-            $definition->setArguments($arguments);
+            $definition->setIsUpdate(true);
         }
 
         // we need at least one linebreak to continue
