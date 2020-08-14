@@ -50,6 +50,15 @@ class ServiceDefinitionNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($node->isAlias());
     }
 
+    public function testUpdate()
+    {
+        $node = new ServiceDefinitionNode();
+
+        $this->assertFalse($node->isUpdate());
+        $node->setIsUpdate(true);
+        $this->assertTrue($node->isUpdate());
+    }
+
     public function testArguments()
     {
         $node = new ServiceDefinitionNode();
