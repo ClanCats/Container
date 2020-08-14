@@ -17,12 +17,12 @@ _Requires PHP >= 7.0_
 
  * Minimal overhead and therefore very fast. 
  * Has no additional dependencies.
- * Battle-tested in production serving millions of requests every day.
+ * In production serving millions of requests every day.
  * Singleton and Factory service resolvers.
  * Metadata system allowing very intuitive service lookups.
  * A container builder allowing to compile / serialize your service definitions.
  * _Container files_ a simple language to define your services and manage your application config.
- * Composer integration, allowing you to import service definitions from diffrent packages.
+ * Composer integration, allowing you to import service definitions from different packages.
  * Lazy service providers for big and dynamic class graphs.
 
 **Things you might not like:**
@@ -43,7 +43,24 @@ _Requires PHP >= 7.0_
     + [Container file](#container-file)
     + [Container factory](#container-factory)
   * [Usage Examples](#usage-examples)
+    + [App Config with Environment](#app-config-with-environment)
+    + [Aliases / Services Definitions / Parameters Example](#aliases---services-definitions---parameters-example)
     + [HTTP Routing using Metadata](#http-routing-using-metadata)
+    + [Eventlisteners using Metadata](#eventlisteners-using-metadata)
+    + [Logging handler discovery](#logging-handler-discovery)
+  * [Container File Syntax](#container-file-syntax)
+    + [Types](#types)
+      - [Numbers](#numbers)
+      - [Strings](#strings)
+      - [Booleans and Null](#booleans-and-null)
+      - [Arrays](#arrays)
+    + [Parameters](#parameters)
+    + [Service Definition](#service-definition)
+      - [Constructor](#constructor)
+      - [Method calls](#method-calls)
+      - [Service metadata](#service-metadata)
+    + [Imports](#imports)
+    + [Overriding](#overriding)
   * [Example App](#example-app)
     + [Bootstrap (Container Builder)](#bootstrap--container-builder)
     + [App Container Files](#app-container-files)
@@ -53,7 +70,7 @@ _Requires PHP >= 7.0_
 
 ## Performance
 
-This package might seem very heavy for a service container, but after a short warmup the compiled container is blazing fast and has almost no overhead (3 classes/files). Binding and resolving services dynamically is slower but still won't impact performance in real-world application.
+This package might seem very heavy for a service container, but after a short warmup, the compiled container is blazing fast and has almost no overhead (3 classes/files). Binding and resolving services dynamically is slower but still won't impact performance in a real-world application.
 
 
 ## Installation
@@ -63,6 +80,11 @@ The container follows `PSR-4` autoloading and can be installed using composer:
 ```
 $ composer require clancats/container
 ```
+
+**Syntax Highlighting**
+
+I've created a basic tmLanguage definition here:
+https://github.com/ClanCats/container-tmLanguage
 
 ## Documentation 💡
 
@@ -128,7 +150,7 @@ A container file allows you to bind your services & parameters using a simple me
 
 Create a new file called `app.ctn` in your applications root folder. 
 
-```
+```php
 @malcolm: Human
     - setName('Reynolds')
 
@@ -170,11 +192,88 @@ echo $container->get('firefly')->ayeAye(); // "aye aye captain Reynolds"
 
 ## Usage Examples
 
+### App Config with Environment
+
+Container parameters are nothing more than values that are globally available in your container.
+We use them to store most static config values and also to handle different environments.
+
+For this, we usually create two files. In this example:
+  
+  * `config.ctn` The main configuration file.
+  * `config.ctn.env` Environment specific overrides.
+
+
+`config.ctn`:
+
+```php
+// default environment
+:env: 'stage'
+
+// debug mode
+:debug: false
+
+// Firewall whitelist
+:firewall.whitelisted_ips: {
+    '127.0.0.1': 'Local',
+    '1.2.3.4': 'Some Office',
+    '4.3.2.1': 'Another Office',
+}
+
+// application name
+:app.name: 'My Awesome application'
+
+import config.env
+```
+
+`config.ctn.env`:
+
+```php
+override :env: 'dev'
+override :debug: true
+
+// Firewall whitelist
+override :firewall.whitelisted_ips: {
+    '127.0.0.1': 'Local',
+    '192.168.33.1': 'MyComputer',
+}
+```
+
+In PHP these values are then accessible as parameters. For this, to work you need to configure the correct import paths in your container namespace. You find an example of that in the [Example App](#example-app).
+
+```php
+echo $container->getParameter('app.name'); // 'My Awesome application'
+echo $container->getParameter('env'); // 'dev'
+echo $container->getParameter('debug'); // true
+```
+
+### Aliases / Services Definitions / Parameters Example
+
+```php
+# Parameters can be defined erverywhere
+:pipeline.prefix: 'myapp.'
+
+// you can define aliases to services
+@pipeline.queue: @queue.redis
+@pipeline.storage: @db.repo.pipeline.mysql
+
+// add function calls that will be run directly after construction of the service
+@pipeline: Pipeline\PipelineManager(@pipeline.queue, @pipeline.storage, @pipeline.executor)
+  - setPrefix(:pipeline.prefix)
+  - bind(@pipeline_handler.image.downloader)
+  - bind(@pipeline_handler.image.process)
+
+@pipeline_handler.image.downloader: PipelineHandler\Images\DownloadHandler(@client.curl)
+@pipeline_handler.image.process: PipelineHandler\Images\ProcessHandler(@image.processor, { 
+  'temp_dir': '/tmp/', 
+  'backend': 'imagick'
+})
+```
+
 ### HTTP Routing using Metadata
 
 Your can use the container metadata to define routes directly with your service definitions:
 
-```
+```php
 @controller.dashboard.home: App\Controller\Dashboard\HomepageAction
     = route: {'GET'}, '/dashboard/home'
 
@@ -189,7 +288,7 @@ Your can use the container metadata to define routes directly with your service 
     = route: {'GET'}, '/dashboard/clients/{clientId}'
 ```
 
-Now obviously depending on your routing implementation you are able to fetch all servies with a rounting definition like so:
+Now obviously this is depending on your routing implementation. You are able to fetch all services with a routing definition like so:
 
 Example using FastRoute:
 
@@ -210,6 +309,283 @@ $dispatcher = \FastRoute\cachedDispatcher(function(RouteCollector $r) use($conta
 ]);
 ```
 
+### Eventlisteners using Metadata
+
+Just like with the routing you can use the meta data system to define eventlisteners:
+
+```php
+@signal.exception.http404: App\ExceptionHandler\NotFoundExceptionHandler
+  = on: 'http.exception', call: 'onHTTPException'
+
+@signal.exception.http400: App\ExceptionHandler\BadRequestExceptionHandler
+  = on: 'http.exception', call: 'onHTTPException'
+
+@signal.exception.http401: App\ExceptionHandler\UnauthorizedAccessExceptionHandler
+  = on: 'http.exception', call: 'onHTTPException'
+
+@signal.bootstrap_handler: App\Bootstrap
+    = on: 'bootstrap.pre', call: 'onBootstrapPre'
+    = on: 'bootstrap.post', call: 'onBootstrapPost'
+```
+
+And then in your event dispatcher register all services that have the matching metadata.
+
+The following example shows how the implementation could look like. Copy pasting this will not just work.
+
+```php
+foreach($container->serviceNamesWithMetaData('on') as $serviceName => $signalHandlerMetaData)
+{
+    // a action can have multiple routes handle all of them
+    foreach($signalHandlerMetaData as $singalHandler)
+    {
+        if (!is_string($singalHandler[0] ?? false)) {
+            throw new RegisterHandlerException('The signal handler event key must be a string.');
+        }
+
+        if (!isset($singalHandler['call']) || !is_string($singalHandler['call'])) {
+            throw new RegisterHandlerException('You must define the name of the function you would like to call.');
+        }
+
+        $priority = $singalHandler['priority'] ?? 0;
+
+        // register the signal handler
+        $eventdispatcher->register($singalHandler[0], function(Signal $signal) use($container, $singalHandler, $serviceName)
+        {
+            $container->get($serviceName)->{$singalHandler['call']}($signal);
+        }, $priority);
+    }
+}
+```
+
+### Logging handler discovery
+
+Or maybe you have a custom framework that comes with a monolog logger and you want to make it easy to add custom log handlers per integration:
+
+```php
+/**
+ * Log to Graylog
+ */
+:gelf.host: 'monitoring.example.com'
+:gelf.port: 12201
+
+@gelf.transport: Gelf\Transport\UdpTransport(:gelf.host, :gelf.port)
+@gelf.publisher: Gelf\Publisher(@gelf.transport)
+@logger.error.gelf_handler: Monolog\Handler\GelfHandler(@gelf.publisher)
+  = log_handler
+
+/**
+ * Also send a slack notification 
+ */
+@logger.,error.slack_handler: Example\MyCustom\SlackWebhookHandler('https://hooks.slack.com/services/...', '#logs')
+    = log_handler
+```
+
+And your framework can simply look for services exposing a `log_handler` meta key:
+
+```php
+// gather the log handlers
+$logHandlerServices = array_keys($container->serviceNamesWithMetaData('log_handler'));
+
+// bind the log hanlers
+foreach($logHandlerServices as $serviceName) {
+    $logger->pushHandler($container->get($serviceName));
+}
+```
+
+## Container File Syntax
+
+Container files are written in a very simple meta language.
+
+### Types
+
+The language supports the following scalar types:
+
+ * **Strings** Single and double quoted. <br>
+   `'hello'` & `"world"`
+ * **Numbers** float / double, int. <br>
+    `3.14`, `42`
+ * **Booleans** <br>
+     `true` and `false`.
+ * **Null** <br>
+    `null`
+ * **Arrays** list and associative. <br>
+   `{'A', 'B', 'C'}`, `{'A': 10, 'B': 20}`
+
+#### Numbers
+
+Container files do not differentiate between different number types because it would be an unnecessary overhead, we forward that job directly to PHP.
+
+```php
+42 # Int
+42.01 # Float
+-42.12345678912345 # Double
+```
+
+That means that also the floating point precision is handled by PHP. All values are interpreted means large doubles might be stored rounded.
+
+#### Strings
+
+Strings must always be encapsulated with a single `'` or double `"` quote. This serves mainly a comfort purpose when having many quotes inside your string not having to escape them all.
+
+Escaping of special characters works just the usual way. 
+
+```php
+:say: 'Hello it\'s me!'`
+```
+
+Beloved or Hated emojis will also work just fine. 
+
+```php
+:snails: '🐌🐌🐌'
+```
+
+#### Booleans and Null
+
+There is not much to say about them:
+
+```php
+:nothing: null
+```
+
+```php
+:positive: true
+:negative: false
+```
+
+#### Arrays
+
+It's important to notice that all arrays are internally associative. When defining a simple list the associative key is automatically generated and represents the index of the item.
+
+This means that the array `{'A', 'B'}` equals `{0: 'A', 1: 'B'}`.
+
+Arrays can be defined multidimensional:
+
+```yml
+{
+    'title': 'Some catchy title with Star Wars',
+    'tags': {'top10', 'movies', 'space'},
+    'body': 'Lorem ipsum ...',
+    'comments': 
+    {
+        {
+            'text': 'Awesome!',
+            'by': 'Some Dude',
+        }
+    }
+}
+```
+
+### Parameters
+
+Parameters or configuration values can also be defined inside the container files. 
+
+A parameter is always prefixed with a `:` character.
+
+```yml
+:database.hostname: "production.db.example.com"
+:database.port: 7878
+:database.cache: true
+```
+
+### Service Definition
+
+A service definition is always named and must be prefixed with a `@` character. 
+
+```php
+## <service name>: <class name>
+@log.adapter: FileAdapter
+```
+
+The class name can contain the full namespace.
+
+```php
+@log.adapter: Acme\Log\FileAdapter
+```
+#### Constructor
+
+Constructor arguments can be passed after the class name. 
+
+```php
+@dude: Person("Jeffery Lebowski")
+```
+
+##### Referenced arguments
+
+Arguments can reference a parameter or service.
+
+```php
+:name: 'Jeffery Lebowski'
+
+@dude: Person(:name)
+```
+
+```php
+@mysql: MySQLAdapter('localhost', 'root', '')
+
+@repository.posts: Repositories/Post(@mysql)
+```
+
+#### Method calls
+
+Method calls can be assigned to a service definition.
+
+```php
+@jones: Person('Duncan Jones')
+@sam: Person('Sam Rockwell')
+
+@movie.moon: Movie('Moon')
+  - setDirector(@jones)
+  - addCast(@sam)
+  - setTags({'Sci-fi', 'Space'})
+```
+
+#### Service metadata
+
+Metadata can be assigned to every service definition.
+
+Its then possible to fetch the services matching a metadata key.
+
+```php
+@controller.auth.sign_in: Controller\Auth\SignInController(@auth)
+  = route: {'GET', 'POST'}, '/signin'
+```
+
+The metadata key is always a vector / array so you can add multiple of the same type:
+
+```php
+@controller.auth.sign_in: Controller\Auth\SignInController(@auth)
+  = route: {'GET', 'POST'}, '/signin'
+  = tag: 'users'
+  = tag: 'auth'
+```
+
+The elements inside the metadata definition can have named keys:
+
+```php
+@app.bootstrap: Bootstrap()
+  = on: 'app.start' call: 'onAppStart'
+```
+
+### Imports
+
+Other container files can be imported from the container namespace.
+
+```java
+import config
+import app/dashboard
+import app/user
+import app/shop
+```
+
+### Overriding 
+
+Services and Parameters have been explicit overwritten if they have already been defined.
+
+```php
+:ship: 'Star Destroyer'
+
+override :ship: 'X-Wing'
+```
 
 ## Example App
 
@@ -222,7 +598,7 @@ Folder structure:
 app.ctn
 
 # A per environment defined config. This file
-# is beeing generated by our deployment process 
+# is being generated by our deployment process 
 # individually for each node.
 app.ctn.env 
 
@@ -231,13 +607,13 @@ app/
   # Most configuration parameters go here
   config.ctn
 
-  # Commnad line commands are defined here
+  # Command line commands are defined here
   commands.ctn
 
   # Application routes (HTTP), actions and controllers 
   routes.ctn
 
-  # General application servies. Dependening on the size of 
+  # General application services. Depending on the size of 
   # the project we split the services into more files to keep
   # things organized. 
   services.ctn
@@ -355,11 +731,13 @@ import app/commands
 import app.env
 ```
 
+
 ## ToDo / feature whishlist
 
 - Container Files
   - [x] Metadata support
   - [x] Array Support
+  - [x] Alias Support
   - [ ] Container file Namespace support
   - [ ] Autowiring by "using trait"
   - [ ] Autowiring by "instance of"
