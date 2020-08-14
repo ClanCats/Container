@@ -47,13 +47,16 @@ class ServiceDefinitionParser extends ContainerParser
 
         // set the name
         $definition->setName($serviceName);
+        
+        // skip the service name token
+        $this->skipToken();
 
         // if an assign token is present we have a real definition 
         // or alias in front of us. Otherwise it is just an update
-        if ($this->nextToken()->isType(T::TOKEN_ASSIGN))
+        if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_ASSIGN))
         {
-            // at this point we can skip the name and assign character
-            $this->skipToken(2);
+            // at this point we can skip the assign character
+            $this->skipToken();
 
             // we might have a alias assignment here
             if ($this->currentToken()->isType(T::TOKEN_DEPENDENCY))
