@@ -300,13 +300,13 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
 
         // test method name
         $builder->add('foo', 'Test');
-        $this->assertStringContainsStringProxy("protected function resolveFoo()", $builder->generate());
+        $this->assertStringContainsStringProxy("public function resolveFoo()", $builder->generate());
 
         $builder->add('foo.bar', 'Test');
-        $this->assertStringContainsStringProxy("protected function resolveFooBar()", $builder->generate());
+        $this->assertStringContainsStringProxy("public function resolveFooBar()", $builder->generate());
 
         $builder->add('fooBar', 'Test');
-        $this->assertStringContainsStringProxy("protected function resolveFooBar1()", $builder->generate());
+        $this->assertStringContainsStringProxy("public function resolveFooBar1()", $builder->generate());
 
         // test instance creation
         $builder = new ContainerBuilder('TestContainer');
