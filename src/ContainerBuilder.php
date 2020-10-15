@@ -524,18 +524,16 @@ class ContainerBuilder
         foreach($this->services as $serviceName => $serviceDefinition)
         {
             $isSharedService = in_array($serviceName, $this->shared);
+            $serviceClassName = $serviceDefinition->getClassName();
 
-            $buffer .= "public function " . $this->getResolverMethodName($serviceName) . "() {\n";
+            if ($serviceClassName[0] !== "\\") {
+                $serviceClassName = "\\" . $serviceClassName;
+            }
+
+            $buffer .= "public function " . $this->getResolverMethodName($serviceName) . "() : {$serviceClassName} {\n";
 
             if ($isSharedService) {
                 $buffer .= "\tif (isset(\$this->resolvedSharedServices[" . var_export($serviceName, true) . "])) return \$this->resolvedSharedServices[" . var_export($serviceName, true) . "];\n";
-            }
-
-            $serviceClassName = $serviceDefinition->getClassName();
-
-            if ($serviceClassName[0] !== "\\")
-            {
-                $serviceClassName = "\\" . $serviceClassName;
             }
 
             $buffer .= "\t\$instance = new " . $serviceClassName . "(". $this->generateArgumentsCode($serviceDefinition->getArguments()) .");\n";
