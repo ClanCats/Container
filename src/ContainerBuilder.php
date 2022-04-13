@@ -3,7 +3,7 @@
  * ClanCats Container
  *
  * @link      https://github.com/ClanCats/Container/
- * @copyright Copyright (c) 2016-2020 Mario Döring
+ * @copyright Copyright (c) 2016-2022 Mario Döring
  * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
  */
 namespace ClanCats\Container;
@@ -523,13 +523,17 @@ class ContainerBuilder
 
         foreach($this->services as $serviceName => $serviceDefinition)
         {
-            $buffer .= "protected function " . $this->getResolverMethodName($serviceName) . "() {\n";
-
+            $isSharedService = in_array($serviceName, $this->shared);
             $serviceClassName = $serviceDefinition->getClassName();
 
-            if ($serviceClassName[0] !== "\\")
-            {
+            if ($serviceClassName[0] !== "\\") {
                 $serviceClassName = "\\" . $serviceClassName;
+            }
+
+            $buffer .= "public function " . $this->getResolverMethodName($serviceName) . "() : {$serviceClassName} {\n";
+
+            if ($isSharedService) {
+                $buffer .= "\tif (isset(\$this->resolvedSharedServices[" . var_export($serviceName, true) . "])) return \$this->resolvedSharedServices[" . var_export($serviceName, true) . "];\n";
             }
 
             $buffer .= "\t\$instance = new " . $serviceClassName . "(". $this->generateArgumentsCode($serviceDefinition->getArguments()) .");\n";
@@ -539,7 +543,7 @@ class ContainerBuilder
                 $buffer .= "\t\$instance->" . $callName . '('. $this->generateArgumentsCode($callArguments) .");\n";
             }
 
-            if (in_array($serviceName, $this->shared))
+            if ($isSharedService)
             {
                 $buffer .= "\t\$this->resolvedSharedServices[" . var_export($serviceName, true) . "] = \$instance;\n";
             }
