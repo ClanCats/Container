@@ -39,7 +39,7 @@ class ServiceProviderArray implements ServiceProviderInterface
     /**
      * What services are provided by the service provider
      * 
-     * @return array[string]
+     * @return array<string>
      */
     public function provides() : array
     {

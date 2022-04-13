@@ -1,24 +1,26 @@
 {
-	"name": "clancats/container",
-	"description": "ClanCats IoC Container.",
-	"license": "MIT",
-	"require": {
-		"php": ">=7.1"
-	},
-    "require-dev": {
-        "phpunit/phpunit": "^8.0"
+    "name": "clancats/container",
+    "description": "ClanCats IoC Container.",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.4"
     },
-	"autoload": {
+    "require-dev": {
+        "composer/composer": "^2.3",
+        "phpunit/phpunit": "^8.0",
+        "phpstan/phpstan": "^1.5"
+    },
+    "autoload": {
         "psr-4": {
-        	"ClanCats\\Container\\": "src/"
+            "ClanCats\\Container\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-        	"ClanCats\\Container\\Tests\\": "tests/"
+            "ClanCats\\Container\\Tests\\": "tests/"
         }
     },
-	"minimum-stability": "dev",
+    "minimum-stability": "dev",
     "scripts": {
         "post-autoload-dump": [
             "ClanCats\\Container\\ComposerContainerFileLoader::generateMap"

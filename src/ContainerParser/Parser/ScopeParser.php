@@ -39,11 +39,19 @@ class ScopeParser extends ContainerParser
     /**
      * Return the current result
      * 
-     * @return null|Node
+     * @return Node
      */
     protected function node() : Node
     {
         return $this->scope;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function parse() : ScopeNode
+    {
+        return parent::parse();
     }
 
     /**

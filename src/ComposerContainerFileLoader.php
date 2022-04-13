@@ -21,7 +21,7 @@ class ComposerContainerFileLoader
      *
      * @param Event             $event
      */
-    public static function generateMap(Event $event)
+    public static function generateMap(Event $event) : void
     {
         // prepare the container file mapping array
         $mapping = [];

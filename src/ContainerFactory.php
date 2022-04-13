@@ -19,14 +19,14 @@ class ContainerFactory
      * 
      * @var string
      */
-    protected $cacheDirectory = null;
+    protected string $cacheDirectory;
 
     /**
      * Is the factory in debug mode
      * 
      * @var bool
      */
-    protected $debugMode = false;
+    protected bool $debugMode = false;
 
     /**
      * Construct a new service loader with a given cache directory
@@ -56,7 +56,7 @@ class ContainerFactory
      * @param string        $cacheDirectory
      * @return void
      */
-    public function setCacheDirecotry(string $cacheDirectory) 
+    public function setCacheDirecotry(string $cacheDirectory) : void
     {
         if (substr($cacheDirectory, -1) !== DIRECTORY_SEPARATOR)
         {
@@ -80,9 +80,9 @@ class ContainerFactory
      * Create a container with the given name. You can pass an 
      * array with services
      * 
-     * @param string                $containerName
-     * @param callable              $builderCallback
-     * @param array                 $initalParameters
+     * @param string                         $containerName
+     * @param callable                       $builderCallback
+     * @param array<string, mixed>           $initalParameters
      * 
      * @return Container The generated container instnace.
      */
@@ -90,7 +90,7 @@ class ContainerFactory
     {
         if (class_exists($containerName))
         {
-            return new $containerName;
+            return new $containerName; // @phpstan-ignore-line
         }
 
         $fileName = basename(str_replace("\\", '/', $containerName));
@@ -119,6 +119,6 @@ class ContainerFactory
         require_once $cacheFile;
 
         // create an instance of the generated container
-        return new $containerName($initalParameters);
+        return new $containerName($initalParameters); // @phpstan-ignore-line
     }
 }

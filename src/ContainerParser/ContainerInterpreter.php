@@ -95,7 +95,7 @@ class ContainerInterpreter
     {
         $path = $import->getPath();
 
-        if (is_null($path) || empty($path))
+        if (empty($path))
         {
             throw new ContainerInterpreterException("An import statement cannot be empty.");
         }

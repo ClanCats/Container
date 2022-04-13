@@ -16,7 +16,8 @@ use ClanCats\Container\{
 use ClanCats\Container\ContainerParser\{
     ContainerLexer,
     ContainerInterpreter,
-    Parser\ScopeParser
+    Parser\ScopeParser,
+    Nodes\ScopeNode
 };
 
 /**
@@ -28,44 +29,44 @@ class ContainerNamespace
     /**
      * The container namespaces parameters
      * 
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $parameters = [];
+    protected array $parameters = [];
 
     /**
      * The container service aliases
      * 
-     * @var array
+     * @var array<string, string>
      */
-    protected $aliases = [];
+    protected array $aliases = [];
 
     /**
      * The container namespaces service defintions
      * 
-     * @param array[string => Service]
+     * @var array<string, ServiceDefinitionInterface>
      */
-    protected $services = [];
+    protected array $services = [];
 
     /**
      * An array of service names that should be shared through the container
      * 
-     * @param array[string]
+     * @var array<string>
      */
-    protected $shared = [];
+    protected array $shared = [];
 
     /**
      * An array of paths 
      * 
      *     name => container file path
      * 
-     * @var array
+     * @var array<string, string>
      */
-    protected $paths = [];
+    protected array $paths = [];
 
     /**
      * Constructor
      * 
-     * @param $paths array[string:string]   
+     * @param array<string, string>    $paths
      */
     public function __construct(array $paths = [])
     {
@@ -78,7 +79,7 @@ class ContainerNamespace
      * @param string                $vendorDir
      * @return void
      */
-    public function importFromVendor(string $vendorDir)
+    public function importFromVendor(string $vendorDir) : void
     {
         $mappingFile = $vendorDir . '/container_map.php';
 
@@ -109,7 +110,7 @@ class ContainerNamespace
      * @param mixed             $value The parameter value.
      * @return void
      */
-    public function setParameter(string $name, $value) 
+    public function setParameter(string $name, $value) : void
     {
         $this->parameters[$name] = $value;
     }
@@ -117,7 +118,7 @@ class ContainerNamespace
     /**
      * Get all parameters from the container namespace
      * 
-     * @return array
+     * @return array<string, mixed>
      */
     public function getParameters() : array
     {
@@ -150,7 +151,7 @@ class ContainerNamespace
     /**
      * Get all aliases from the container namespace
      * 
-     * @return array
+     * @return array<string, string>
      */
     public function getAliases() : array
     {
@@ -171,11 +172,11 @@ class ContainerNamespace
     /**
      * Set a service in the namespace
      * 
-     * @param string            $name The service name.
-     * @param mixed             $value The service definition.
+     * @param string                        $name The service name.
+     * @param ServiceDefinition             $service The service definition.
      * @return void
      */
-    public function setService(string $name, ServiceDefinition $service) 
+    public function setService(string $name, ServiceDefinition $service) : void
     {
         $this->services[$name] = $service;
     }
@@ -183,7 +184,7 @@ class ContainerNamespace
     /**
      * Get all services from the container namespace
      * 
-     * @return array[ServiceDefinition]
+     * @return array<string, ServiceDefinitionInterface>
      */
     public function getServices() : array
     {
@@ -204,7 +205,7 @@ class ContainerNamespace
     /**
      * Simply returns the contents of the given file
      * 
-     * @param return string         $containerFilePath The path to a container file.
+     * @param string         $containerFilePath The path to a container file.
      * @return string
      */
     protected function getCodeFromFile(string $containerFilePath) : string
@@ -214,7 +215,7 @@ class ContainerNamespace
             throw new ContainerNamespaceException("The file '" . $containerFilePath . "' is not readable or does not exist.");
         }
 
-        return file_get_contents($containerFilePath);
+        return file_get_contents($containerFilePath) ?: '';
     }
 
     /**
@@ -237,7 +238,7 @@ class ContainerNamespace
      * 
      * @param string        $containerFilePath The path to a container file.
      */ 
-    public function parse(string $containerFilePath)
+    public function parse(string $containerFilePath) : void
     {
         // create a lexer from the given file
         $lexer = new ContainerLexer($this->getCodeFromFile($containerFilePath), $containerFilePath);
@@ -245,8 +246,12 @@ class ContainerNamespace
         // parse the file
         $parser = new ScopeParser($lexer->tokens());
 
+        if (!(($node = $parser->parse()) instanceof ScopeNode)) {
+            throw new ContainerNamespaceException("Scope parser returned an unexpeted node type: " . get_class($node));
+        }
+
         // interpret the parsed node
         $interpreter = new ContainerInterpreter($this);
-        $interpreter->handleScope($parser->parse());
+        $interpreter->handleScope($node);
     }
 }

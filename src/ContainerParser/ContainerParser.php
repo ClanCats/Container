@@ -342,12 +342,12 @@ class ContainerParser
     /**
      * Start the code parser and return the result
      *
-     * @return array
+     * @return Node
      */
-    public function parse()
+    public function parse() : Node
     {
         // reset the result
-        $this->result = array();
+        $this->result = [];
 
         // start parsing trought the tokens
         while (!$this->parserIsDone()) 

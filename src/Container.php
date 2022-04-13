@@ -22,82 +22,83 @@ class Container
     /**
      * The parameters
      * 
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $parameters = [];
+    protected array $parameters = [];
 
     /**
      * A mapping array to know how a service must be resolved.
      * 
-     * @var array
+     * @var array<string, int>
      */
-    const RESOLVE_METHOD = 0;
-    const RESOLVE_PROVIDER = 1;
-    const RESOLVE_FACTORY = 2;
-    const RESOLVE_SHARED = 3;
-    const RESOLVE_SETTER = 4;
-    const RESOLVE_ALIAS = 5;
-    protected $serviceResolverType = [];
+    protected array $serviceResolverType = [];
+
+    public const RESOLVE_METHOD = 0;
+    public const RESOLVE_PROVIDER = 1;
+    public const RESOLVE_FACTORY = 2;
+    public const RESOLVE_SHARED = 3;
+    public const RESOLVE_SETTER = 4;
+    public const RESOLVE_ALIAS = 5;
 
     /**
      * An array of services and their provider
      * 
-     * @var array[string => ServiceProviderInterface]
+     * @var array<string, ServiceProviderInterface>
      */
-    protected $serviceProviders = [];
+    protected array $serviceProviders = [];
 
     /**
      * An array of methods that resolve a service inside the current container.
      * This is mostly for the cached / dumped container which creates custom methods
      * for each service to (try to) improve performance of the container.
      * 
-     * @var array
+     * @var array<string, string>
      */
-    protected $resolverMethods = [];
+    protected array $resolverMethods = [];
 
     /**
      * An array of factories ojects.
      * 
-     * @var array[ServiceFactoryInterface|Closure]
+     * @var array<string, ServiceFactoryInterface|Closure>
      */
-    private $resolverFactories = [];
+    private array $resolverFactories = [];
 
     /**
      * An array of service name aliases
      *
-     * @var array[string => string]
+     * @var array<string, string>
      */
-    protected $serviceAliases = [];
+    protected array $serviceAliases = [];
 
     /**
      * Array of already resolved shared factories
      * 
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $resolvedSharedServices = [];
+    protected array $resolvedSharedServices = [];
 
     /**
      * The actual metadata by key & service name
      *
      *    [metakey][service] = [[meta array], [meta array]]
      * 
-     * @var array[string => array]
+     * @var array<string, array<string, array<mixed>>>
      */
-    protected $metadata = [];
+    protected array $metadata = [];
 
     /**
      * List of metadata keys by service name
      *
      *    [service] = [metakey array]
      *
-     * @var string[array]
+     * @var array<string, array<string>>
      */
-    protected $metadataService = [];
+    protected array $metadataService = [];
 
     /**
      * Construct a new container instance with inital parameters.
      * 
-     * @param array                 $initalParameters Array of inital parameters.
+     * @param array<string, mixed>                 $initalParameters Array of inital parameters.
      * @return void
      */
     public function __construct(array $initalParameters = [])
@@ -108,7 +109,7 @@ class Container
     /**
      * Returns all container parameters 
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function allParameters() : array
     {
@@ -154,7 +155,8 @@ class Container
     /**
      * Get the metadata of a specific service
      *
-     * @param string            $serviceName
+     * @param string                            $serviceName
+     * @return array<string, array<mixed>>
      */
     public function getMetaData(string $serviceName, string $key) : array
     {
@@ -165,6 +167,7 @@ class Container
      * Get the metadata keys of the given service
      *
      * @param string            $serviceName
+     * @return array<string>
      */
     public function getMetaDataKeys(string $serviceName) : array
     {
@@ -194,9 +197,9 @@ class Container
      * Set metadata for a specific service
      * This will override all meta data matching service and key.
      *
-     * @param string            $serviceName
-     * @param string            $key
-     * @param array             $values multidimensional array
+     * @param string                  $serviceName
+     * @param string                  $key
+     * @param array<mixed>            $values multidimensional array
      *
      * @return void
      */
@@ -230,7 +233,7 @@ class Container
      *
      * @param string            $serviceName
      * @param string            $key
-     * @param array             $values
+     * @param array<mixed>      $values
      *
      * @return void
      */
@@ -260,18 +263,17 @@ class Container
      * Get an array of service names that have metadata with the given key
      *
      * @param string            $key The metadata key
-     * @return array
+     * @return array<string, array<mixed>>
      */
     public function serviceNamesWithMetaData(string $key) : array
     {
         return $this->metadata[$key] ?? []; 
     }
 
-
     /**
      * Returns an array of all available service keys.
      * 
-     * @return array[string]
+     * @return array<string>
      */
     public function available() : array
     {
@@ -439,27 +441,21 @@ class Container
             // directly in the container. We can skip here an unnecessary method call.
             case static::RESOLVE_METHOD:
                 return $this->{$this->resolverMethods[$serviceName]}();
-            break;
 
             case static::RESOLVE_PROVIDER:
                 return $this->resolveServiceProvider($serviceName);
-            break;
 
             case static::RESOLVE_FACTORY:
                 return $this->resolveServiceFactory($serviceName);
-            break;
 
             case static::RESOLVE_SHARED:
                 return $this->resolveServiceShared($serviceName);
-            break;
 
             case static::RESOLVE_ALIAS:
                 return $this->get($this->serviceAliases[$serviceName]);
-            break;
 
             default:
                 throw new UnknownServiceException('Could not resolve service named "' . $serviceName . '", the resolver type is unkown.');
-            break;
         }
     }
 
@@ -560,7 +556,7 @@ class Container
      * @param mixed             $factory The service factory instance, the closure or the classname as string
      * @param bool              $shared Should the service be shared inside the container.
      * 
-     * @return Closure|ServiceFactoryInterface The given or generated service factory.
+     * @return Closure|ServiceFactoryInterface|void The given or generated service factory.
      */
     public function bind(string $name, $factory, bool $shared = true)
     {
@@ -577,8 +573,8 @@ class Container
      * Creates and binds a service factory by class name and arguments. 
      * 
      * @param string            $name The service name.
-     * @param string            $className The service class name.
-     * @param array             $arguments An array of arguments.
+     * @param string            $factory The service class name.
+     * @param array<mixed>      $arguments An array of arguments.
      * @param bool              $shared Should the service be shared inside the container.
      * 
      * @return ServiceFactory The created service factory
