@@ -24,7 +24,7 @@ jobs:
       with:
         php-version: ${{ matrix.php-versions }}
         coverage: xdebug
-        tools: cs2pr
+        tools: cs2pr, phpunit:${{ matrix.phpunit-versions }}
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
