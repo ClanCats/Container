@@ -15,23 +15,20 @@ class ScopeImportNode extends BaseNode
      * 
      * @var string
      */
-    protected $path = '';
+    protected string $path = '';
 
     /**
      * Set the current import path
      * 
-     * @param Node 			$node
-     * @return void
+     * @param string 			$path
      */
-    public function setPath(string $path)
+    public function setPath(string $path) : void
     {
     	$this->path = $path;
     }
 
     /**
      * Returns the current import path
-     * 
-     * @return array
      */
     public function getPath() : string 
     {

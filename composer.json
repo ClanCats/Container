@@ -7,8 +7,9 @@
     },
     "require-dev": {
         "composer/composer": "^2.3",
-        "phpunit/phpunit": "^8.0",
-        "phpstan/phpstan": "^1.5"
+        "phpunit/phpunit": "^9.0",
+        "phpstan/phpstan": "^1.5",
+        "vimeo/psalm": "5.x-dev"
     },
     "autoload": {
         "psr-4": {

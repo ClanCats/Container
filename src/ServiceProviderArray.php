@@ -22,16 +22,16 @@ class ServiceProviderArray implements ServiceProviderInterface
      * this attribute. You can also create an instance of the array provider and 
      * set your services using the `setServices() method.
      * 
-     * @var array
+     * @var array<string, array<mixed>>
      */
-    protected $services = [];
+    protected array $services = [];
 
     /**
-     * Set the providers services 
-     * 
-     * @param array             $services
+     * Set the providers services
+     *
+     * @param array<string, array<mixed>>     $services
      */
-    public function setServices(array $services) 
+    public function setServices(array $services): void 
     {
         $this->services = $services;
     }
@@ -51,7 +51,7 @@ class ServiceProviderArray implements ServiceProviderInterface
      * 
      * @param string                    $serviceName
      * @param Container                 $container
-     * @return array[mixed, bool]
+     * @return array{mixed, bool}
      */
     public function resolve(string $serviceName, Container $container) : array
     {

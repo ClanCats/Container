@@ -22,29 +22,29 @@ class ContainerParser
     /**
      * The tokens in this code segment
      *
-     * @var array[Token]
+     * @var array<Token>
      */
-    protected $tokens = array();
+    protected array $tokens = [];
 
     /**
      * The current index while parsing trough the tokens
      *
      * @var int
      */
-    protected $index = 0;
+    protected int $index = 0;
 
     /**
      * The number of tokens to parse
      *
      * @var int
      */
-    protected $tokenCount = 0;
+    protected int $tokenCount = 0;
 
     /**
      * The constructor
      * You have to initialize the Parser with an array of lexed tokens.
      *
-     * @var array[T]             $tokens
+     * @param array<T>             $tokens
      * @return void
      */
     public function __construct(array $tokens)
@@ -68,10 +68,10 @@ class ContainerParser
     /**
      * Set the tokens of the current parser
      * 
-     * @param array[T]             $tokens
+     * @param array<T>             $tokens
      * @return void
      */
-    public function setTokens(array $tokens)
+    public function setTokens(array $tokens) : void
     {
         // reset the keys
         $this->tokens = array_values($tokens);
@@ -86,7 +86,7 @@ class ContainerParser
     /**
      * Returns all curent tokens 
      * 
-     * @return array[T]
+     * @return array<T>
      */
     public function getTokens() : array
     {
@@ -133,7 +133,7 @@ class ContainerParser
     {
         if (!isset($this->tokens[$this->index]))
         {
-            throw new ContainerParserException("The current token is of the available tokens range.");
+            throw new ContainerParserException("The current token is out of the available tokens range.");
         }
 
         return $this->tokens[$this->index];
@@ -161,7 +161,7 @@ class ContainerParser
      * @param int            $times
      * @return void
      */
-    protected function skipToken(int $times = 1)
+    protected function skipToken(int $times = 1) : void
     {
         $this->index += $times;
     }
@@ -169,10 +169,10 @@ class ContainerParser
     /**
      * Skip all upcoming tokens of the given type
      *
-     * @param array[int]         $types 
+     * @param array<int>         $types 
      * @return void
      */
-    protected function skipTokenOfType(array $types = [])
+    protected function skipTokenOfType(array $types = []) : void
     {
         while ((!$this->parserIsDone()) && in_array($this->currentToken()->getType(), $types))
         {
@@ -191,10 +191,11 @@ class ContainerParser
     }
 
     /**
-     * Return all remaining tokens 
-     * 
-     * @param string                    $skip
-     * @return array[T]
+     * Return all remaining tokens
+     *
+     * @param bool $skip
+     *
+     * @return array<T>
      */
     protected function getRemainingTokens(bool $skip = false) : array
     {
@@ -216,17 +217,14 @@ class ContainerParser
     /**
      * Get all tokens until the next token with given type
      *
-     * @param int                $type
+     * @param int                   $type
      * @param bool                  $ignoreScopes if enabled, if the token is inside a new scope its ignored. 
-     * @return array[T]
+     * @return array<T>
      */
     protected function getTokensUntil(int $type, bool $ignoreScopes = false) : array
     {
-        $tokens = array();
-
-        if (!is_array($type)) {
-            $type = array($type);
-        }
+        $tokens = [];
+        $type = [$type];
 
         while (!$this->parserIsDone() && !in_array($this->currentToken()->getType(), $type)) 
         {
@@ -249,7 +247,7 @@ class ContainerParser
     /**
      * Retruns all tokens until the opened scope is closed again
      * 
-     * @return array[T]
+     * @return array<T>
      */
     protected function getTokensUntilClosingScope(bool $includeScope = false, int $openToken = T::TOKEN_BRACE_OPEN, int $closeToken = T::TOKEN_BRACE_CLOSE) : array
     {
@@ -270,7 +268,7 @@ class ContainerParser
        
         $currentLevel = 0;
 
-        while($this->currentToken() && !($this->currentToken()->getType() === $closeToken && $currentLevel === 0))
+        while(!$this->parserIsDone() && !($this->currentToken()->getType() === $closeToken && $currentLevel === 0))
         {
             if ($this->currentToken()->getType() === $openToken)
             {
@@ -303,7 +301,7 @@ class ContainerParser
      * @param T                 $token
      * @return ContainerParserException
      */
-    protected function errorUnexpectedToken($token)
+    protected function errorUnexpectedToken($token) : ContainerParserException
     {
         $class = new \ReflectionClass($token);
         $constants = array_flip($class->getConstants());
@@ -312,14 +310,26 @@ class ContainerParser
     }
 
     /**
+     * Create new unexpected token exception
+     *
+     * @param string                 $message
+     * @return ContainerParserException
+     */
+    protected function errorParsing(string $message) : ContainerParserException
+    {
+        $token = $this->currentToken();
+        return new ContainerParserException($message . '" given at line ' . $token->getLine() . ' in file ' . $token->getFilename());
+    }
+
+    /**
      * Starts a new parser with the remaining or given tokens
      * 
      * @param string                $parserClassName
-     * @param array                 $tokens
+     * @param array<T>|null         $tokens
      * @param bool                  $skip
      * @return Node
      */
-    protected function parseChild(string $parserClassName, $tokens = null, $skip = true)
+    protected function parseChild(string $parserClassName, ?array $tokens = null, $skip = true) : Node
     {
         if (is_null($tokens))
         {
@@ -346,9 +356,6 @@ class ContainerParser
      */
     public function parse() : Node
     {
-        // reset the result
-        $this->result = [];
-
         // start parsing trought the tokens
         while (!$this->parserIsDone()) 
         {
@@ -373,8 +380,6 @@ class ContainerParser
 
     /**
      * Return the current result
-     * 
-     * @return null|Node
      */
     protected function node() : Node
     {
@@ -386,7 +391,7 @@ class ContainerParser
      *
      * @return null|Node
      */
-    protected function next()
+    protected function next() : ?Node
     {
         throw new ContainerParserException("The container parser acts as base and should not be used on its own.");
     }

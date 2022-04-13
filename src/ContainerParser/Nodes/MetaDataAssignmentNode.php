@@ -21,29 +21,29 @@ class MetaDataAssignmentNode extends BaseNode
      * 
      * @var string
      */
-    protected $key;
+    protected ?string $key = null;
 
     /**
      * Should the data be stacked on others
      * 
-     * @param string
+     * @var bool
      */
-    protected $isStacked = true;
+    protected bool $isStacked = true;
 
     /**
      * The data array
      * 
      * @var ArrayNode
      */
-    protected $data;
+    protected ?ArrayNode $data = null;
 
     /**
      * Service definition constructor
      * 
-     * @param string        $name
-     * @param string        $className
+     * @param string|null             $key
+     * @param ArrayNode|null          $data
      */
-    public function __construct(string $key = null, ArrayNode $data = null)
+    public function __construct(?string $key = null, ?ArrayNode $data = null)
     {
         if (!is_null($key)) { $this->setKey($key); }
         if (!is_null($data)) { $this->setData($data); }
@@ -54,7 +54,7 @@ class MetaDataAssignmentNode extends BaseNode
      * 
      * @return string
      */
-    public function getKey() : string 
+    public function getKey() : ?string 
     {
         return $this->key;
     }
@@ -62,10 +62,10 @@ class MetaDataAssignmentNode extends BaseNode
     /**
      * Set the meta data key
      * 
-     * @param Node          $node
+     * @param string          $key
      * @return void
      */
-    public function setKey(string $key)
+    public function setKey(string $key) : void
     {
         $this->key = $key;   
     }
@@ -86,7 +86,7 @@ class MetaDataAssignmentNode extends BaseNode
      * @param bool          $isStacked
      * @return void
      */
-    public function setIsStacked(bool $isStacked)
+    public function setIsStacked(bool $isStacked) : void
     {
         $this->isStacked = $isStacked;
     }
@@ -109,8 +109,6 @@ class MetaDataAssignmentNode extends BaseNode
     /**
      * Check if arguments are defined 
      * Note the arguments can still be empty
-     * 
-     * @return ArgumentArrayNode
      */
     public function hasData() : bool 
     {
@@ -119,10 +117,10 @@ class MetaDataAssignmentNode extends BaseNode
 
     /**
      * Set the data
-     * 
+     *
      * @param ArrayNode         $data
      */
-    public function setData(ArrayNode $data) 
+    public function setData(ArrayNode $data): void 
     {
         $this->data = $data;
     }

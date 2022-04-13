@@ -9,6 +9,7 @@
 namespace ClanCats\Container\ContainerParser\Parser;
 
 use ClanCats\Container\ContainerParser\{
+    Nodes\BaseNode as Node,
     ContainerParser,
     Token as T,
 
@@ -22,9 +23,9 @@ class ReferenceParser extends ContainerParser
     /**
      * Parse the next token
      *
-     * @return null|Node
+     * @return ParameterReferenceNode|ServiceReferenceNode
      */
-    protected function next()
+    protected function next() : ?Node
     { 
         $token = $this->currentToken();
 

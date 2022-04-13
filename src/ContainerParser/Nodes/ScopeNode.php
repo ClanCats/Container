@@ -17,9 +17,9 @@ class ScopeNode extends BaseNode
     /**
      * An array of parsed nodes
      * 
-     * @var array
+     * @var array<Node>
      */
-    protected $nodes = [];
+    protected array $nodes = [];
 
     /**
      * Add a node to the scope
@@ -27,7 +27,7 @@ class ScopeNode extends BaseNode
      * @param Node 			$node
      * @return void
      */
-    public function addNode(Node $node)
+    public function addNode(Node $node) : void
     {
     	$this->nodes[] = $node;
     }
@@ -35,7 +35,7 @@ class ScopeNode extends BaseNode
     /**
      * Returns the nodes array
      * 
-     * @return array
+     * @return array<Node>
      */
     public function getNodes() : array 
     {

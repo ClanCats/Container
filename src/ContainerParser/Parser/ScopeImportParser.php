@@ -24,7 +24,7 @@ class ScopeImportParser extends ContainerParser
      *
      * @return null|Node
      */
-    protected function next()
+    protected function next() : ?Node
     {
         if (!$this->currentToken()->isType(T::TOKEN_IMPORT))
         {

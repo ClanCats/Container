@@ -7,7 +7,7 @@ use ClanCats\Container\{
 
 class CustomServiceProviderArray extends ServiceProviderArray 
 {
-    protected $services = 
+    protected array $services = 
     [
         'car' => 
         [

@@ -15,6 +15,7 @@ use ClanCats\Container\ContainerParser\{
 
     // contextual node
     Nodes\ValueNode,
+    Nodes\ArrayNode,
     Nodes\MetaDataAssignmentNode
 };
 
@@ -25,7 +26,7 @@ class ServiceMetaDataParser extends ContainerParser
      *
      * @return null|Node
      */
-    protected function next()
+    protected function next() : ?Node
     {
         if (!$this->currentToken()->isType(T::TOKEN_EQUAL))
         {
@@ -62,6 +63,11 @@ class ServiceMetaDataParser extends ContainerParser
             $this->getTokensUntil(T::TOKEN_LINE, true), 
             false
         );
+
+        if (!($data instanceof ArrayNode)) {
+            throw $this->errorParsing("Trying to assign non array as metadata.");
+        }
+
         $meta->setData($data);
 
         return $meta;

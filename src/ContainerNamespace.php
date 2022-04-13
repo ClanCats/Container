@@ -173,10 +173,10 @@ class ContainerNamespace
      * Set a service in the namespace
      * 
      * @param string                        $name The service name.
-     * @param ServiceDefinition             $service The service definition.
+     * @param ServiceDefinitionInterface             $service The service definition.
      * @return void
      */
-    public function setService(string $name, ServiceDefinition $service) : void
+    public function setService(string $name, ServiceDefinitionInterface $service) : void
     {
         $this->services[$name] = $service;
     }
@@ -199,7 +199,7 @@ class ContainerNamespace
      */
     public function has(string $name) : bool
     {
-        return isset($this->paths[$name]) && is_string($this->paths[$name]);
+        return isset($this->paths[$name]);
     }
 
     /**

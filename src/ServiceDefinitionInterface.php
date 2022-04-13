@@ -27,14 +27,14 @@ interface ServiceDefinitionInterface
     /**
      * Returns all registered method calls
      * 
-     * @return array[string => ServiceArguments]
+     * @return array<string, ServiceArguments>
      */
     public function getMethodCalls() : array;
 
     /**
      * Get all metadata of the service definition
      *
-     * @return array 
+     * @return array<string, array<mixed>>
      */
     public function getMetaData() : array;
 }   

@@ -27,7 +27,7 @@ class ArrayElementNode extends BaseNode
      *
      * @var AssignableNode
      */
-    protected $value;
+    protected AssignableNode $value;
 
     /**
      * Array Element constructor

@@ -22,44 +22,32 @@ class ScopeParser extends ContainerParser
     /**
      * The current scope node
      * 
-     * @param ScopeNode
+     * @var ScopeNode
      */
-    protected $scope;
+    protected ScopeNode $scope;
 
     /**
      * Prepare the current parser 
      * 
      * @return void
      */
-    protected function prepare() 
+    protected function prepare() : void
     {
         $this->scope = new ScopeNode;
     }
 
     /**
      * Return the current result
-     * 
-     * @return Node
      */
-    protected function node() : Node
+    protected function node() : ScopeNode
     {
         return $this->scope;
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function parse() : ScopeNode
-    {
-        return parent::parse();
-    }
-
+    
     /**
      * Parse the next token
-     *
-     * @return null|Node
      */
-    protected function next()
+    protected function next() : ?Node
     {
         $token = $this->currentToken();
 
@@ -105,6 +93,8 @@ class ScopeParser extends ContainerParser
         {
             throw $this->errorUnexpectedToken($token);
         }
+
+        return null;
     }
 }
 

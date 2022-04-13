@@ -15,8 +15,12 @@ use ClanCats\Container\ContainerParser\{
 
     // contextual node
     Nodes\ValueNode,
+    Nodes\ConstructionActionNode,
+    Nodes\MetaDataAssignmentNode,
+    Nodes\ArgumentArrayNode,
     Nodes\ServiceDefinitionNode
 };
+use ClanCats\Container\ContainerParser\Nodes\ServiceReferenceNode;
 
 class ServiceDefinitionParser extends ContainerParser
 {
@@ -25,7 +29,7 @@ class ServiceDefinitionParser extends ContainerParser
      *
      * @return null|Node
      */
-    protected function next()
+    protected function next() : ?Node
     {
         $definition = new ServiceDefinitionNode();
 
@@ -72,7 +76,13 @@ class ServiceDefinitionParser extends ContainerParser
 
             // assign the class name from the identifiers value
             if ($definition->isAlias()) {
-                $definition->setAliasTarget($this->parseChild(ReferenceParser::class));
+                $ref = $this->parseChild(ReferenceParser::class);
+
+                if (!($ref instanceof ServiceReferenceNode)) {
+                    throw $this->errorParsing("Invalid service reference given");
+                }
+
+                $definition->setAliasTarget($ref);
             } else {
                 $definition->setClassName($this->currentToken()->getValue());
             }
@@ -83,6 +93,11 @@ class ServiceDefinitionParser extends ContainerParser
             if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_BRACE_OPEN) && (!$definition->isAlias()))
             {
                 $arguments = $this->parseChild(ArgumentArrayParser::class, $this->getTokensUntilClosingScope(), false);
+
+                if (!($arguments instanceof ArgumentArrayNode)) {
+                    throw $this->errorParsing("Could not parse constructor arguments for service.");
+                }
+
                 $definition->setArguments($arguments);
             }
         }
@@ -100,11 +115,21 @@ class ServiceDefinitionParser extends ContainerParser
             // parse servide definiton caller
             if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_MINUS) && (!$definition->isAlias()))
             {
-                $definition->addConstructionAction($this->parseChild(ServiceMethodCallParser::class));
+                $node = $this->parseChild(ServiceMethodCallParser::class);
+                if (!$node instanceof ConstructionActionNode) {
+                    throw $this->errorParsing('Trying to assign a non mehtod call to constructor');
+                }
+
+                $definition->addConstructionAction($node);
             }
             elseif (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_EQUAL) && (!$definition->isAlias()))
             {
-                $definition->addMetaDataAssignemnt($this->parseChild(ServiceMetaDataParser::class));
+                $node = $this->parseChild(ServiceMetaDataParser::class);
+                if (!$node instanceof MetaDataAssignmentNode) {
+                    throw $this->errorParsing('Trying to assign a non meta data assignment to service');
+                }
+
+                $definition->addMetaDataAssignemnt($node);
             }
         }
 

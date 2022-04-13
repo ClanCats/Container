@@ -19,13 +19,12 @@ class ServiceReferenceNode extends BaseNode implements AssignableNode
      * 
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * Service reference constructor
      * 
-     * @param string        $node
-     * @param ValueNode     $value
+     * @param string        $name
      */
     public function __construct(string $name)
     {
@@ -45,10 +44,10 @@ class ServiceReferenceNode extends BaseNode implements AssignableNode
     /**
      * Set the Service name
      * 
-     * @param Node 			$node
+     * @param string 			$name
      * @return void
      */
-    public function setName(string $name)
+    public function setName(string $name) : void
     {
     	$this->name = $name;   
     }

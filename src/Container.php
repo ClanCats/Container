@@ -462,7 +462,7 @@ class Container
     /**
      * Resolve a service instance from the given factory object.
      * 
-     * @param ServiceFactoryInterface|Closure           $factory The factory object.
+     * @param ServiceFactoryInterface|Closure|null       $factory The factory object.
      * 
      * @return mixed The instance of created by the factory object.
      */

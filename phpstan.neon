@@ -1,3 +1,6 @@
 parameters:
     bootstrapFiles:
         - phpunit.php
+    level: 6
+    paths:
+        - src

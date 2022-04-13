@@ -15,7 +15,7 @@ class Token
      *
      * @var int
      */
-    protected $type;
+    protected int $type;
 
     /**
      * The value of this token.
@@ -29,14 +29,14 @@ class Token
      *
      * @var int
      */
-    protected $line = 0;
+    protected int $line = 0;
 
     /**
      * The tokens filename
      * 
      * @var string  
      */
-    protected $filename;
+    protected ?string $filename;
 
     /**
      * The token types
@@ -94,8 +94,6 @@ class Token
 
     /**
      * Get the filename of the token
-     * 
-     * @return int
      */
     public function getFilename() : ?string
     {

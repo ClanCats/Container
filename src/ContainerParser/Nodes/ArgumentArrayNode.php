@@ -17,14 +17,14 @@ class ArgumentArrayNode extends BaseNode
     /**
      * An array of arguments to be passed on the services construction
      * 
-     * @var [AssignableNode]
+     * @var array<AssignableNode>
      */
     protected $arguments = [];
 
     /**
      * Get all defined arguments
      * 
-     * @return [AssignableNode]
+     * @return array<AssignableNode>
      */
     public function getArguments() : array 
     {
@@ -33,10 +33,8 @@ class ArgumentArrayNode extends BaseNode
 
     /**
      * Add an AssignableNode as argument to the service definition
-     * 
-     * @return [AssignableNode]
      */
-    public function addArgument(AssignableNode $argument) 
+    public function addArgument(AssignableNode $argument): void 
     {
         $this->arguments[] = $argument;
     }

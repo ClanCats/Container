@@ -22,28 +22,28 @@ class ContainerLexer
      *
      * @var string
      */
-    protected $code = null;
+    protected ?string $code = null;
 
     /**
      * The code lenght to iterate
      *
      * @var int
      */
-    protected $length = 0;
+    protected int $length = 0;
 
     /**
      * The current string offset in the code
      *
      * @var int
      */
-    protected $offset = 0;
+    protected int $offset = 0;
 
     /**
      * The current line
      *
      * @var int
      */
-    protected $line = 0;
+    protected int $line = 0;
 
     /**
      * The filename 
@@ -51,14 +51,14 @@ class ContainerLexer
      *
      * @var string
      */
-    protected $filename = 'unknown';
+    protected string $filename = 'unknown';
 
     /**
      * Token map
      *
-     * @var array
+     * @var array<string, int>
      */
-    protected $tokenMap = 
+    protected array $tokenMap = 
     [
         // strings
         '/^"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"/' => T::TOKEN_STRING,
@@ -112,10 +112,11 @@ class ContainerLexer
     /**
      * The constructor
      *
-     * @var string         $code
+     * @param string         $code The code to be tokenized
+     * @param string         $filename The name of the file for error reporting.
      * @return void
      */
-    public function __construct(string $code, $filename = null)
+    public function __construct(string $code, ?string $filename = null)
     {
         // there is never a need for tabs or multiple whitespaces 
         // so we remove them before assigning the code
@@ -145,7 +146,7 @@ class ContainerLexer
      *
      * @throws ContainerLexerException
      * 
-     * @return string|false Returns `false` if everything has been parsed and we are done.
+     * @return T|false Returns `false` if everything has been parsed and we are done.
      */
     protected function next()
     {
@@ -174,7 +175,7 @@ class ContainerLexer
     /**
      * Start the lexer and retrieve all resulting tokens.
      *
-     * @return array[Token]
+     * @return array<Token>
      */
     public function tokens() : array
     {

@@ -16,20 +16,22 @@ class ServiceDefinition implements ServiceDefinitionInterface
 {
     /**
      * Static instance constructor to allow eye candy like:
-     * 
+     *
      *     ServiceDefinition::for('\Acme\SessionService')
      *        ->addDependencyArgument('storage')
      *        ->addParameterArgument('session_token')
      *        ->addRawArgument(600)
-     * 
+     *
      * Or the shorter way
-     *     
+     *
      *     ServiceDefinition::for('\Acme\SessionService', ['@storage', ':session_token', 600])
-     * 
+     *
      * @param string            $serviceClassName The full class name of the desired service.
-     * @param array             $arguments An array of constructor arguments for the service.     
+     * @param array<mixed>             $arguments An array of constructor arguments for the service.     
+     *
+     * @return static
      */
-    public static function for(string $serviceClassName, array $arguments = [])
+    public static function for(string $serviceClassName, array $arguments = []): self
     {
         return new static($serviceClassName, $arguments);
     }
@@ -45,7 +47,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
      *         ]
      *     ])
      * 
-     * @param array             $serviceConfiguration
+     * @param array<mixed>             $serviceConfiguration
      * @return static
      */
     public static function fromArray(array $serviceConfiguration)
@@ -94,24 +96,24 @@ class ServiceDefinition implements ServiceDefinitionInterface
     /**
      * An array of method calls after service construction
      * 
-     * @var array[[<method name>, ServiceArguments]]
+     * @var array<string, ServiceArguments>
      */
-    protected $methodCallers = [];
+    protected array $methodCallers = [];
 
     /**
      * Meta data for this service definition
      *
-     * @var array[string => array]  
+     * @var array<string, array<mixed>>  
      */
-    protected $metaData = [];
+    protected array $metaData = [];
 
     /**
      * Construct a new service definition with the given classname and optional arguments as array.
      * 
-     * @param string            $className The full class name of the desired service.
-     * @param array             $arguments An array of constructor arguments for the service.  
+     * @param string                   $className The full class name of the desired service.
+     * @param array<mixed>             $arguments An array of constructor arguments for the service.  
      */
-    public function __construct(string $className, array $arguments = [])
+    final public function __construct(string $className, array $arguments = [])
     {
         $this->className = $className;
         $this->constructorArguments = new ServiceArguments($arguments);
@@ -130,7 +132,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
     /**
      * Add an array of arguments to the service constructor
      * 
-     * @param array             $arguments
+     * @param array<mixed>             $arguments
      * @return self
      */
     public function arguments(array $arguments) : ServiceDefinition
@@ -184,8 +186,8 @@ class ServiceDefinition implements ServiceDefinitionInterface
     /**
      * Adds a method call to the service definition, the arguments should be set as an array.
      * 
-     * @param string            $method The name of the method to be called.
-     * @param array             $arguments The method arguments as array.
+     * @param string                   $method The name of the method to be called.
+     * @param array<mixed>             $arguments The method arguments as array.
      * @return self
      */
     public function calls(string $method, array $arguments = []) : ServiceDefinition
@@ -208,7 +210,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
     /**
      * Returns all registered method calls
      * 
-     * @return array
+     * @return array<string, ServiceArguments>
      */
     public function getMethodCalls() : array
     {
@@ -218,8 +220,8 @@ class ServiceDefinition implements ServiceDefinitionInterface
     /**
      * Sets meta data for the given key
      *
-     * @param string        $key
-     * @param array         $values
+     * @param string               $key
+     * @param array<mixed>         $values
      * @return self
      */
     public function addMetaData(string $key, array $values)
@@ -234,7 +236,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
     /**
      * Get all metadata of the service definition
      *
-     * @return array 
+     * @return array<string, array<mixed>>
      */
     public function getMetaData() : array
     {

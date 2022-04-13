@@ -90,7 +90,7 @@ class ContainerFactory
     {
         if (class_exists($containerName))
         {
-            return new $containerName; // @phpstan-ignore-line
+            return new $containerName;
         }
 
         $fileName = basename(str_replace("\\", '/', $containerName));
@@ -119,6 +119,6 @@ class ContainerFactory
         require_once $cacheFile;
 
         // create an instance of the generated container
-        return new $containerName($initalParameters); // @phpstan-ignore-line
+        return new $containerName($initalParameters);
     }
 }
