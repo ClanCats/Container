@@ -152,7 +152,7 @@ Create a new file called `app.ctn` in your applications root folder.
 
 ```php
 @malcolm: Human
-    - setName('Reynolds')
+  - setName('Reynolds')
 
 @firefly: SpaceShip(@malcolm)
 ```
@@ -214,9 +214,9 @@ For this, we usually create two files. In this example:
 
 // Firewall whitelist
 :firewall.whitelisted_ips: {
-    '127.0.0.1': 'Local',
-    '1.2.3.4': 'Some Office',
-    '4.3.2.1': 'Another Office',
+  '127.0.0.1': 'Local',
+  '1.2.3.4': 'Some Office',
+  '4.3.2.1': 'Another Office',
 }
 
 // application name
@@ -233,8 +233,8 @@ override :debug: true
 
 // Firewall whitelist
 override :firewall.whitelisted_ips: {
-    '127.0.0.1': 'Local',
-    '192.168.33.1': 'MyComputer',
+  '127.0.0.1': 'Local',
+  '192.168.33.1': 'MyComputer',
 }
 ```
 
@@ -275,17 +275,17 @@ Your can use the container metadata to define routes directly with your service 
 
 ```php
 @controller.dashboard.home: App\Controller\Dashboard\HomepageAction
-    = route: {'GET'}, '/dashboard/home'
+  = route: {'GET'}, '/dashboard/home'
 
 @controller.dashboard.sign_in: App\Controller\Dashboard\SignInAction
-    = route: {'GET', 'POST'}, '/dashboard/signin'
+  = route: {'GET', 'POST'}, '/dashboard/signin'
 
 @controller.dashboard.sign_out: App\Controller\Dashboard\SignOutAction
-    = route: {'GET'}, '/logout'
+  = route: {'GET'}, '/logout'
 
 @controller.dashboard.client: App\Controller\Dashboard\ClientDetailAction
-    = route: {'GET'}, '/dashboard/clients/me'
-    = route: {'GET'}, '/dashboard/clients/{clientId}'
+  = route: {'GET'}, '/dashboard/clients/me'
+  = route: {'GET'}, '/dashboard/clients/{clientId}'
 ```
 
 Now obviously this is depending on your routing implementation. You are able to fetch all services with a routing definition like so:
@@ -324,8 +324,8 @@ Just like with the routing you can use the meta data system to define eventliste
   = on: 'http.exception', call: 'onHTTPException'
 
 @signal.bootstrap_handler: App\Bootstrap
-    = on: 'bootstrap.pre', call: 'onBootstrapPre'
-    = on: 'bootstrap.post', call: 'onBootstrapPost'
+  = on: 'bootstrap.pre', call: 'onBootstrapPre'
+  = on: 'bootstrap.post', call: 'onBootstrapPost'
 ```
 
 And then in your event dispatcher register all services that have the matching metadata.
