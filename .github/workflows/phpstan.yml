@@ -1,4 +1,4 @@
-name: Hydrogen PHPUnit
+name: PHPStan
 
 on:
   push:
