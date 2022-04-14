@@ -19,6 +19,8 @@ use ClanCats\Container\ContainerParser\{
     Parser\ScopeParser,
     Nodes\ScopeNode
 };
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
 
 /**
  * The container namespace acts as a collection of multiple 
@@ -90,6 +92,38 @@ class ContainerNamespace
 
         $vendorPaths = require $mappingFile;
         $this->paths = array_merge($vendorPaths, $this->paths);
+    }
+
+    /**
+     * Recursivly imports all `ctn` files in the given directory into the namespace 
+     * You can specify a prefix to be applied to each ctn file
+     * 
+     * @param string                $directory The directory path where to look for container files
+     * @param string                $prefix optional prefix to be appiled to the import name
+     * @param string                $fileExtension allows you to specify a custom file extension
+     */
+    public function importDirectory(string $directory, string $prefix = '', string $fileExtension = '.ctn') : void
+    {
+        // find available container files
+        $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
+
+        $importPaths = [];
+        foreach ($rii as $file) 
+        {
+            // skip directories
+            if ($file->isDir()) continue;
+
+            // skip non ctn files
+            if (substr($file->getPathname(), -4) !== $fileExtension) continue;
+
+            // get the import name
+            $importName = trim($prefix . substr($file->getPathname(), strlen($directory), -(strlen($fileExtension))), '/');
+
+            // add the file
+            $importPaths[$importName] = $file->getPathname();
+        }
+
+        $this->paths = array_merge($this->paths, $importPaths);
     }
 
     /**
@@ -200,6 +234,17 @@ class ContainerNamespace
     public function has(string $name) : bool
     {
         return isset($this->paths[$name]);
+    }
+
+    /**
+     * Returns the system path to a file in the namespace
+     * 
+     * @param string            $name
+     * @return string
+     */
+    public function getPath(string $name) : string 
+    {
+        return $this->paths[$name];
     }
 
     /**

@@ -425,7 +425,7 @@ class ContainerBuilder
      */
     private function generateParameters() : string
     {
-        return "protected \$parameters = " . var_export($this->parameters, true) . ";\n";
+        return "protected array \$parameters = " . var_export($this->parameters, true) . ";\n";
     }
 
     /**
@@ -435,7 +435,7 @@ class ContainerBuilder
      */
     private function generateAliases() : string
     {
-        return "protected \$serviceAliases = " . var_export($this->aliases, true) . ";\n";
+        return "protected array \$serviceAliases = " . var_export($this->aliases, true) . ";\n";
     }
 
     /**
@@ -469,7 +469,7 @@ class ContainerBuilder
             }
         }
 
-        return "protected \$metadata = " . var_export($metaData, true) . ";\nprotected \$metadataService = " . var_export($metaDataService, true) . ";\n";
+        return "protected array \$metadata = " . var_export($metaData, true) . ";\nprotected array \$metadataService = " . var_export($metaDataService, true) . ";\n";
     }
 
     /**
@@ -492,7 +492,7 @@ class ContainerBuilder
             $types[] = var_export($serviceName, true) . ' => ' . Container::RESOLVE_ALIAS;
         }
 
-        return "protected \$serviceResolverType = [" . implode(', ', $types) . "];\n";
+        return "protected array \$serviceResolverType = [" . implode(', ', $types) . "];\n";
     }
 
     /**
@@ -509,7 +509,7 @@ class ContainerBuilder
             $mappings[] = var_export($serviceName, true) . ' => ' . var_export($this->getResolverMethodName($serviceName), true);
         }
 
-        return "protected \$resolverMethods = [" . implode(', ', $mappings) . "];\n";
+        return "protected array \$resolverMethods = [" . implode(', ', $mappings) . "];\n";
     }
 
     /**

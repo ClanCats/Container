@@ -162,6 +162,11 @@ class ContainerLexer
                 if ($token === T::TOKEN_LINE) {
                     $this->line++;
                 }
+                
+                // make sure to also count multiline comments
+                if ($token === T::TOKEN_COMMENT) {
+                    $this->line+= substr_count($matches[0], "\n");
+                }
 
                 $this->offset += strlen($matches[0]);
 

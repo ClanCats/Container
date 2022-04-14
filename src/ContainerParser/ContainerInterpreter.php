@@ -104,7 +104,7 @@ class ContainerInterpreter
 
         // after retrieving new code we have 
         // to start a new lexer & and parser 
-        $lexer = new ContainerLexer($code);
+        $lexer = new ContainerLexer($code, $this->namespace->getPath($path));
         $parser = new ScopeParser($lexer->tokens());
         $scopeNode = $parser->parse();
 

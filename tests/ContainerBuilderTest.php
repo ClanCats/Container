@@ -286,12 +286,12 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
         $builder = new ContainerBuilder('TestContainer');
 
         $builder->add('foo', 'Test');
-        $this->assertStringContainsStringProxy("protected \$resolverMethods = ['foo' => 'resolveFoo'];", $builder->generate());
+        $this->assertStringContainsStringProxy("protected array \$resolverMethods = ['foo' => 'resolveFoo'];", $builder->generate());
 
         $builder = new ContainerBuilder('TestContainer');
 
         $builder->add('foo.bar_test', 'Test');
-        $this->assertStringContainsStringProxy("protected \$resolverMethods = ['foo.bar_test' => 'resolveFooBarTest'];", $builder->generate());
+        $this->assertStringContainsStringProxy("protected array \$resolverMethods = ['foo.bar_test' => 'resolveFooBarTest'];", $builder->generate());
     }
 
     public function testGenerateResolverMethods()
