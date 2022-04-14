@@ -26,9 +26,9 @@ class ArgumentArrayParser extends ContainerParser
     /**
      * The current arguments node
      * 
-     * @var ArgumentArrayNode|null
+     * @var ArgumentArrayNode
      */
-    protected ?ArgumentArrayNode $arguments = null;
+    protected ArgumentArrayNode $arguments;
 
     /**
      * Prepare the current parser 

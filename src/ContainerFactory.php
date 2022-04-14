@@ -80,7 +80,8 @@ class ContainerFactory
      * Create a container with the given name. You can pass an 
      * array with services
      * 
-     * @param string                         $containerName
+     * @template CLASS
+     * @param class-string<CLASS>            $containerName
      * @param callable                       $builderCallback
      * @param array<string, mixed>           $initalParameters
      * 
@@ -88,17 +89,18 @@ class ContainerFactory
      */
     public function create(string $containerName, callable $builderCallback, array $initalParameters = []) : Container
     {
-        if (class_exists($containerName))
+        $classString = (string) $containerName;
+        if (class_exists($classString))
         {
             return new $containerName;
         }
 
-        $fileName = basename(str_replace("\\", '/', $containerName));
+        $fileName = basename(str_replace("\\", '/', $classString));
         $cacheFile = $this->cacheDirectory . $fileName . '.php';
 
         if ((!(file_exists($cacheFile) && is_readable($cacheFile))) || $this->isDebugMode())
         {
-            $builder = new ContainerBuilder($containerName);
+            $builder = new ContainerBuilder($classString);
 
             // run the builder callback
             $builderCallback($builder);

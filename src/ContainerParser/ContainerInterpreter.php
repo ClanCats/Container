@@ -199,8 +199,8 @@ class ContainerInterpreter
         }
 
         // special case if an alias is beeing defined
-        if ($definition->isAlias()) {
-            $this->namespace->setAlias($definition->getName(), $definition->getAliasTarget()->getName());
+        if ($definition->isAlias() && $aliasTarget = $definition->getAliasTarget()) {
+            $this->namespace->setAlias($definition->getName(), $aliasTarget->getName());
             return;
         }
 
@@ -274,9 +274,9 @@ class ContainerInterpreter
         {
             if ($meta instanceof MetaDataAssignmentNode && $service instanceof ServiceDefinition)
             {
-                if ($meta->hasData()) 
+                if ($meta->hasData() && $dataNode = $meta->getData()) 
                 {
-                    $service->addMetaData($meta->getKey(), $meta->getData()->convertToNativeArray());
+                    $service->addMetaData($meta->getKey(), $dataNode->convertToNativeArray());
                 } else {
                     $service->addMetaData($meta->getKey(), []);
                 }

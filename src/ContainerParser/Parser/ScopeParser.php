@@ -58,39 +58,43 @@ class ScopeParser extends ContainerParser
             $token = $this->nextToken();
 
             // only allow override of service and parameter definitions
-            if (!($token->isType(T::TOKEN_PARAMETER) || $token->isType(T::TOKEN_DEPENDENCY)))
+            if ($token && !($token->isType(T::TOKEN_PARAMETER) || $token->isType(T::TOKEN_DEPENDENCY)))
             {
                 throw $this->errorUnexpectedToken($this->currentToken());
             }
         }
 
         // is parameter definition
-        if ($token->isType(T::TOKEN_PARAMETER)) 
+        if ($token && $token->isType(T::TOKEN_PARAMETER)) 
         {
             $this->scope->addNode($this->parseChild(ParameterDefinitionParser::class));
         }
 
         // is service definition
-        elseif ($token->isType(T::TOKEN_DEPENDENCY)) 
+        elseif ($token && $token->isType(T::TOKEN_DEPENDENCY)) 
         {
             $this->scope->addNode($this->parseChild(ServiceDefinitionParser::class));
         }
 
         // import another scope
-        elseif ($token->isType(T::TOKEN_IMPORT)) 
+        elseif ($token && $token->isType(T::TOKEN_IMPORT)) 
         {
             $this->scope->addNode($this->parseChild(ScopeImportParser::class));
         }
 
         // just a linebreak
-        elseif ($token->isType(T::TOKEN_LINE)) 
+        elseif ($token && $token->isType(T::TOKEN_LINE)) 
         {
             $this->skipToken();
         }
 
         // anything else?
         else 
-        {
+        {   
+            if (!$token) {
+                throw $this->errorParsing('Unexpected end of scope..');
+            }
+
             throw $this->errorUnexpectedToken($token);
         }
 

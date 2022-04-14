@@ -27,7 +27,7 @@ interface ServiceDefinitionInterface
     /**
      * Returns all registered method calls
      * 
-     * @return array<string, ServiceArguments>
+     * @return array<array{string, ServiceArguments}>
      */
     public function getMethodCalls() : array;
 

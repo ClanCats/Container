@@ -21,7 +21,7 @@ class ServiceMethodCallNode extends BaseNode implements ConstructionActionNode
      * 
      * @var string
      */
-    protected ?string $name = null;
+    protected string $name;
 
     /**
      * Should the call be stacked on others
@@ -40,12 +40,12 @@ class ServiceMethodCallNode extends BaseNode implements ConstructionActionNode
     /**
      * Service definition constructor
      * 
-     * @param string|null                   $name
+     * @param string                   $name
      * @param ArgumentArrayNode|null        $arguments
      */
-    public function __construct(?string $name = null, ?ArgumentArrayNode $arguments = null)
+    public function __construct(string $name, ?ArgumentArrayNode $arguments = null)
     {
-        if (!is_null($name)) { $this->setName($name); }
+        $this->setName($name);
         if (!is_null($arguments)) {  $this->setArguments($arguments); }
     }
 
@@ -54,7 +54,7 @@ class ServiceMethodCallNode extends BaseNode implements ConstructionActionNode
      * 
      * @return string
      */
-    public function getName() : ?string 
+    public function getName() : string 
     {
         return $this->name;
     }
@@ -98,8 +98,7 @@ class ServiceMethodCallNode extends BaseNode implements ConstructionActionNode
      */
     public function getArguments() : ArgumentArrayNode 
     {
-        if (!$this->hasArguments()) 
-        {
+        if (is_null($this->arguments)) {
             throw new LogicalNodeException("This service definition has no arguments.");
         }
 

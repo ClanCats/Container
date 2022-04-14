@@ -37,7 +37,7 @@ class ValueNode extends BaseNode implements AssignableNode
 	 *
 	 * @var int
 	 */
-	protected ?int $type = null;
+	protected int $type = self::TYPE_UNKNOWN;
 	
 	/**
 	 * The value value >.>
@@ -51,6 +51,7 @@ class ValueNode extends BaseNode implements AssignableNode
      * 
      * This MUST equal the token type raw values!
      */
+    public const TYPE_UNKNOWN = -1;
     public const TYPE_STRING = 0;
     public const TYPE_NUMBER = 1;
     public const TYPE_BOOL_TRUE = 2;

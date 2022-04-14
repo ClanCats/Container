@@ -21,7 +21,7 @@ class MetaDataAssignmentNode extends BaseNode
      * 
      * @var string
      */
-    protected ?string $key = null;
+    protected string $key;
 
     /**
      * Should the data be stacked on others
@@ -40,12 +40,12 @@ class MetaDataAssignmentNode extends BaseNode
     /**
      * Service definition constructor
      * 
-     * @param string|null             $key
+     * @param string             $key
      * @param ArrayNode|null          $data
      */
-    public function __construct(?string $key = null, ?ArrayNode $data = null)
+    public function __construct(string $key, ?ArrayNode $data = null)
     {
-        if (!is_null($key)) { $this->setKey($key); }
+        $this->setKey($key);
         if (!is_null($data)) { $this->setData($data); }
     }
 
@@ -54,7 +54,7 @@ class MetaDataAssignmentNode extends BaseNode
      * 
      * @return string
      */
-    public function getKey() : ?string 
+    public function getKey() : string 
     {
         return $this->key;
     }
@@ -94,9 +94,9 @@ class MetaDataAssignmentNode extends BaseNode
     /**
      * Get the data 
      * 
-     * @return ArrayNode
+     * @return ArrayNode|null
      */
-    public function getData() : ArrayNode 
+    public function getData() : ?ArrayNode 
     {
         if (!$this->hasData()) 
         {

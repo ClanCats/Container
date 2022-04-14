@@ -221,8 +221,7 @@ class ServiceDefinitionNode extends BaseNode
      */
     public function getArguments() : ArgumentArrayNode 
     {
-        if (!$this->hasArguments()) 
-        {
+        if (is_null($this->arguments)) {
             throw new LogicalNodeException("This service definition has no arguments.");
         }
 

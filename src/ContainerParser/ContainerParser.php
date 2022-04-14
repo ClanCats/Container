@@ -144,12 +144,12 @@ class ContainerParser
      * If the token does not exist because its off index "false" is returend.
      *
      * @param int             $i
-     * @return T|false
+     * @return T|null
      */
-    protected function nextToken(int $i = 1)
+    protected function nextToken(int $i = 1) : ?T
     {
         if (!isset($this->tokens[$this->index + $i])) {
-            return false;
+            return null;
         }
 
         return $this->tokens[$this->index + $i];
@@ -324,7 +324,8 @@ class ContainerParser
     /**
      * Starts a new parser with the remaining or given tokens
      * 
-     * @param string                $parserClassName
+     * @template CLASS
+     * @param class-string<CLASS>   $parserClassName
      * @param array<T>|null         $tokens
      * @param bool                  $skip
      * @return Node

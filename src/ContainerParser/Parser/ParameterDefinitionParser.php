@@ -46,9 +46,9 @@ class ParameterDefinitionParser extends ContainerParser
         $parameterName = substr($parameterName, 1);
 
         // now a assign ":" character must follow
-        if (!$this->nextToken()->isType(T::TOKEN_ASSIGN))
+        if (($nextToken = $this->nextToken()) && !$nextToken->isType(T::TOKEN_ASSIGN))
         {
-            throw $this->errorUnexpectedToken($this->nextToken());
+            throw $this->errorUnexpectedToken($nextToken);
         }
 
         // at this point we can skip the name and assign character
