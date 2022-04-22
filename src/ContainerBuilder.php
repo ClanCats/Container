@@ -21,58 +21,58 @@ class ContainerBuilder
      * 
      * @var string
      */
-    protected $containerName;
+    protected string $containerName;
 
     /**
      * The class name without namespace
      * 
      * @var string
      */
-    protected $containerClassName;
+    protected string $containerClassName;
 
     /**
      * Just the namespace
      * 
-     * @var string
+     * @var string|null
      */
-    protected $containerNamespace;
+    protected ?string $containerNamespace = null;
 
     /**
      * An array of paramters to be builded directly
      * as propterty.
      * 
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $parameters = [];
+    protected array $parameters = [];
 
     /**
      * An array of service aliases to be defined.
      * 
-     * @var array
+     * @var array<string, string>
      */
-    protected $aliases = [];
+    protected array $aliases = [];
 
     /**
      * An array of binded services
      * 
-     * @param array[string => Service]
+     * @var array<string, ServiceDefinitionInterface>
      */
-    protected $services = [];
+    protected array $services = [];
 
     /**
      * An array of service names that should be shared in the builded container
      * 
-     * @param array[string]
+     * @var array<string>
      */
-    protected $shared = [];
+    protected array$shared = [];
 
     /**
      * An array of converted service names
      * The normalized service names is camel cased and should be usable as method name.
      * 
-     * @param array[string]
+     * @var array<string>
      */
-    private $normalizedServiceNames = [];
+    private array $normalizedServiceNames = [];
 
     /**
      * Constrcut a container builder instance 
@@ -139,7 +139,7 @@ class ContainerBuilder
      * 
      * @return string|null
      */
-    public function getContainerNamespace()
+    public function getContainerNamespace() : ?string
     {
         return $this->containerNamespace;
     }
@@ -147,7 +147,7 @@ class ContainerBuilder
     /**
      * Get all currently added services 
      * 
-     * @return array[string => ServiceDefinition]
+     * @return array<string, ServiceDefinitionInterface>
      */
     public function getServices() : array 
     {
@@ -157,7 +157,7 @@ class ContainerBuilder
     /**
      * Returns all shared service names
      * 
-     * @return array[string]
+     * @return array<string>
      */
     public function getSharedNames() : array 
     {
@@ -167,10 +167,10 @@ class ContainerBuilder
     /**
      * Add a service by string and arguments array.
      * 
-     * @param string            $serviceName
-     * @param string            $serviceClass
-     * @param array             $serviceArguments
-     * @param bool              $shared
+     * @param string                    $serviceName
+     * @param string                    $serviceClass
+     * @param array<mixed>              $serviceArguments
+     * @param bool                      $isShared
      * @return ServiceDefinition
      */
     public function add(string $serviceName, string $serviceClass, array $serviceArguments = [], bool $isShared = true) : ServiceDefinition
@@ -184,10 +184,10 @@ class ContainerBuilder
     /**
      * Add services by an array
      * 
-     * @param array             $serviceArray
+     * @param array<string, array<mixed>>       $servicesArray
      * @return void
      */
-    public function addArray(array $servicesArray) 
+    public function addArray(array $servicesArray) : void
     {
         foreach($servicesArray as $serviceName => $serviceConfiguration)
         {
@@ -202,7 +202,7 @@ class ContainerBuilder
      * @param ServiceDefinitionInterface    $serviceDefinition
      * @return void
      */
-    public function addService(string $serviceName, ServiceDefinitionInterface $serviceDefinition, bool $isShared = true) 
+    public function addService(string $serviceName, ServiceDefinitionInterface $serviceDefinition, bool $isShared = true) : void
     {
         if ($this->invalidServiceBuilderString($serviceName))
         {
@@ -230,9 +230,9 @@ class ContainerBuilder
      * Import data from a container namespace 
      * 
      * @param ContainerNamespace            $namespace
-     * @return void
+     * @return void
      */
-    public function importNamespace(ContainerNamespace $namespace)
+    public function importNamespace(ContainerNamespace $namespace) : void
     {
         // import the parameters
         $this->parameters = array_merge($this->parameters, $namespace->getParameters());
@@ -425,7 +425,7 @@ class ContainerBuilder
      */
     private function generateParameters() : string
     {
-        return "protected \$parameters = " . var_export($this->parameters, true) . ";\n";
+        return "protected array \$parameters = " . var_export($this->parameters, true) . ";\n";
     }
 
     /**
@@ -435,7 +435,7 @@ class ContainerBuilder
      */
     private function generateAliases() : string
     {
-        return "protected \$serviceAliases = " . var_export($this->aliases, true) . ";\n";
+        return "protected array \$serviceAliases = " . var_export($this->aliases, true) . ";\n";
     }
 
     /**
@@ -469,7 +469,7 @@ class ContainerBuilder
             }
         }
 
-        return "protected \$metadata = " . var_export($metaData, true) . ";\nprotected \$metadataService = " . var_export($metaDataService, true) . ";\n";
+        return "protected array \$metadata = " . var_export($metaData, true) . ";\nprotected array \$metadataService = " . var_export($metaDataService, true) . ";\n";
     }
 
     /**
@@ -492,7 +492,7 @@ class ContainerBuilder
             $types[] = var_export($serviceName, true) . ' => ' . Container::RESOLVE_ALIAS;
         }
 
-        return "protected \$serviceResolverType = [" . implode(', ', $types) . "];\n";
+        return "protected array \$serviceResolverType = [" . implode(', ', $types) . "];\n";
     }
 
     /**
@@ -509,7 +509,7 @@ class ContainerBuilder
             $mappings[] = var_export($serviceName, true) . ' => ' . var_export($this->getResolverMethodName($serviceName), true);
         }
 
-        return "protected \$resolverMethods = [" . implode(', ', $mappings) . "];\n";
+        return "protected array \$resolverMethods = [" . implode(', ', $mappings) . "];\n";
     }
 
     /**

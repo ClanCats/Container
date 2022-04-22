@@ -14,6 +14,7 @@ use ClanCats\Container\ContainerParser\{
     Token as T,
 
     // contextual node
+    Nodes\AssignableNode,
     Nodes\ArrayNode,
     Nodes\ArrayElementNode,
     Nodes\ParameterReferenceNode,
@@ -26,9 +27,9 @@ class ArrayParser extends ContainerParser
     /**
      * The current arguments node
      * 
-     * @param ArgumentArrayNode
+     * @var ArrayNode
      */
-    protected $array;
+    protected ArrayNode $array;
 
     /**
      * Prepare the current parser 
@@ -42,8 +43,6 @@ class ArrayParser extends ContainerParser
 
     /**
      * Return the current result
-     * 
-     * @return null|Node
      */
     protected function node() : Node
     {
@@ -52,10 +51,8 @@ class ArrayParser extends ContainerParser
 
     /**
      * Parse the next token
-     *
-     * @return null|Node
      */
-    protected function next()
+    protected function next() : ?Node
     {
         // is the current element associative?
         $associativeArray = $this->nextToken() && $this->nextToken()->isType(T::TOKEN_ASSIGN);
@@ -124,13 +121,17 @@ class ArrayParser extends ContainerParser
         // just a linebreak
         elseif ($token->isType(T::TOKEN_LINE)) 
         {
-            $this->skipToken(); return;
+            $this->skipToken(); return null;
         }
 
         // anything else?
         else 
         {
             throw $this->errorUnexpectedToken($token);
+        }
+
+        if (!($elementValue instanceof AssignableNode)) {
+            throw $this->errorParsing("Trying to assign nonassignable to array.");
         }
 
         // update our array node
@@ -148,6 +149,8 @@ class ArrayParser extends ContainerParser
         {
             $this->skipToken();
         }
+
+        return null;
     }
 }
 

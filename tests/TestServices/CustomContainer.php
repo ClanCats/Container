@@ -7,12 +7,12 @@ use ClanCats\Container\{
 
 class CustomContainer extends Container 
 {
-    protected $resolverMethods = [
+    protected array $resolverMethods = [
         'engine' => 'resolveEngine',
         'car' => 'resolveCar',
     ];
 
-    protected $serviceResolverType = [
+    protected array $serviceResolverType = [
         'engine' => 0, 'car' => 0, 'broken' => 42,
     ];
 

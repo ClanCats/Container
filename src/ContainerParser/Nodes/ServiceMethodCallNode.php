@@ -21,31 +21,31 @@ class ServiceMethodCallNode extends BaseNode implements ConstructionActionNode
      * 
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * Should the call be stacked on others
      * 
-     * @param string
+     * @var bool
      */
-    protected $isStacked = false;
+    protected bool $isStacked = false;
 
     /**
      * An array of arguments to be passed on the services construction
      * 
      * @var ArgumentArrayNode
      */
-    protected $arguments;
+    protected ?ArgumentArrayNode $arguments = null;
 
     /**
      * Service definition constructor
      * 
-     * @param string        $name
-     * @param string        $className
+     * @param string                   $name
+     * @param ArgumentArrayNode|null        $arguments
      */
-    public function __construct(string $name = null, ArgumentArrayNode $arguments = null)
+    public function __construct(string $name, ?ArgumentArrayNode $arguments = null)
     {
-        if (!is_null($name)) { $this->setName($name); }
+        $this->setName($name);
         if (!is_null($arguments)) {  $this->setArguments($arguments); }
     }
 
@@ -62,7 +62,7 @@ class ServiceMethodCallNode extends BaseNode implements ConstructionActionNode
     /**
      * Set the parameters name
      * 
-     * @param Node          $node
+     * @param string          $name
      * @return void
      */
     public function setName(string $name)
@@ -98,8 +98,7 @@ class ServiceMethodCallNode extends BaseNode implements ConstructionActionNode
      */
     public function getArguments() : ArgumentArrayNode 
     {
-        if (!$this->hasArguments()) 
-        {
+        if (is_null($this->arguments)) {
             throw new LogicalNodeException("This service definition has no arguments.");
         }
 
@@ -109,8 +108,6 @@ class ServiceMethodCallNode extends BaseNode implements ConstructionActionNode
     /**
      * Check if arguments are defined 
      * Note the arguments can still be empty
-     * 
-     * @return ArgumentArrayNode
      */
     public function hasArguments() : bool 
     {
@@ -119,10 +116,10 @@ class ServiceMethodCallNode extends BaseNode implements ConstructionActionNode
 
     /**
      * Set the arguments array
-     * 
+     *
      * @param ArgumentArrayNode         $arguments
      */
-    public function setArguments(ArgumentArrayNode $arguments) 
+    public function setArguments(ArgumentArrayNode $arguments): void 
     {
         $this->arguments = $arguments;
     }

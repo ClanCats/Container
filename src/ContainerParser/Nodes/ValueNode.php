@@ -35,9 +35,9 @@ class ValueNode extends BaseNode implements AssignableNode
     /**
 	 * The value type
 	 *
-	 * @var string
+	 * @var int
 	 */
-	protected $type = null;
+	protected int $type = self::TYPE_UNKNOWN;
 	
 	/**
 	 * The value value >.>
@@ -51,17 +51,19 @@ class ValueNode extends BaseNode implements AssignableNode
      * 
      * This MUST equal the token type raw values!
      */
-    const TYPE_STRING = 0;
-    const TYPE_NUMBER = 1;
-    const TYPE_BOOL_TRUE = 2;
-    const TYPE_BOOL_FALSE = 3;
-    const TYPE_NULL = 4;
+    public const TYPE_UNKNOWN = -1;
+    public const TYPE_STRING = 0;
+    public const TYPE_NUMBER = 1;
+    public const TYPE_BOOL_TRUE = 2;
+    public const TYPE_BOOL_FALSE = 3;
+    public const TYPE_NULL = 4;
 
 	/**
      * Construct the value node
-     * 
+     *
      * @param mixed 			$value
-     * @param strign 			$type
+     * @param int               $type
+     *
      * @return void
      */
     public function __construct($value, int $type)
@@ -81,9 +83,7 @@ class ValueNode extends BaseNode implements AssignableNode
     }
 
     /**
-     * Return the current type 
-     * 
-     * @return int
+     * Return the current type
      */
     public function getType() : int 
     {

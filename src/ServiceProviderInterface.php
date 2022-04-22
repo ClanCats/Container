@@ -13,7 +13,7 @@ interface ServiceProviderInterface
     /**
      * What services are provided by the service provider
      * 
-     * @return array[string]
+     * @return array<string>
      */
     public function provides() : array;
 
@@ -25,7 +25,7 @@ interface ServiceProviderInterface
      * 
      * @param string                    $serviceName
      * @param Container                 $container
-     * @return array[string, bool]
+     * @return array{mixed, bool}
      */
     public function resolve(string $serviceName, Container $container) : array;
 }   

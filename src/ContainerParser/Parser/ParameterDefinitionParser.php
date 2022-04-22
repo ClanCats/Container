@@ -14,6 +14,7 @@ use ClanCats\Container\ContainerParser\{
     Token as T,
 
     // contextual node
+    Nodes\AssignableNode,
     Nodes\ValueNode,
     Nodes\ParameterDefinitionNode
 };
@@ -25,7 +26,7 @@ class ParameterDefinitionParser extends ContainerParser
      *
      * @return null|Node
      */
-    protected function next()
+    protected function next() : ?Node
     {
         $isOverride = false;
         if ($this->currentToken()->isType(T::TOKEN_OVERRIDE))
@@ -45,9 +46,9 @@ class ParameterDefinitionParser extends ContainerParser
         $parameterName = substr($parameterName, 1);
 
         // now a assign ":" character must follow
-        if (!$this->nextToken()->isType(T::TOKEN_ASSIGN))
+        if (($nextToken = $this->nextToken()) && !$nextToken->isType(T::TOKEN_ASSIGN))
         {
-            throw $this->errorUnexpectedToken($this->nextToken());
+            throw $this->errorUnexpectedToken($nextToken);
         }
 
         // at this point we can skip the name and assign character
@@ -81,6 +82,10 @@ class ParameterDefinitionParser extends ContainerParser
         else 
         {
             throw $this->errorUnexpectedToken($this->currentToken());
+        }
+        
+        if (!($parameterValue instanceof AssignableNode)) {
+            throw $this->errorParsing("Trying declare parameter with non assignable.");
         }
 
         // create the definition node

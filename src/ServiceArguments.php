@@ -19,7 +19,7 @@ class ServiceArguments
      *         600, // session lifetime
      *     ])
      * 
-     * @param array         $arguments The arguments as array.
+     * @param array<mixed>         $arguments The arguments as array.
      */
     public static function from(array $arguments) : ServiceArguments
     {
@@ -31,24 +31,24 @@ class ServiceArguments
      * Subclasses would be cleaner, but this could have 
      * a real performance impact so lets do it oldschool 
      */ 
-    const RAW = 0;
-    const PARAMETER = 1;
-    const DEPENDENCY = 2;
+    public const RAW = 0;
+    public const PARAMETER = 1;
+    public const DEPENDENCY = 2;
 
     /**
      * An array of arguments
      * 
-     * @var array[[string, int]]
+     * @var array<mixed>
      */
-    protected $arguments = [];
+    protected array $arguments = [];
 
     /**
      * Construct new arguments object with array
      * 
-     * @param array             $arguments
+     * @param array<mixed>             $arguments
      * @return void
      */
-    public function __construct(array $arguments = [])
+    final public function __construct(array $arguments = [])
     {
         $this->addArgumentsFromArray($arguments);
     }
@@ -104,7 +104,7 @@ class ServiceArguments
      *  - @ prefix indicates dependency
      *  - : prefix indicates parameter
      * 
-     * @param array                 $argumentsArray
+     * @param array<mixed>                 $argumentsArray
      * @return void
      */
     public function addArgumentsFromArray(array $argumentsArray) 
@@ -129,7 +129,7 @@ class ServiceArguments
      * return them as array
      * 
      * @param Container             $container
-     * @return array
+     * @return array<int, mixed>
      */
     public function resolve(Container $container) : array
     {
@@ -156,7 +156,7 @@ class ServiceArguments
     /**
      * Return all arguments
      * 
-     * @return array[[string => int]]
+     * @return array<mixed>
      */
     public function getAll() : array
     {

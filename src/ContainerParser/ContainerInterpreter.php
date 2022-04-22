@@ -95,7 +95,7 @@ class ContainerInterpreter
     {
         $path = $import->getPath();
 
-        if (is_null($path) || empty($path))
+        if (empty($path))
         {
             throw new ContainerInterpreterException("An import statement cannot be empty.");
         }
@@ -104,11 +104,15 @@ class ContainerInterpreter
 
         // after retrieving new code we have 
         // to start a new lexer & and parser 
-        $lexer = new ContainerLexer($code);
+        $lexer = new ContainerLexer($code, $this->namespace->getPath($path));
         $parser = new ScopeParser($lexer->tokens());
         $scopeNode = $parser->parse();
 
         unset($lexer, $parser);
+
+        if (!$scopeNode instanceof ScopeNode) {
+            throw new ContainerInterpreterException("Could not retrieve a valid scope from import");
+        }
 
         // and continue handling the importet scope
         $this->handleScope($scopeNode);
@@ -127,11 +131,13 @@ class ContainerInterpreter
             throw new ContainerInterpreterException("A parameter named \"{$definition->getName()}\" is already defined, you can prefix the definition with \"override\" to get around this error.");
         }
 
-        if ($definition->getValue() instanceof ValueNode) {
-            $this->namespace->setParameter($definition->getName(), $definition->getValue()->getRawValue());
+        $node = $definition->getValue();
+
+        if ($node instanceof ValueNode) {
+            $this->namespace->setParameter($definition->getName(), $node->getRawValue());
         } 
-        elseif ($definition->getValue() instanceof ArrayNode) {
-            $this->namespace->setParameter($definition->getName(), $definition->getValue()->convertToNativeArray());
+        elseif ($node instanceof ArrayNode) {
+            $this->namespace->setParameter($definition->getName(), $node->convertToNativeArray());
         }
         else {
             throw new ContainerInterpreterException("Invalid parameter value given for key \"{$definition->getName()}\".");
@@ -180,8 +186,9 @@ class ContainerInterpreter
 
     /**
      * Handle a service definition
-     * 
-     * @param ParameterDefinitionNode           $definition
+     *
+     * @param ServiceDefinitionNode $definition
+     *
      * @return void
      */
     public function handleServiceDefinition(ServiceDefinitionNode $definition) 
@@ -192,8 +199,8 @@ class ContainerInterpreter
         }
 
         // special case if an alias is beeing defined
-        if ($definition->isAlias()) {
-            $this->namespace->setAlias($definition->getName(), $definition->getAliasTarget()->getName());
+        if ($definition->isAlias() && $aliasTarget = $definition->getAliasTarget()) {
+            $this->namespace->setAlias($definition->getName(), $aliasTarget->getName());
             return;
         }
 
@@ -213,7 +220,7 @@ class ContainerInterpreter
             $service = new ServiceDefinition($definition->getClassName());
         }
 
-        if ($definition->hasArguments()) 
+        if ($definition->hasArguments() && $service instanceof ServiceDefinition) 
         {
             $arguments = $definition
                 ->getArguments() // get the definitions arguments
@@ -247,7 +254,7 @@ class ContainerInterpreter
         // handle construction actions
         foreach($definition->getConstructionActions() as $action)
         {
-            if ($action instanceof ServiceMethodCallNode)
+            if ($action instanceof ServiceMethodCallNode && $service instanceof ServiceDefinition)
             {
                 if ($action->hasArguments()) 
                 {
@@ -265,11 +272,11 @@ class ContainerInterpreter
         // handle meta data
         foreach($definition->getMetaDataAssignemnts() as $meta)
         {
-            if ($meta instanceof MetaDataAssignmentNode)
+            if ($meta instanceof MetaDataAssignmentNode && $service instanceof ServiceDefinition)
             {
-                if ($meta->hasData()) 
+                if ($meta->hasData() && $dataNode = $meta->getData()) 
                 {
-                    $service->addMetaData($meta->getKey(), $meta->getData()->convertToNativeArray());
+                    $service->addMetaData($meta->getKey(), $dataNode->convertToNativeArray());
                 } else {
                     $service->addMetaData($meta->getKey(), []);
                 }

@@ -19,30 +19,29 @@ use ClanCats\Container\ContainerParser\{
     Nodes\ServiceReferenceNode,
     Nodes\ValueNode
 };
+use ClanCats\Container\ContainerParser\Nodes\AssignableNode;
 
 class ArgumentArrayParser extends ContainerParser
 {
     /**
      * The current arguments node
      * 
-     * @param ArgumentArrayNode
+     * @var ArgumentArrayNode
      */
-    protected $arguments;
+    protected ArgumentArrayNode $arguments;
 
     /**
      * Prepare the current parser 
      * 
      * @return void
      */
-    protected function prepare() 
+    protected function prepare() : void
     {
         $this->arguments = new ArgumentArrayNode;
     }
 
     /**
      * Return the current result
-     * 
-     * @return null|Node
      */
     protected function node() : Node
     {
@@ -50,18 +49,28 @@ class ArgumentArrayParser extends ContainerParser
     }
 
     /**
-     * Parse the next token
-     *
-     * @return null|Node
+     * Throws an exception when a unassignable node is given to assign
      */
-    protected function next()
+    private function addArgumentSafe(Node $node) : void
+    {
+        if (!($node instanceof AssignableNode)) {
+            throw $this->errorParsing("Trying to assign unassignable to argument vector");
+        }
+
+        $this->arguments->addArgument($node);
+    }
+
+    /**
+     * Parse the next token
+     */
+    protected function next() : ?Node
     { 
         $token = $this->currentToken();
 
         // the argument might be an array
         if ($this->currentToken()->isType(T::TOKEN_SCOPE_OPEN)) 
         {
-            $this->arguments->addArgument($this->parseChild(
+            $node = $this->parseChild(
                 ArrayParser::class, 
                 $this->getTokensUntilClosingScope(
                     false, 
@@ -69,7 +78,9 @@ class ArgumentArrayParser extends ContainerParser
                     T::TOKEN_SCOPE_CLOSE
                 ), 
                 false
-            ));
+            );
+
+            $this->addArgumentSafe($node);
         }
         // or a simple scalar value
         elseif ($token->isValue())
@@ -78,18 +89,18 @@ class ArgumentArrayParser extends ContainerParser
         }
         // is it a parameter?
         elseif ($token->isType(T::TOKEN_PARAMETER)) 
-        {
-            $this->arguments->addArgument($this->parseChild(ReferenceParser::class));
+        {   
+            $this->addArgumentSafe($this->parseChild(ReferenceParser::class));
         }
         // is a service reference
         elseif ($token->isType(T::TOKEN_DEPENDENCY)) 
         {
-            $this->arguments->addArgument($this->parseChild(ReferenceParser::class));
+            $this->addArgumentSafe($this->parseChild(ReferenceParser::class));
         }
         // just a linebreak
         elseif ($token->isType(T::TOKEN_LINE)) 
         {
-            $this->skipToken(); return;
+            $this->skipToken(); return null;
         }
 
         // anything else?
@@ -105,6 +116,8 @@ class ArgumentArrayParser extends ContainerParser
         {
             $this->skipToken();
         }
+
+        return null;
     }
 }
 

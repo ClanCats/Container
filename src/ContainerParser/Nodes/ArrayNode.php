@@ -19,21 +19,21 @@ class ArrayNode extends BaseNode implements AssignableNode
     /**
      * An array of ArrayElementNode
      * 
-     * @var [AssignableNode]
+     * @var array<ArrayElementNode>
      */
-    protected $elements = [];
+    protected array $elements = [];
 
     /**
      * The current arrays index
      *
      * @var int
      */
-    private $index = 0;
+    private int $index = 0;
 
     /**
      * Get array elements
      * 
-     * @return [ArrayElementNode]
+     * @return array<ArrayElementNode>
      */
     public function getElements() : array 
     {
@@ -44,10 +44,10 @@ class ArrayNode extends BaseNode implements AssignableNode
      * Add an ArrayElementNode to the current array
      * this will not check for dublicates.
      * 
-     * @param $element              ArrayElementNode
+     * @param ArrayElementNode          $element
      * @return void
      */
-    public function addElement(ArrayElementNode $element) 
+    public function addElement(ArrayElementNode $element) : void
     {
         $this->elements[] = $element;
     }
@@ -58,7 +58,7 @@ class ArrayNode extends BaseNode implements AssignableNode
      * @param string|int            $key
      * @return bool
      */
-    public function has($key)
+    public function has($key) : bool
     {
         foreach ($this->elements as $element) {
             if ($element->getKey() == $key) {
@@ -75,7 +75,7 @@ class ArrayNode extends BaseNode implements AssignableNode
      * @param AssignableNode            $value
      * @return void
      */
-    public function push(AssignableNode $value)
+    public function push(AssignableNode $value) : void
     {
         // count the index up to find a free spot
         while ($this->has($this->index)) {
@@ -90,7 +90,7 @@ class ArrayNode extends BaseNode implements AssignableNode
      * This will throw an exception when the array contains a reference
      * to a service or parameter
      *
-     * @return array
+     * @return array<mixed>
      */
     public function convertToNativeArray() : array
     {

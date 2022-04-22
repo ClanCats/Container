@@ -24,8 +24,7 @@ class ParameterReferenceNode extends BaseNode implements AssignableNode
     /**
      * Parameter reference constructor
      * 
-     * @param string        $node
-     * @param ValueNode     $value
+     * @param string        $name
      */
     public function __construct(string $name)
     {
@@ -45,10 +44,9 @@ class ParameterReferenceNode extends BaseNode implements AssignableNode
     /**
      * Set the parameters name
      * 
-     * @param Node 			$node
-     * @return void
+     * @param string 			$name
      */
-    public function setName(string $name)
+    public function setName(string $name) : void
     {
     	$this->name = $name;   
     }

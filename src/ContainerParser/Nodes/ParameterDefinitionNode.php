@@ -28,9 +28,9 @@ class ParameterDefinitionNode extends BaseNode
     /**
      * The value that is being defined
      * 
-     * @param ValueNode
+     * @var AssignableNode
      */
-    protected $value;
+    protected AssignableNode $value;
 
     /**
      * Does this definition override existing ones?
@@ -42,8 +42,8 @@ class ParameterDefinitionNode extends BaseNode
     /**
      * Parameter definition constructor
      * 
-     * @param string        $node
-     * @param ValueNode     $value
+     * @param string             $name
+     * @param AssignableNode     $value
      */
     public function __construct(string $name, AssignableNode $value)
     {
@@ -64,7 +64,7 @@ class ParameterDefinitionNode extends BaseNode
     /**
      * Get the parameters value
      * 
-     * @return ValueNode
+     * @return AssignableNode
      */
     public function getValue() : AssignableNode 
     {
@@ -74,10 +74,10 @@ class ParameterDefinitionNode extends BaseNode
     /**
      * Set the parameters name
      * 
-     * @param Node 			$node
+     * @param string 			$name
      * @return void
      */
-    public function setName(string $name)
+    public function setName(string $name) : void
     {
     	$this->name = $name;   
     }
@@ -85,7 +85,7 @@ class ParameterDefinitionNode extends BaseNode
     /**
      * Set the parameters value
      * 
-     * @param ValueNode             $value
+     * @param AssignableNode             $value
      * @return void
      */
     public function setValue(AssignableNode $value)

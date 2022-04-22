@@ -15,6 +15,7 @@ use ClanCats\Container\ContainerParser\{
 
     // contextual node
     Nodes\ValueNode,
+    Nodes\ArgumentArrayNode,
     Nodes\ServiceMethodCallNode
 };
 
@@ -25,7 +26,7 @@ class ServiceMethodCallParser extends ContainerParser
      *
      * @return null|Node
      */
-    protected function next()
+    protected function next() : ?Node
     {
         if (!$this->currentToken()->isType(T::TOKEN_MINUS))
         {
@@ -56,6 +57,11 @@ class ServiceMethodCallParser extends ContainerParser
         }
 
         $arguments = $this->parseChild(ArgumentArrayParser::class, $this->getTokensUntilClosingScope(), false);
+        
+        if (!($arguments instanceof ArgumentArrayNode)) {
+            throw $this->errorParsing("Could not parse constructor arguments for service.");
+        }
+
         $call->setArguments($arguments);
 
         return $call;

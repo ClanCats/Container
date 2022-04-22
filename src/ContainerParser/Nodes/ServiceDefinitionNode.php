@@ -29,58 +29,58 @@ class ServiceDefinitionNode extends BaseNode
     /**
      * The services class name
      * 
-     * @param string
+     * @var string
      */
     protected $className;
 
     /**
      * The services alias target
      * 
-     * @param ServiceReferenceNode
+     * @var ServiceReferenceNode
      */
-    protected $aliasTarget = null;
+    protected ?ServiceReferenceNode $aliasTarget = null;
 
     /**
      * Does this definition override existing ones?
      * 
      * @var bool
      */
-    protected $isOverride = false;
+    protected bool $isOverride = false;
 
     /**
      * In case of an alias the className hold the alias target
      * 
      * @var bool
      */
-    protected $isAlias = false;
+    protected bool $isAlias = false;
 
     /**
      * The node only updates an already present service
      *
      * @var bool
      */
-    protected $isUpdate = false;
+    protected bool $isUpdate = false;
 
     /**
      * An array of arguments to be passed on the services construction
      * 
      * @var ArgumentArrayNode
      */
-    protected $arguments;
+    protected ?ArgumentArrayNode $arguments = null;
 
     /**
      * An array of actions to take place after construction
      * 
-     * @var [ConstructionActionNode]
+     * @var array<ConstructionActionNode>
      */
-    protected $constructionActions = [];
+    protected array $constructionActions = [];
 
     /**
      * An array of actions to take place after construction
      * 
-     * @var [MetaDataAssignmentNode]
+     * @var array<MetaDataAssignmentNode>
      */
-    protected $metaDataAssignments = [];
+    protected array $metaDataAssignments = [];
 
     /**
      * Service definition constructor
@@ -107,7 +107,7 @@ class ServiceDefinitionNode extends BaseNode
     /**
      * Set the parameters name
      * 
-     * @param Node 			$node
+     * @param string 			$name
      * @return void
      */
     public function setName(string $name)
@@ -127,10 +127,8 @@ class ServiceDefinitionNode extends BaseNode
 
     /**
      * Set the services class name
-     * 
-     * @return string
      */
-    public function setClassName(string $className) 
+    public function setClassName(string $className): void 
     {
         $this->className = $className;
     }
@@ -147,10 +145,8 @@ class ServiceDefinitionNode extends BaseNode
 
     /**
      * Set the services alias target name
-     * 
-     * @return ServiceReferenceNode
      */
-    public function setAliasTarget(ServiceReferenceNode $aliasTarget) 
+    public function setAliasTarget(ServiceReferenceNode $aliasTarget): void 
     {
         $this->aliasTarget = $aliasTarget;
     }
@@ -225,8 +221,7 @@ class ServiceDefinitionNode extends BaseNode
      */
     public function getArguments() : ArgumentArrayNode 
     {
-        if (!$this->hasArguments()) 
-        {
+        if (is_null($this->arguments)) {
             throw new LogicalNodeException("This service definition has no arguments.");
         }
 
@@ -236,8 +231,6 @@ class ServiceDefinitionNode extends BaseNode
     /**
      * Check if arguments are defined 
      * Note the arguments can still be empty
-     * 
-     * @return ArgumentArrayNode
      */
     public function hasArguments() : bool 
     {
@@ -246,10 +239,10 @@ class ServiceDefinitionNode extends BaseNode
 
     /**
      * Set the arguments array
-     * 
+     *
      * @param ArgumentArrayNode         $arguments
      */
-    public function setArguments(ArgumentArrayNode $arguments) 
+    public function setArguments(ArgumentArrayNode $arguments): void 
     {
     	$this->arguments = $arguments;
     }
@@ -268,7 +261,7 @@ class ServiceDefinitionNode extends BaseNode
     /**
      * Get all construction actions
      * 
-     * @return array[ConstructionActionNode]
+     * @return array<ConstructionActionNode>
      */
     public function getConstructionActions() : array
     {
@@ -289,7 +282,7 @@ class ServiceDefinitionNode extends BaseNode
     /**
      * Get all meta data assignemnts
      * 
-     * @return array[MetaDataAssignmentNode]
+     * @return array<MetaDataAssignmentNode>
      */
     public function getMetaDataAssignemnts() : array
     {

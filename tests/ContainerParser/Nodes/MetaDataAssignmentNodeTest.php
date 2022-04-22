@@ -10,7 +10,7 @@ class MetaDataAssignmentNodeTest extends \PHPUnit\Framework\TestCase
 {
     public function testConstruct()
     {
-        $node = new MetaDataAssignmentNode();
+        $node = new MetaDataAssignmentNode('test');
         $this->assertInstanceOf(MetaDataAssignmentNode::class, $node);
 
         $node = new MetaDataAssignmentNode('bar');
@@ -19,7 +19,7 @@ class MetaDataAssignmentNodeTest extends \PHPUnit\Framework\TestCase
 
     public function testKey()
     {
-        $node = new MetaDataAssignmentNode();
+        $node = new MetaDataAssignmentNode('test');
         $node->setKey('foo');
 
         $this->assertEquals('foo', $node->getKey());
@@ -27,7 +27,7 @@ class MetaDataAssignmentNodeTest extends \PHPUnit\Framework\TestCase
 
     public function testStacked()
     {
-        $node = new MetaDataAssignmentNode();
+        $node = new MetaDataAssignmentNode('test');
 
         $this->assertTrue($node->isStacked());
         $node->setIsStacked(false);
@@ -36,7 +36,7 @@ class MetaDataAssignmentNodeTest extends \PHPUnit\Framework\TestCase
 
     public function testData()
     {
-        $node = new MetaDataAssignmentNode();
+        $node = new MetaDataAssignmentNode('test');
         $data = new ArrayNode();
 
         $this->assertFalse($node->hasData());
@@ -50,7 +50,7 @@ class MetaDataAssignmentNodeTest extends \PHPUnit\Framework\TestCase
     public function testArgumentAccessWithoutArguments() 
     {
         $this->expectException(\ClanCats\Container\Exceptions\LogicalNodeException::class);
-        $node = new MetaDataAssignmentNode();
+        $node = new MetaDataAssignmentNode('test');
         $node->getData();
     }
 }

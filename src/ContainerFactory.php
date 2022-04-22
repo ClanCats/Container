@@ -19,14 +19,14 @@ class ContainerFactory
      * 
      * @var string
      */
-    protected $cacheDirectory = null;
+    protected string $cacheDirectory;
 
     /**
      * Is the factory in debug mode
      * 
      * @var bool
      */
-    protected $debugMode = false;
+    protected bool $debugMode = false;
 
     /**
      * Construct a new service loader with a given cache directory
@@ -56,7 +56,7 @@ class ContainerFactory
      * @param string        $cacheDirectory
      * @return void
      */
-    public function setCacheDirecotry(string $cacheDirectory) 
+    public function setCacheDirecotry(string $cacheDirectory) : void
     {
         if (substr($cacheDirectory, -1) !== DIRECTORY_SEPARATOR)
         {
@@ -80,25 +80,27 @@ class ContainerFactory
      * Create a container with the given name. You can pass an 
      * array with services
      * 
-     * @param string                $containerName
-     * @param callable              $builderCallback
-     * @param array                 $initalParameters
+     * @template CLASS
+     * @param class-string<CLASS>            $containerName
+     * @param callable                       $builderCallback
+     * @param array<string, mixed>           $initalParameters
      * 
      * @return Container The generated container instnace.
      */
     public function create(string $containerName, callable $builderCallback, array $initalParameters = []) : Container
     {
-        if (class_exists($containerName))
+        $classString = (string) $containerName;
+        if (class_exists($classString))
         {
             return new $containerName;
         }
 
-        $fileName = basename(str_replace("\\", '/', $containerName));
+        $fileName = basename(str_replace("\\", '/', $classString));
         $cacheFile = $this->cacheDirectory . $fileName . '.php';
 
         if ((!(file_exists($cacheFile) && is_readable($cacheFile))) || $this->isDebugMode())
         {
-            $builder = new ContainerBuilder($containerName);
+            $builder = new ContainerBuilder($classString);
 
             // run the builder callback
             $builderCallback($builder);

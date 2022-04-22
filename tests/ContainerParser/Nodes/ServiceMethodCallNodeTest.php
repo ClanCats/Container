@@ -10,13 +10,13 @@ class ServiceMethodCallNodeTest extends \PHPUnit\Framework\TestCase
 {
     public function testConstruct()
     {
-        $node = new ServiceMethodCallNode();
+        $node = new ServiceMethodCallNode('test');
         $this->assertInstanceOf(ServiceMethodCallNode::class, $node);
     }
 
     public function testName()
     {
-        $node = new ServiceMethodCallNode();
+        $node = new ServiceMethodCallNode('test');
         $node->setName('foo');
 
         $this->assertEquals('foo', $node->getName());
@@ -24,7 +24,7 @@ class ServiceMethodCallNodeTest extends \PHPUnit\Framework\TestCase
 
     public function testStacked()
     {
-        $node = new ServiceMethodCallNode();
+        $node = new ServiceMethodCallNode('test');
 
         $this->assertFalse($node->isStacked());
         $node->setIsStacked(true);
@@ -33,7 +33,7 @@ class ServiceMethodCallNodeTest extends \PHPUnit\Framework\TestCase
 
     public function testArguments()
     {
-        $node = new ServiceMethodCallNode();
+        $node = new ServiceMethodCallNode('test');
         $arguments = new ArgumentArrayNode();
 
         $this->assertFalse($node->hasArguments());
@@ -47,7 +47,7 @@ class ServiceMethodCallNodeTest extends \PHPUnit\Framework\TestCase
     public function testArgumentAccessWithoutArguments() 
     {
         $this->expectException(\ClanCats\Container\Exceptions\LogicalNodeException::class);
-        $node = new ServiceMethodCallNode();
+        $node = new ServiceMethodCallNode('test');
         $node->getArguments();
     }
 }
