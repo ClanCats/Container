@@ -556,7 +556,7 @@ class Container
      * @param mixed             $factory The service factory instance, the closure or the classname as string
      * @param bool              $shared Should the service be shared inside the container.
      * 
-     * @return Closure|ServiceFactoryInterface|void The given or generated service factory.
+     * @return ServiceFactory|void The given or generated service factory.
      */
     public function bind(string $name, $factory, bool $shared = true)
     {
