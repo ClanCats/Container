@@ -106,6 +106,7 @@ class ContainerLexer
         "/^(\?)/" => T::TOKEN_OPTIONAL,
 
         // ids
+        "/^([\w\-\/\\\\.]+)::class/" => T::TOKEN_CLASS_NAME,
         "/^([\w\-\/\\\\.]+)/" => T::TOKEN_IDENTIFIER,
     ];
 

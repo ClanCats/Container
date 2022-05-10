@@ -52,11 +52,12 @@ class ValueNode extends BaseNode implements AssignableNode
      * This MUST equal the token type raw values!
      */
     public const TYPE_UNKNOWN = -1;
-    public const TYPE_STRING = 0;
-    public const TYPE_NUMBER = 1;
-    public const TYPE_BOOL_TRUE = 2;
-    public const TYPE_BOOL_FALSE = 3;
-    public const TYPE_NULL = 4;
+    public const TYPE_STRING = Token::TOKEN_STRING;
+    public const TYPE_NUMBER = Token::TOKEN_NUMBER;
+    public const TYPE_BOOL_TRUE = Token::TOKEN_BOOL_TRUE;
+    public const TYPE_BOOL_FALSE = Token::TOKEN_BOOL_FALSE;
+    public const TYPE_NULL = Token::TOKEN_NULL;
+    public const TYPE_CLASS_NAME = Token::TOKEN_CLASS_NAME;
 
 	/**
      * Construct the value node
@@ -115,6 +116,7 @@ class ValueNode extends BaseNode implements AssignableNode
             self::TYPE_BOOL_TRUE, 
             self::TYPE_BOOL_FALSE,
             self::TYPE_NULL,
+            self::TYPE_CLASS_NAME,
         ]))
         {
             throw new LogicalNodeException('Invalid value type assigned.');

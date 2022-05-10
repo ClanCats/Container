@@ -60,6 +60,13 @@ class TokenTest extends \PHPUnit\Framework\TestCase
         // null
         $null = new T(42, T::TOKEN_NULL, true);
         $this->assertNull($null->getValue());
+
+        // class name
+        $cn = new T(42, T::TOKEN_CLASS_NAME, "Something::class");
+        $this->assertEquals("\\Something", $cn->getValue());
+
+        $cn = new T(42, T::TOKEN_CLASS_NAME, "Foo\\Bar::class");
+        $this->assertEquals("\\Foo\\Bar", $cn->getValue());
     }
 
     public function testIsValue()

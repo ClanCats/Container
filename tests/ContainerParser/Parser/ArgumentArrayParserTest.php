@@ -146,4 +146,20 @@ class ArgumentArrayParserTest extends ParserTestCase
         $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $arguments = $this->argumentsArrayNodeFromCode('@foo,bar');
     }
+
+
+    public function testClassNameArgument()
+    {
+        $arguments = $this->argumentsArrayNodeFromCode('Foo::class, Bar::class');
+        $argument1 = $arguments->getArguments()[0];
+        $argument2 = $arguments->getArguments()[1];
+
+        $this->assertCount(2, $arguments->getArguments());
+
+        $this->assertInstanceOf(ValueNode::class, $argument1);
+        $this->assertEquals('\\Foo', $argument1->getRawValue());
+        
+        $this->assertInstanceOf(ValueNode::class, $argument2);
+        $this->assertEquals('\\Bar', $argument2->getRawValue());
+    }
 }
