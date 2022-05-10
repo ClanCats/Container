@@ -64,6 +64,7 @@ class Token
     const TOKEN_OPTIONAL = 20;
     const TOKEN_IDENTIFIER = 21;
     const TOKEN_EQUAL = 22;
+    const TOKEN_CLASS_NAME = 23;
 
     /**
      * The constructor
@@ -150,6 +151,10 @@ class Token
             case self::TOKEN_NULL:
                 $value = null;
                 break;
+
+            case self::TOKEN_CLASS_NAME:
+                $value = "\\" . trim(substr($value, 0, -7), "\\");
+                break;
         }
 
         return $value;
@@ -167,7 +172,8 @@ class Token
         $this->type === self::TOKEN_NUMBER ||
         $this->type === self::TOKEN_NULL ||
         $this->type === self::TOKEN_BOOL_TRUE ||
-        $this->type === self::TOKEN_BOOL_FALSE;
+        $this->type === self::TOKEN_BOOL_FALSE ||
+        $this->type === self::TOKEN_CLASS_NAME;
     }
 }
 

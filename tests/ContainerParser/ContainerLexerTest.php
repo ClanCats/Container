@@ -187,4 +187,28 @@ class ContainerLexerTest extends LexerTestCase
             T::TOKEN_DEPENDENCY, 
         ]);
     }
+
+    public function testClassNames()
+    {
+        $this->assertTokenTypes(":foo: \Foo\Bar::class", [
+            T::TOKEN_PARAMETER, 
+            T::TOKEN_ASSIGN,
+            T::TOKEN_SPACE, 
+            T::TOKEN_CLASS_NAME, 
+        ]);
+
+        $this->assertTokenTypes(":foo: Foo\Bar::class", [
+            T::TOKEN_PARAMETER, 
+            T::TOKEN_ASSIGN,
+            T::TOKEN_SPACE, 
+            T::TOKEN_CLASS_NAME, 
+        ]);
+
+        $this->assertTokenTypes(":foo: Bar::class", [
+            T::TOKEN_PARAMETER, 
+            T::TOKEN_ASSIGN,
+            T::TOKEN_SPACE, 
+            T::TOKEN_CLASS_NAME, 
+        ]);
+    }
 }
