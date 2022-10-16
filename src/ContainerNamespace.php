@@ -119,6 +119,9 @@ class ContainerNamespace
             // get the import name
             $importName = trim($prefix . substr($file->getPathname(), strlen($directory), -(strlen($fileExtension))), '/');
 
+            // fix windows paths by always replacing "\" with "/"
+            $importName = str_replace("\\", "/", $importName);
+
             // add the file
             $importPaths[$importName] = $file->getPathname();
         }
