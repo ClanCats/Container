@@ -13,7 +13,7 @@ use ClanCats\Container\Tests\TestServices\{
 
 class ContainerTest extends \PHPUnit\Framework\TestCase
 {
-    public function testParameterBasics()
+    public function testParameterBasics() : void
     {
         $container = new Container(['foo' => 'bar', 'pass' => 1234]);
 
@@ -33,7 +33,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         ], $container->allParameters());
     }
 
-    public function testServiceTypeFactory()
+    public function testServiceTypeFactory() : void
     {
         $container = new Container();
         $container->bindFactory('test', function($c) {});
@@ -53,7 +53,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(Container::RESOLVE_SHARED, $container->getServiceResolverType('test2'));
     }
 
-    public function testInvalidServiceFactoryBinding() 
+    public function testInvalidServiceFactoryBinding() : void
     {
         $this->expectException(\ClanCats\Container\Exceptions\InvalidServiceException::class);
         $container = new Container();
@@ -61,19 +61,19 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $container->get('test');
     }
 
-    public function testUnknownService() 
+    public function testUnknownService() : void
     {
         $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
         (new Container())->get('unknown');
     }
 
-    public function testServiceTypeUnknown() 
+    public function testServiceTypeUnknown() : void
     {
         $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
         (new Container())->getServiceResolverType('unknown');
     }
 
-    public function testBind()
+    public function testBind() : void
     {
         $container = new Container();
         $container->setParameter('ps', 205);
@@ -97,7 +97,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(205, $car->engine->power);
     }
 
-    public function testBindFactory()
+    public function testBindFactory() : void
     {
         $container = new Container();
         $container->bindFactory('engine', function($c) 
@@ -130,7 +130,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertNotSame($car1->engine, $car2->engine);
     } 
 
-    public function testbindFactoryShared()
+    public function testbindFactoryShared() : void
     {
         $container = new Container();
         $container->bindFactory('engine.custom', function($c) 
@@ -165,13 +165,13 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(300, $container->get('volvo.s90')->engine->power);
     }
 
-    public function testBrokenCustomContainerFactoryType() 
+    public function testBrokenCustomContainerFactoryType() : void
     {
         $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
         (new CustomContainer())->get('broken');
     }
 
-    public function testResolveFromMethod()
+    public function testResolveFromMethod() : void
     {
         $container = new CustomContainer();
 
@@ -186,7 +186,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(Container::RESOLVE_METHOD, $container->getServiceResolverType('car'));
     }
 
-    public function testContainerResolveSelf()
+    public function testContainerResolveSelf() : void
     {
         $containerA = new Container();
         $containerB = new Container();
@@ -198,7 +198,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertNotSame($containerA, $containerB->get('container'));
     }
 
-    public function testContainerHas()
+    public function testContainerHas() : void
     {
         $container = new Container();
 
@@ -211,7 +211,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($container->has('foo'));
     }
 
-    public function testContainerSet()
+    public function testContainerSet() : void
     {
         $container = new Container();
 
@@ -223,13 +223,13 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('bar', $container->get('foo'));
     }
 
-    public function testContainerSetSelfError() 
+    public function testContainerSetSelfError() : void
     {
         $this->expectException(\ClanCats\Container\Exceptions\ContainerException::class);
         (new Container())->set('container', 'shouldNotWork');
     }
 
-    public function testServiceIsResolved()
+    public function testServiceIsResolved() : void
     {
         $container = new Container();
 
@@ -260,7 +260,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($container->isResolved('car'));
     }
 
-    public function testReleaseService()
+    public function testReleaseService() : void
     {
         $container = new Container();
 
@@ -278,7 +278,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertNotSame($referenceCar, $container->get('car'));
     }
 
-    public function testAvailable()
+    public function testAvailable() : void
     {
         $container = new Container();
 
@@ -290,7 +290,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['foo', 'bar', 'container'], $container->available());
     }
 
-    public function testCustomProviderArray()
+    public function testCustomProviderArray() : void
     {
         $container = new Container();
         $container->register(new CustomServiceProviderArray());
@@ -313,7 +313,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertNotSame($container->get('car')->engine, $container->get('engine'));
     }
 
-    public function testRemove()
+    public function testRemove() : void
     {
         $container = new Container();
 
@@ -351,7 +351,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
 
     }
 
-    public function testSetMetaData() 
+    public function testSetMetaData() : void
     {
         $container = new Container();
 
@@ -371,7 +371,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([['Ships']], $container->getMetaData('car', 'tags'));
     }
 
-    public function testSetMetaDataInvalidArray()  
+    public function testSetMetaDataInvalidArray() : void
     {
         $this->expectException(\ClanCats\Container\Exceptions\ContainerException::class);
         $container = new Container();
@@ -384,14 +384,14 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $container->setMetaData('car', 'tags', ['this', 'is', 'not', 'an', 'array']);   
     }
 
-    public function testSetMetaDataInvalidService()  
+    public function testSetMetaDataInvalidService() : void
     {
         $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
         $container = new Container();
         $container->setMetaData('car', 'tags', [['Cars']]);
     }
 
-    public function testAddMetaData() 
+    public function testAddMetaData() : void
     {
         $container = new Container();
 
@@ -411,14 +411,14 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([['Cars'], ['Objects'], ['Ships']], $container->getMetaData('car', 'tags'));
     }
 
-    public function testAddMetaDataInvalidService()  
+    public function testAddMetaDataInvalidService() : void
     {
         $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
         $container = new Container();
         $container->addMetaData('car', 'tags', [['Cars']]);
     }
 
-    public function testGetMetaDataKeys() 
+    public function testGetMetaDataKeys() : void
     {
         $container = new Container();
 
@@ -433,7 +433,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['tags', 'routing'], $container->getMetaDataKeys('car'));
     }
 
-    public function testServiceNamesWithMetaData() 
+    public function testServiceNamesWithMetaData() : void
     {
         $container = new Container();
 
@@ -456,7 +456,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         ], $container->serviceNamesWithMetaData('tags'));
     }
 
-    public function testServiceAliases()
+    public function testServiceAliases() : void
     {
         $container = new Container();
         $container->register(new CustomServiceProviderArray());
@@ -490,7 +490,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($container->isResolved('car.main'));
     }
 
-    public function testServiceAliasesRecursion()
+    public function testServiceAliasesRecursion() : void
     {
         $container = new Container();
         $container->register(new CustomServiceProviderArray());
@@ -502,7 +502,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Car::class, $container->get('my_car'));
     }
 
-    public function testServiceAliasMetaData()
+    public function testServiceAliasMetaData() : void
     {
         $container = new Container();
         $container->register(new CustomServiceProviderArray());
@@ -513,5 +513,61 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals([['foo']], $container->getMetaData('car', 'test'));
         $this->assertEquals([['foo_alias']], $container->getMetaData('car_alias', 'test'));
+    }
+
+    public function testGetClassForServiceShared() : void
+    {
+        $container = new Container();
+        
+        // test with already resolved service
+        $container->set('pre_resolved', new Car(new Engine()));
+        $this->assertEquals(Car::class, $container->getClassForService('pre_resolved'));
+    }
+
+    public function testGetClassForServiceProvider() : void
+    {
+        $container = new Container();
+        $container->register(new CustomServiceProviderArray());
+
+        $this->assertEquals(Car::class, $container->getClassForService('car'));
+        $this->assertEquals(Engine::class, $container->getClassForService('engine'));
+    }
+
+    public function testGetClassForServiceFactory() : void
+    {
+        $container = new Container();
+        $container->bindClass('car.shared', Car::class, [], true);
+        $container->bindClass('car.factory', Car::class, [], false);
+
+        $this->assertEquals(Car::class, $container->getClassForService('car.shared'));
+        $this->assertEquals(Car::class, $container->getClassForService('car.factory'));
+    }
+
+    public function testGetClassForServiceClosure() : void
+    {
+        $container = new Container();
+        $container->bind('car', function($c) {
+            return new Car($c->get('engine'));
+        });
+
+        // closures are not supported and will return null
+        $this->assertEquals(null, $container->getClassForService('car'));
+    }
+
+    public function testGetClassForServiceAlias() : void 
+    {
+        $container = new Container();
+        $container->bindClass('car.main', Car::class, [], true);
+        $container->alias('car.alias', 'car.main');
+
+        $this->assertEquals(Car::class, $container->getClassForService('car.alias'));
+    }
+
+    public function testGetClassForServiceMethod() : void
+    {
+        $container = new CustomContainer();
+        
+        $this->assertEquals(Car::class, $container->getClassForService('car'));
+        $this->assertEquals(Engine::class, $container->getClassForService('engine'));
     }
 }

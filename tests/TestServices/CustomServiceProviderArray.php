@@ -5,7 +5,7 @@ use ClanCats\Container\{
     ServiceProviderArray
 };
 
-class CustomServiceProviderArray extends ServiceProviderArray 
+class CustomServiceProviderArray extends ServiceProviderArray
 {
     protected array $services = 
     [
