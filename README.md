@@ -6,7 +6,8 @@
 
 A PHP Service Container featuring a simple meta-language with fast and compilable dependency injection. 
 
-[![Build Status](https://travis-ci.org/ClanCats/Container.svg?branch=master)](https://travis-ci.org/ClanCats/Container)
+[![PHPUnit](https://github.com/ClanCats/Container/actions/workflows/phpunit.yml/badge.svg?branch=master)](https://github.com/ClanCats/Container/actions/workflows/phpunit.yml)
+[![PHPStan](https://github.com/ClanCats/Container/actions/workflows/phpstan.yml/badge.svg)](https://github.com/ClanCats/Container/actions/workflows/phpstan.yml)
 [![Packagist](https://img.shields.io/packagist/dt/clancats/container.svg)](https://packagist.org/packages/clancats/container)
 [![Packagist](https://img.shields.io/packagist/l/clancats/container.svg)](https://github.com/ClanCats/Container/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/clancats/container.svg)](https://github.com/ClanCats/Container/releases)
