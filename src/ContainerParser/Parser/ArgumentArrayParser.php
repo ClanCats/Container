@@ -20,6 +20,7 @@ use ClanCats\Container\ContainerParser\{
     Nodes\ValueNode
 };
 use ClanCats\Container\ContainerParser\Nodes\AssignableNode;
+use ClanCats\Container\ContainerParser\Nodes\ServiceAutoWireReferenceNode;
 
 class ArgumentArrayParser extends ContainerParser
 {
@@ -96,6 +97,11 @@ class ArgumentArrayParser extends ContainerParser
         elseif ($token->isType(T::TOKEN_DEPENDENCY)) 
         {
             $this->addArgumentSafe($this->parseChild(ReferenceParser::class));
+        }
+        // is a autowired service reference
+        elseif ($token->isType(T::TOKEN_AUTO)) 
+        {
+            $this->addArgumentSafe(new ServiceAutoWireReferenceNode($token));
         }
         // just a linebreak
         elseif ($token->isType(T::TOKEN_LINE)) 

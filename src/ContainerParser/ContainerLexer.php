@@ -91,6 +91,7 @@ class ContainerLexer
         "/^(use )/" => T::TOKEN_USE,
         "/^(import )/" => T::TOKEN_IMPORT,
         "/^(override )/" => T::TOKEN_OVERRIDE,
+        "/^(auto)/" => T::TOKEN_AUTO,
 
         // scope
         "/^(\()/" => T::TOKEN_BRACE_OPEN,

@@ -65,6 +65,7 @@ class Token
     const TOKEN_IDENTIFIER = 21;
     const TOKEN_EQUAL = 22;
     const TOKEN_CLASS_NAME = 23;
+    const TOKEN_AUTO = 24;
 
     /**
      * The constructor

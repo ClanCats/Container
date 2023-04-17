@@ -64,7 +64,14 @@ class ContainerBuilder
      * 
      * @var array<string>
      */
-    protected array$shared = [];
+    protected array $shared = [];
+
+    /**
+     * Enables / Disables auto wiring in the builded container
+     * 
+     * @var bool
+     */
+    protected bool $autoWire = false;
 
     /**
      * An array of converted service names
@@ -162,6 +169,32 @@ class ContainerBuilder
     public function getSharedNames() : array 
     {
         return $this->shared;
+    }
+
+    /**
+     * Enables auto wiring support in the builded container
+     */
+    public function enableAutoWire() : void
+    {
+        $this->autoWire = true;
+    }
+
+    /**
+     * Disables auto wiring support in the builded container
+     */
+    public function disableAutoWire() : void
+    {
+        $this->autoWire = false;
+    }
+
+    /**
+     * Returns true if auto wiring is enabled
+     * 
+     * @return bool
+     */
+    public function isAutoWireEnabled() : bool
+    {
+        return $this->autoWire;
     }
 
     /**
