@@ -460,6 +460,27 @@ class Container
     }
 
     /**
+     * The same as `get()` but promises the return serviecs has the given type
+     * 
+     * @throws UnknownServiceException When a service could not be found or is unresolvable.
+     * 
+     * @template T
+     * @param class-string<T> $serviceType The type of the service to look for.
+     * @param string $serviceName The name / Identifier of the service to look for.
+     * @return T The requested service.
+     */
+    public function getTyped(string $serviceType, string $serviceName)
+    {
+        $service = $this->get($serviceName);
+
+        if (!$service instanceof $serviceType) {
+            throw new UnknownServiceException('The service "' . $serviceName . '" is not of type "' . $serviceType . '"');
+        }
+        
+        return $service;
+    }
+
+    /**
      * Returns the class name for a given service name.
      * The goal of this function is to retrieve the class name without actually loading the service.
      * This function heavly relies on reflection in cached containers. So keep that in mind.
