@@ -21,12 +21,12 @@ class CustomContainer extends Container
         parent::__construct();
     }
 
-    protected function resolveEngine()
+    protected function resolveEngine() : Engine
     {
         return $this->resolvedSharedServices['engine'] = new Engine();
     }
 
-    protected function resolveCar()
+    protected function resolveCar() : Car
     {
         return new Car($this->get('engine'));
     }

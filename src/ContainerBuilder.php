@@ -168,7 +168,7 @@ class ContainerBuilder
      * Add a service by string and arguments array.
      * 
      * @param string                    $serviceName
-     * @param string                    $serviceClass
+     * @param class-string              $serviceClass
      * @param array<mixed>              $serviceArguments
      * @param bool                      $isShared
      * @return ServiceDefinition

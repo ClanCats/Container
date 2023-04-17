@@ -29,7 +29,7 @@ class ServiceDefinitionNode extends BaseNode
     /**
      * The services class name
      * 
-     * @var string
+     * @var class-string
      */
     protected $className;
 
@@ -85,8 +85,8 @@ class ServiceDefinitionNode extends BaseNode
     /**
      * Service definition constructor
      * 
-     * @param string        $name
-     * @param string        $className
+     * @param string              $name
+     * @param class-string        $className
      */
     public function __construct(string $name = null, string $className = null)
     {
@@ -118,7 +118,7 @@ class ServiceDefinitionNode extends BaseNode
     /**
      * Get the services class name
      * 
-     * @return string
+     * @return class-string
      */
     public function getClassName() : string 
     {
@@ -127,6 +127,8 @@ class ServiceDefinitionNode extends BaseNode
 
     /**
      * Set the services class name
+     * 
+     * @param class-string 		$className
      */
     public function setClassName(string $className): void 
     {

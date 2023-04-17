@@ -13,7 +13,7 @@ interface ServiceDefinitionInterface
     /**
      * Returns the service class name
      * 
-     * @return string
+     * @return class-string
      */
     public function getClassName() : string;
 

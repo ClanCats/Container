@@ -460,6 +460,77 @@ class Container
     }
 
     /**
+     * Returns the class name for a given service name.
+     * The goal of this function is to retrieve the class name without actually loading the service.
+     * This function heavly relies on reflection in cached containers. So keep that in mind.
+     * 
+     * **Warning:**
+     * This is not always possible and will return `null` if the class name cannot be determined.
+     * For example if the service resolver is a closure there is no way to determine the class name 
+     * without actually loading the service.
+     * 
+     * This won't throw an exception if the service is not found and simply returns null.
+     * 
+     * @param string $serviceName 
+     * @return null|class-string 
+     */
+    public function getClassForService(string $serviceName): ?string
+    {
+        if (!isset($this->serviceResolverType[$serviceName])) {
+            return null;
+        }
+
+        // if the service has already been resolved, we can simply return the class name
+        if (isset($this->resolvedSharedServices[$serviceName])) {
+            return get_class($this->resolvedSharedServices[$serviceName]) ?: null;
+        }
+
+        $serviceResolverType = $this->serviceResolverType[$serviceName];
+
+        // if we have a method resolver we have to rely on reflection to get the class name
+        if ($serviceResolverType === static::RESOLVE_METHOD) 
+        {
+            $reflection = new \ReflectionMethod($this, $this->resolverMethods[$serviceName]);
+            $returnType = $reflection->getReturnType();
+            if (!$returnType instanceof \ReflectionNamedType) {
+                return null;
+            }
+
+            // if its a builtin type we cannot determine the class name
+            if ($returnType->isBuiltin()) {
+                return null;
+            }
+
+            return $returnType->getName(); // @phpstan-ignore-line
+        } 
+        // if the services relies on a different service provider it needs to explicity 
+        // support the class name lookup interface for this to work.
+        elseif ($serviceResolverType === static::RESOLVE_PROVIDER) {
+            $provider = $this->serviceProviders[$serviceName];
+
+            if ($provider instanceof ServiceProviderClassLookupInterface) {
+                return $provider->lookupClassName($serviceName, $this);
+            }
+        }
+        // handles services definition based resolvers
+        // if the resolver is not a "ServiceDefinitionInterface" we cannot determine the class name
+        else if ($serviceResolverType === static::RESOLVE_FACTORY || $serviceResolverType === static::RESOLVE_SHARED) {
+            $factory = $this->resolverFactories[$serviceName];
+
+            if ($factory instanceof ServiceDefinitionInterface) {
+                return $factory->getClassName();
+            }
+        }
+        
+        // if its an alias, we just forward the call to the aliased service
+        elseif ($serviceResolverType === static::RESOLVE_ALIAS) {
+            return $this->getClassForService($this->serviceAliases[$serviceName]);
+        }
+
+        return null;
+    }
+
+    /**
      * Resolve a service instance from the given factory object.
      * 
      * @param ServiceFactoryInterface|Closure|null       $factory The factory object.
@@ -552,16 +623,16 @@ class Container
      *     $container->bind('router', '\\Routing\\Router')
      *         ->addDependencyArgument('config');
      * 
-     * @param string            $name The service name.
-     * @param mixed             $factory The service factory instance, the closure or the classname as string
-     * @param bool              $shared Should the service be shared inside the container.
+     * @param string                $name The service name.
+     * @param mixed|class-string    $factory The service factory instance, the closure or the classname as string
+     * @param bool                  $shared Should the service be shared inside the container.
      * 
      * @return ServiceFactory|void The given or generated service factory.
      */
     public function bind(string $name, $factory, bool $shared = true)
     {
         if (is_string($factory)) {
-            return $this->bindClass($name, $factory, [], $shared);
+            return $this->bindClass($name, $factory, [], $shared); // @phpstan-ignore-line
         } elseif ($shared) {
             $this->bindFactoryShared($name, $factory);
         } else {
@@ -573,15 +644,15 @@ class Container
      * Creates and binds a service factory by class name and arguments. 
      * 
      * @param string            $name The service name.
-     * @param string            $factory The service class name.
+     * @param class-string      $className The service class name.
      * @param array<mixed>      $arguments An array of arguments.
      * @param bool              $shared Should the service be shared inside the container.
      * 
      * @return ServiceFactory The created service factory
      */
-    public function bindClass(string $name, string $factory, array $arguments = [], bool $shared = true) : ServiceFactory
+    public function bindClass(string $name, string $className, array $arguments = [], bool $shared = true) : ServiceFactory
     {
-        $factory = new ServiceFactory($factory, $arguments);
+        $factory = new ServiceFactory($className, $arguments);
 
         if ($shared) {
             $this->bindFactoryShared($name, $factory);

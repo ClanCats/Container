@@ -26,7 +26,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
      *
      *     ServiceDefinition::for('\Acme\SessionService', ['@storage', ':session_token', 600])
      *
-     * @param string            $serviceClassName The full class name of the desired service.
+     * @param class-string             $serviceClassName The full class name of the desired service.
      * @param array<mixed>             $arguments An array of constructor arguments for the service.     
      *
      * @return static
@@ -82,7 +82,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
     /**
      * The services class name
      * 
-     * @var string 
+     * @var class-string 
      */
     protected $className;
 
@@ -110,7 +110,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
     /**
      * Construct a new service definition with the given classname and optional arguments as array.
      * 
-     * @param string                   $className The full class name of the desired service.
+     * @param class-string             $className The full class name of the desired service.
      * @param array<mixed>             $arguments An array of constructor arguments for the service.  
      */
     final public function __construct(string $className, array $arguments = [])
@@ -122,7 +122,7 @@ class ServiceDefinition implements ServiceDefinitionInterface
     /**
      * Returns the service class name
      * 
-     * @return string
+     * @return class-string
      */
     public function getClassName() : string
     {

@@ -14,7 +14,7 @@ use ClanCats\Container\{
 };
 
 
-class ServiceProviderArray implements ServiceProviderInterface 
+class ServiceProviderArray implements ServiceProviderInterface, ServiceProviderClassLookupInterface
 {
     /**
      * Array of to be provided services 
@@ -76,4 +76,29 @@ class ServiceProviderArray implements ServiceProviderInterface
 
         return [$service, false];
     }
+
+    /**
+     * Returns the class name for a given service
+     * 
+     * @param string                    $serviceName
+     * @param Container                 $container
+     * @return class-string
+     */
+    public function lookupClassName(string $serviceName, Container $container) : string
+    {
+        if (!isset($this->services[$serviceName]))
+        {
+            throw new UnknownServiceException('The service provider "' . get_class($this) . '" does not support service resolving of the service "' . $serviceName . '"');
+        }
+
+        $serviceConfiguration = $this->services[$serviceName];
+
+        if (!isset($serviceConfiguration['class']))
+        {
+            throw new InvalidServiceException('The service provider "' . get_class($this) . '" does not support service resolving of the service "' . $serviceName . '" because the service is not a class.');
+        }
+
+        return $serviceConfiguration['class'];
+    }
+
 }   
