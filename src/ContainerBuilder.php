@@ -38,6 +38,13 @@ class ContainerBuilder
     protected ?string $containerNamespace = null;
 
     /**
+     * Should we override the debug function in the generated container
+     * So that when the container is var_dump't we do not end in an 
+     * infinite recrusion?
+     */
+    protected bool $overrideDebugInfo = true;
+
+    /**
      * An array of paramters to be builded directly
      * as propterty.
      * 
@@ -64,7 +71,7 @@ class ContainerBuilder
      * 
      * @var array<string>
      */
-    protected array$shared = [];
+    protected array $shared = [];
 
     /**
      * An array of converted service names
@@ -112,6 +119,18 @@ class ContainerBuilder
             $this->containerNamespace = substr($containerName, 0, $pos);
             $this->containerClassName = substr($containerName, $pos + 1);
         }
+    }
+
+    /**
+     * Sets the override debug info flag
+     * When set to false the generated container will not override the __debugInfo method.
+     * 
+     * @param bool              $overrideDebugInfo
+     * @return void
+     */
+    public function setOverrideDebugInfo(bool $overrideDebugInfo) : void
+    {
+        $this->overrideDebugInfo = $overrideDebugInfo;
     }
 
     /**
@@ -343,6 +362,10 @@ class ContainerBuilder
         $buffer .= $this->generateResolverMappings() . "\n";
         $buffer .= $this->generateResolverMethods() . "\n";
 
+        if ($this->overrideDebugInfo) {
+            $buffer .= $this->generateDebugInfo() . "\n";
+        }
+
         return $buffer . "\n}";
     }
 
@@ -554,5 +577,18 @@ class ContainerBuilder
         }
 
         return $buffer;
+    }
+
+    private function generateDebugInfo() : string 
+    {
+        return <<<EOF
+        /**
+         * Override the debug info function so that we do not end in an infinite recrusion.
+         */
+        public function __debugInfo() : array
+        {
+            return ['services' => \$this->available()];
+        }
+        EOF;
     }
 }
