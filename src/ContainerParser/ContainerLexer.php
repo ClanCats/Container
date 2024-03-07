@@ -166,6 +166,11 @@ class ContainerLexer
                     break;
                 }
 
+                // broperly count linebreaks
+                if ($this->code[$this->offset] === "\n") {
+                    $this->line++;
+                }
+
                 $string .= $this->code[$this->offset];
                 $this->offset++;
             }
