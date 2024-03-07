@@ -38,6 +38,7 @@ class ContainerLexerTest extends LexerTestCase
     {
         $this->assertTokenTypes("'hello'\"world\"", [T::TOKEN_STRING, T::TOKEN_STRING]);
 
+
         // escaping
         $string = $this->tokensFromCode('"James \' Bond"')[0];
         $this->assertEquals("James ' Bond", $string->getValue());
@@ -55,6 +56,15 @@ class ContainerLexerTest extends LexerTestCase
         $this->assertTokenTypes("''", [T::TOKEN_STRING]);
         $this->assertTokenTypes("'true'", [T::TOKEN_STRING]);
         $this->assertTokenTypes("'\"\"'", [T::TOKEN_STRING]);
+    }
+
+    public function testMultilineStrings()
+    {
+        $this->assertTokenTypes(<<<'CODE'
+        :foo: "myfunc() then
+            return 'bla bla'
+        end"
+        CODE, [T::TOKEN_PARAMETER, T::TOKEN_ASSIGN, T::TOKEN_SPACE, T::TOKEN_STRING]);
     }
 
     public function testScalarNumber()

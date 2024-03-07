@@ -60,10 +60,6 @@ class ContainerLexer
      */
     protected array $tokenMap = 
     [
-        // strings
-        '/^"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"/' => T::TOKEN_STRING,
-        "/^'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'/" => T::TOKEN_STRING,
-
         // numbers
         "/^[+\-]?([0-9]*[.])?[0-9]+/" => T::TOKEN_NUMBER,
 
@@ -154,6 +150,29 @@ class ContainerLexer
         if ($this->offset >= $this->length) 
         {
             return false;
+        }
+
+        // parse string seperatly
+        $char = $this->code[$this->offset];
+        if ($char === '"' || $char === "'") 
+        {
+            $string = $char;
+            $this->offset++;
+
+            while ($this->offset < $this->length) 
+            {
+                if ($this->code[$this->offset] === $char && $this->code[$this->offset - 1] !== "\\") {
+                    $string .= $char;
+                    break;
+                }
+
+                $string .= $this->code[$this->offset];
+                $this->offset++;
+            }
+
+            $this->offset++;
+
+            return new T($this->line + 1, T::TOKEN_STRING, $string, $this->filename);
         }
 
         foreach ($this->tokenMap as $regex => $token) 

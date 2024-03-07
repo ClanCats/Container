@@ -144,4 +144,27 @@ class ParameterDefinitionParserTest extends ParserTestCase
         $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $def = $this->parameterDefnitionNodeFromCode(':foo: @bar'); // actually i want this in the feature
     }
+
+    public function testMultilineStringWithEscapedQuates()
+    {
+        $content = file_get_contents(__DIR__ . '/../../ctn/multilineparamsq.ctn') ?: '';
+
+        $def = $this->parameterDefnitionNodeFromCode($content);
+        $this->assertEquals(<<<'EOS'
+        Know
+        Why
+        this
+        doesn't work
+        
+        EOS, $def->getValue()->getRawValue());
+
+        $content = file_get_contents(__DIR__ . '/../../ctn/multilineparamdq.ctn') ?: '';
+
+        $def = $this->parameterDefnitionNodeFromCode($content);
+        $this->assertEquals(<<<'EOS'
+
+        Hey you should be able to say "Something"
+        
+        EOS, $def->getValue()->getRawValue());
+    }
 }
