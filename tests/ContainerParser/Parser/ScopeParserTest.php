@@ -63,10 +63,31 @@ class ScopeParserTest extends ParserTestCase
         $this->scopeNodeFromCode('override 42'); // actually i want this in the feature
     }
 
-     public function testUnexpectedToken() 
+     public function testUnexpectedToken()
     {
         $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->scopeNodeFromCode(":test: 42\n42"); // actually i want this in the feature
+    }
+
+    public function testParserExceptionReportsCorrectLineAfterHeredoc()
+    {
+        // the point of the heredoc line-counting fix is that error messages built
+        // from Token::getLine() stay accurate after a heredoc block; exercise the
+        // real exception message here, not just the token accessor.
+        $code = ":doc: <<<EOT\nhello\nworld\nEOT\n:test: 42\n42";
+
+        // the offending token is the trailing, standalone "42" - i.e. the *last*
+        // occurrence of "42" in the source (the first one is part of ":test: 42").
+        $badTokenPos = strrpos($code, '42');
+        $this->assertNotFalse($badTokenPos);
+        $expectedLine = substr_count(substr($code, 0, $badTokenPos), "\n") + 1;
+
+        try {
+            $this->scopeNodeFromCode($code);
+            $this->fail('Expected a ContainerParserException to be thrown.');
+        } catch (\ClanCats\Container\Exceptions\ContainerParserException $e) {
+            $this->assertStringContainsString('given at line ' . $expectedLine, $e->getMessage());
+        }
     }
 
     public function testParseImport()

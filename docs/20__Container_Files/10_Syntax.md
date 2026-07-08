@@ -45,6 +45,24 @@ Beloved or Hated emojis will also work just fine.
 :snails: '🐌🐌🐌'
 ```
 
+Repeated spaces and tabs are always collapsed to a single space, and this also applies inside a string. This keeps container files tidy regardless of how they're indented, but it means you can't rely on whitespace to format text you store, e.g. a multi-line example embedded in a description.
+
+```
+:example: "a  b" # becomes "a b"
+```
+
+If you need to preserve formatting exactly as written, use a heredoc block instead. This is an explicit opt-out of the whitespace collapsing described above.
+
+```
+:example: <<<EOT
+    {
+        "foo": "bar"
+    }
+EOT
+```
+
+A heredoc starts with `<<<` followed by a tag name, and ends with a line containing only the matching tag. The tag can be any combination of letters, digits and underscores, and everything in between is kept exactly as written, including indentation and repeated spaces. Unlike PHP's heredoc syntax there is no automatic indentation stripping, the closing tag must be flush against the start of its line.
+
 ### Booleans and Null
 
 There is not much to say about them:

@@ -115,9 +115,21 @@ class ContainerLexer
      */
     public function __construct(string $code, ?string $filename = null)
     {
-        // there is never a need for tabs or multiple whitespaces 
+        // heredoc blocks (<<<TAG ... TAG) are an explicit opt-out of the
+        // whitespace collapsing below. Extract them first so their content
+        // survives exactly as written, e.g. for a formatted multi-line
+        // example embedded in a hint string.
+        $rawStrings = [];
+        $code = $this->extractHeredocs($code, $rawStrings);
+
+        // there is never a need for tabs or multiple whitespaces
         // so we remove them before assigning the code
-        $this->code = trim(preg_replace("/[ \t]+/", ' ', $code) ?? '');
+        $code = trim(preg_replace("/[ \t]+/", ' ', $code) ?? '');
+
+        // restore the raw string bodies now that everything around them has
+        // already been collapsed, so the placeholders themselves were never
+        // touched by the collapse above.
+        $this->code = $rawStrings ? strtr($code, $rawStrings) : $code;
 
         // we need to know the codes length
         $this->length = strlen($this->code);
@@ -126,6 +138,41 @@ class ContainerLexer
         if ($filename) {
             $this->filename = $filename;
         }
+    }
+
+    /**
+     * Replace heredoc blocks (<<<TAG ... TAG) with placeholders so their
+     * exact formatting survives the whitespace collapse in the constructor.
+     *
+     * The closing tag must be alone on its own line, there is no automatic
+     * indentation stripping like PHP's flexible heredoc syntax.
+     *
+     * @param string                 $code
+     * @param array<string, string>  $rawStrings Filled with placeholder => restored single-quoted string body.
+     *
+     * @return string
+     */
+    protected function extractHeredocs(string $code, array &$rawStrings) : string
+    {
+        $pattern = '/<<<([A-Za-z_][A-Za-z0-9_]*)\r?\n(.*?)\r?\n\1(?=\r?\n|$)/s';
+
+        return preg_replace_callback($pattern, function (array $matches) use (&$rawStrings) : string {
+            $placeholder = "\x00RAW" . count($rawStrings) . "\x00";
+
+            // the restored body will be re-scanned as a regular single quoted
+            // string, so any single quote it contains must be escaped to not
+            // be mistaken for the closing quote.
+            $rawStrings[$placeholder] = str_replace("'", "\\'", $matches[2]);
+
+            // the placeholder collapses the multi-line heredoc (its opening `<<<TAG`
+            // line and closing tag line) onto fewer lines than it occupied in the
+            // source. re-emit the "lost" newlines after the string so line numbers of
+            // the following tokens - and therefore lexer/parser error messages - stay
+            // accurate.
+            $lostNewlines = substr_count($matches[0], "\n") - substr_count($matches[2], "\n");
+
+            return "'" . $placeholder . "'" . str_repeat("\n", $lostNewlines);
+        }, $code) ?? $code;
     }
 
     /**
