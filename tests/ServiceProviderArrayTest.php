@@ -89,7 +89,7 @@ class ServiceProviderArrayTest extends \PHPUnit\Framework\TestCase
         ]);
     }
 
-    public function testResolveCallsMissingMethod() 
+    public function testResolveCallsMissingMethod()
     {
         $this->expectException(\ClanCats\Container\Exceptions\InvalidServiceException::class);
         $this->resolveWithArray('engine', [
@@ -97,5 +97,40 @@ class ServiceProviderArrayTest extends \PHPUnit\Framework\TestCase
                 ['arguments' => [123]],
             ]]
         ]);
+    }
+
+    public function testLookupClassName()
+    {
+        $container = new Container();
+        $provider = new ServiceProviderArray();
+        $provider->setServices([
+            'engine' => ['class' => Engine::class],
+        ]);
+
+        $this->assertEquals(Engine::class, $provider->lookupClassName('engine', $container));
+    }
+
+    public function testLookupClassNameUnknownService()
+    {
+        $container = new Container();
+        $provider = new ServiceProviderArray();
+        $provider->setServices([
+            'engine' => ['class' => Engine::class],
+        ]);
+
+        $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
+        $provider->lookupClassName('unknown', $container);
+    }
+
+    public function testLookupClassNameWithoutClass()
+    {
+        $container = new Container();
+        $provider = new ServiceProviderArray();
+        $provider->setServices([
+            'engine' => ['shared' => false],
+        ]);
+
+        $this->expectException(\ClanCats\Container\Exceptions\InvalidServiceException::class);
+        $provider->lookupClassName('engine', $container);
     }
 }

@@ -485,4 +485,16 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('engine', $arguments->getAll()[0][0]);
         $this->assertEquals(ServiceArguments::DEPENDENCY, $arguments->getAll()[0][1]);
     }
+
+    public function testSetOverrideDebugInfo()
+    {
+        $builder = new ContainerBuilder('TestContainer');
+
+        // by default the generated container overrides the __debugInfo method
+        $this->assertStringContainsStringProxy('public function __debugInfo', $builder->generate());
+
+        // when disabled the __debugInfo method is no longer generated
+        $builder->setOverrideDebugInfo(false);
+        $this->assertStringNotContainsStringProxy('public function __debugInfo', $builder->generate());
+    }
 }

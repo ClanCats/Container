@@ -1,0 +1,1 @@
+@producer: ClanCats\Container\Tests\TestServices\Producer('db-producer')

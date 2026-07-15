@@ -18,7 +18,8 @@ use ClanCats\Container\ContainerParser\{
     Nodes\ArgumentArrayNode,
     Nodes\ServiceReferenceNode,
     Nodes\ParameterReferenceNode,
-    Nodes\ServiceMethodCallNode
+    Nodes\ServiceMethodCallNode,
+    Nodes\MetaDataAssignmentNode
 };
 
 class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
@@ -314,12 +315,85 @@ class ContainerInterpreterTest extends \PHPUnit\Framework\TestCase
     public function testHandleUpdateServiceDefinitionNotInUniverse()
     {
         $this->expectException(\ClanCats\Container\Exceptions\ContainerInterpreterException::class);
-        
+
         $ns = new ContainerNamespace();
         $interpreter = new ContainerInterpreter($ns);
         $loggerUpdate = new ServiceDefinitionNode('logger');
         $loggerUpdate->setIsUpdate(true);
         $loggerUpdate->addConstructionAction(new ServiceMethodCallNode('sleep'));
         $interpreter->handleServiceDefinition($loggerUpdate);
+    }
+
+    public function testHandleScopeWithUnexpectedNode()
+    {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerInterpreterException::class);
+
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+
+        // a value node is not a valid top level scope node
+        $scope = new ScopeNode();
+        $scope->addNode(new ValueNode('nope', ValueNode::TYPE_STRING));
+
+        $interpreter->handleScope($scope);
+    }
+
+    public function testHandleServiceDefinitionConstructionArgumentsWithArguments()
+    {
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+
+        $arguments = new ArgumentArrayNode();
+        $arguments->addArgument(new ServiceReferenceNode('other'));
+        $arguments->addArgument(new ParameterReferenceNode('some.param'));
+        $arguments->addArgument(new ValueNode('raw', ValueNode::TYPE_STRING));
+
+        $array = new ArrayNode();
+        $array->push(new ValueNode('a', ValueNode::TYPE_STRING));
+        $arguments->addArgument($array);
+
+        $call = new ServiceMethodCallNode('configure');
+        $call->setArguments($arguments);
+
+        $logger = new ServiceDefinitionNode('logger', 'Log');
+        $logger->addConstructionAction($call);
+
+        $interpreter->handleServiceDefinition($logger);
+
+        $calls = $ns->getServices()['logger']->getMethodCalls();
+        $this->assertCount(1, $calls);
+        $this->assertEquals('configure', $calls[0][0]);
+
+        $callArguments = $calls[0][1]->getAll();
+        $this->assertCount(4, $callArguments);
+        $this->assertEquals(['a'], $callArguments[3][0]);
+    }
+
+    public function testHandleServiceDefinitionMetaData()
+    {
+        $ns = new ContainerNamespace();
+        $interpreter = new ContainerInterpreter($ns);
+
+        $data = new ArrayNode();
+        $data->push(new ValueNode('GET', ValueNode::TYPE_STRING));
+        $data->push(new ValueNode('/demo', ValueNode::TYPE_STRING));
+
+        $withData = new MetaDataAssignmentNode('routing');
+        $withData->setData($data);
+
+        $withoutData = new MetaDataAssignmentNode('tag');
+
+        $logger = new ServiceDefinitionNode('logger', 'Log');
+        $logger->addMetaDataAssignemnt($withData);
+        $logger->addMetaDataAssignemnt($withoutData);
+
+        $interpreter->handleServiceDefinition($logger);
+
+        $metaData = $ns->getServices()['logger']->getMetaData();
+
+        $this->assertEquals([
+            'routing' => [['GET', '/demo']],
+            'tag' => [[]],
+        ], $metaData);
     }
 }

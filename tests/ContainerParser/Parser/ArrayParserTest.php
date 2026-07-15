@@ -165,4 +165,30 @@ class ArrayParserTest extends ParserTestCase
         $this->assertEquals('hello', $elements[0]->getKey());
         $this->assertEquals('World', $elements[0]->getValue()->getRawValue());
     }
+
+    public function testArrayWithParameterReference()
+    {
+        $array = $this->arrayNodeFromCode(':foo');
+        $elements = $array->getElements();
+
+        $this->assertCount(1, $elements);
+        $this->assertInstanceOf(ParameterReferenceNode::class, $elements[0]->getValue());
+        $this->assertEquals('foo', $elements[0]->getValue()->getName());
+    }
+
+    public function testArrayWithServiceReference()
+    {
+        $array = $this->arrayNodeFromCode('@foo');
+        $elements = $array->getElements();
+
+        $this->assertCount(1, $elements);
+        $this->assertInstanceOf(ServiceReferenceNode::class, $elements[0]->getValue());
+        $this->assertEquals('foo', $elements[0]->getValue()->getName());
+    }
+
+    public function testArrayWithUnexpectedToken()
+    {
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
+        $this->arrayNodeFromCode('=');
+    }
 }

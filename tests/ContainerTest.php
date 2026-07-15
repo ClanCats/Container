@@ -8,7 +8,8 @@ use ClanCats\Container\Tests\TestServices\{
     Car, Engine, Producer,
 
     CustomContainer,
-    CustomServiceProviderArray
+    CustomServiceProviderArray,
+    ClassNameLookupContainer
 };
 
 class ContainerTest extends \PHPUnit\Framework\TestCase
@@ -566,8 +567,54 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     public function testGetClassForServiceMethod() : void
     {
         $container = new CustomContainer();
-        
+
         $this->assertEquals(Car::class, $container->getClassForService('car'));
+        $this->assertEquals(Engine::class, $container->getClassForService('engine'));
+    }
+
+    public function testGetTyped() : void
+    {
+        $container = new Container();
+        $container->bindClass('car', Car::class, ['@engine']);
+        $container->bindClass('engine', Engine::class);
+
+        $car = $container->getTyped(Car::class, 'car');
+        $this->assertInstanceOf(Car::class, $car);
+    }
+
+    public function testGetTypedWrongType() : void
+    {
+        $container = new Container();
+        $container->bindClass('engine', Engine::class);
+
+        $this->expectException(\ClanCats\Container\Exceptions\UnknownServiceException::class);
+        $container->getTyped(Producer::class, 'engine');
+    }
+
+    public function testGetClassForServiceUnknown() : void
+    {
+        $container = new Container();
+
+        // a service that was never registered has no resolver type
+        $this->assertNull($container->getClassForService('does.not.exist'));
+    }
+
+    public function testGetClassForServiceMethodBuiltinReturnType() : void
+    {
+        $container = new ClassNameLookupContainer();
+
+        // a builtin return type cannot be resolved to a class name
+        $this->assertNull($container->getClassForService('builtin'));
+    }
+
+    public function testGetClassForServiceMethodWithoutReturnType() : void
+    {
+        $container = new ClassNameLookupContainer();
+
+        // a missing return type cannot be resolved to a class name
+        $this->assertNull($container->getClassForService('notype'));
+
+        // a proper class return type is resolved through reflection
         $this->assertEquals(Engine::class, $container->getClassForService('engine'));
     }
 }

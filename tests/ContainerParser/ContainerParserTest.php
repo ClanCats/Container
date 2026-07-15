@@ -57,4 +57,18 @@ class ContainerParserTest extends ParserTestCase
     	// check if the keys have been removed
     	$this->assertEquals([0, 1, 2], array_keys($parser->getTokens()));
     }
+
+    public function testBaseParserNodeThrows()
+    {
+        // the base parser has no result node and should throw when parsing an empty token set
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
+        (new ContainerParser([]))->parse();
+    }
+
+    public function testBaseParserNextThrows()
+    {
+        // the base parser cannot parse a token and should throw
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
+        (new ContainerParser([new T(1, T::TOKEN_NUMBER, 42)]))->parse();
+    }
 }

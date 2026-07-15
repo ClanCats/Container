@@ -69,6 +69,17 @@ class ScopeParserTest extends ParserTestCase
         $this->scopeNodeFromCode(":test: 42\n42"); // actually i want this in the feature
     }
 
+    public function testUnexpectedEndOfScopeAfterOverride()
+    {
+        // an "override" token with nothing following it ends the scope unexpectedly.
+        // the lexer trims trailing whitespace so this token sequence can only be
+        // produced directly, not from source code.
+        $parser = new ScopeParser([new T(1, T::TOKEN_OVERRIDE, 'override ')]);
+
+        $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
+        $parser->parse();
+    }
+
     public function testParserExceptionReportsCorrectLineAfterHeredoc()
     {
         // the point of the heredoc line-counting fix is that error messages built
