@@ -201,8 +201,9 @@ class ContainerLexer
 
         // parse string seperatly
         $char = $this->code[$this->offset];
-        if ($char === '"' || $char === "'") 
+        if ($char === '"' || $char === "'")
         {
+            $startLine = $this->line;
             $string = $char;
             $this->offset++;
 
@@ -224,7 +225,7 @@ class ContainerLexer
 
             $this->offset++;
 
-            return new T($this->line + 1, T::TOKEN_STRING, $string, $this->filename);
+            return new T($startLine + 1, T::TOKEN_STRING, $string, $this->filename);
         }
 
         foreach ($this->tokenMap as $regex => $token) 

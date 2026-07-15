@@ -101,10 +101,11 @@ class ArrayParser extends ContainerParser
             );
         }
 
-        // is a parameter reference 
-        elseif ($token->isValue()) 
+        // is a parameter reference
+        elseif ($token->isValue())
         {
             $elementValue = ValueNode::fromToken($token);
+            $this->skipToken();
         }
 
         elseif ($token->isType(T::TOKEN_PARAMETER)) 
@@ -140,9 +141,6 @@ class ArrayParser extends ContainerParser
         } else {
             $this->array->push($elementValue);
         }
-
-        // skip the value token
-        $this->skipToken();
 
         // now ther might follow a seperator indicating another argument
         if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_SEPERATOR)) 

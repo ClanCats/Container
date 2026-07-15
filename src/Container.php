@@ -171,7 +171,7 @@ class Container
      */
     public function getMetaDataKeys(string $serviceName) : array
     {
-        return $this->metadataService[$serviceName];
+        return $this->metadataService[$serviceName] ?? [];
     }
 
     /**

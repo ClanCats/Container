@@ -86,6 +86,7 @@ class ArgumentArrayParser extends ContainerParser
         elseif ($token->isValue())
         {
             $this->arguments->addArgument(ValueNode::fromToken($token));
+            $this->skipToken();
         }
         // is it a parameter?
         elseif ($token->isType(T::TOKEN_PARAMETER)) 
@@ -104,12 +105,10 @@ class ArgumentArrayParser extends ContainerParser
         }
 
         // anything else?
-        else 
+        else
         {
             throw $this->errorUnexpectedToken($token);
         }
-
-        $this->skipToken();
 
         // now ther might follow a seperator indicating another argument
         if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_SEPERATOR)) 

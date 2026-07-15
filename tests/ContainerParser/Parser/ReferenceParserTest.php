@@ -38,9 +38,20 @@ class ReferenceParserTest extends ParserTestCase
         $this->assertEquals('service', $service->getName());
     }
 
-    public function testInvalid() 
+    public function testInvalid()
     {
         $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $this->referenceParserFromCode('invalid')->parse();
+    }
+
+    public function testAdvancesTokenIndex()
+    {
+        // the parser must consume the single token it reads so that
+        // parseChild() / getParsedTokensCount() advances callers correctly
+        $parser = $this->referenceParserFromCode('@service');
+        $parser->parse();
+
+        $this->assertEquals(1, $parser->getParsedTokensCount());
+        $this->assertEquals(1, $parser->getIndex());
     }
 }

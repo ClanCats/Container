@@ -141,10 +141,27 @@ class ArgumentArrayParserTest extends ParserTestCase
         $arguments = $this->argumentsArrayNodeFromCode('@foo,,');
     }
 
-    public function testInvalidIdentifier() 
+    public function testInvalidIdentifier()
     {
         $this->expectException(\ClanCats\Container\Exceptions\ContainerParserException::class);
         $arguments = $this->argumentsArrayNodeFromCode('@foo,bar');
+    }
+
+    public function testErrorParsingMessageIsWellFormed()
+    {
+        // errorParsing() previously appended a stray closing quote, producing
+        // e.g. "...argument vector" given at line ...". The message must be
+        // clean. All of its call sites are defensive branches unreachable
+        // through normal input, so we exercise the method directly.
+        $parser = $this->argumentsArrayParserFromCode('@foo');
+
+        $method = new \ReflectionMethod($parser, 'errorParsing');
+        $method->setAccessible(true);
+
+        $exception = $method->invoke($parser, 'Trying to assign unassignable to argument vector');
+
+        $this->assertStringContainsString('Trying to assign unassignable to argument vector given at line', $exception->getMessage());
+        $this->assertStringNotContainsString('vector" given', $exception->getMessage());
     }
 
 

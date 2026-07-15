@@ -85,9 +85,8 @@ class ServiceDefinitionParser extends ContainerParser
                 $definition->setAliasTarget($ref);
             } else {
                 $definition->setClassName($this->currentToken()->getValue());
+                $this->skipToken();
             }
-            
-            $this->skipToken();
 
             // try to parse service constructor arguments
             if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_BRACE_OPEN) && (!$definition->isAlias()))

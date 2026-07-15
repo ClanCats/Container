@@ -318,7 +318,7 @@ class ContainerParser
     protected function errorParsing(string $message) : ContainerParserException
     {
         $token = $this->currentToken();
-        return new ContainerParserException($message . '" given at line ' . $token->getLine() . ' in file ' . $token->getFilename());
+        return new ContainerParserException($message . ' given at line ' . $token->getLine() . ' in file ' . $token->getFilename());
     }
 
     /**

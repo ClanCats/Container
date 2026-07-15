@@ -105,6 +105,32 @@ class ContainerLexerTest extends LexerTestCase
         CODE, [T::TOKEN_PARAMETER, T::TOKEN_ASSIGN, T::TOKEN_SPACE, T::TOKEN_STRING]);
     }
 
+    public function testMultilineStringReportsStartLine()
+    {
+        // a quoted string spanning several source lines must be tagged with the
+        // line it STARTS on, not the line it ends on (regression: the scanner
+        // incremented the line counter mid-string and reported the end line)
+        $code = ":before: 'a'\n:doc: 'line one\nline two\nline three'\n:after: 'b'";
+        $tokens = $this->tokensFromCode($code);
+
+        $multiline = null;
+        foreach ($tokens as $token) {
+            if ($token->getType() === T::TOKEN_STRING && strpos($token->getValue(), "\n") !== false) {
+                $multiline = $token;
+                break;
+            }
+        }
+
+        $this->assertNotNull($multiline, 'multiline string token not found');
+        // the string opens on source line 2
+        $this->assertEquals(2, $multiline->getLine());
+
+        // tokens after the multiline string still report their real source line
+        $after = $this->findParameterToken($tokens, ':after');
+        $this->assertNotNull($after);
+        $this->assertEquals($this->expectedLineOf($code, ':after'), $after->getLine());
+    }
+
     public function testHeredocStrings()
     {
         // regular multiline strings collapse repeated whitespace / indentation
