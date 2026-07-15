@@ -27,6 +27,15 @@ class ContainerParser
     protected array $tokens = [];
 
     /**
+     * The index at which parsing started. This is `0` for a top level parser
+     * but may be a positive offset when a child parser shares its parents
+     * token buffer through a window (see `parseChild`).
+     *
+     * @var int
+     */
+    protected int $startIndex = 0;
+
+    /**
      * The current index while parsing trough the tokens
      *
      * @var int
@@ -34,7 +43,9 @@ class ContainerParser
     protected int $index = 0;
 
     /**
-     * The number of tokens to parse
+     * The exclusive end bound of the tokens to parse. Together with
+     * `$startIndex` this describes the window `[startIndex, tokenCount)` a
+     * (child) parser is responsible for inside the shared token buffer.
      *
      * @var int
      */
@@ -44,30 +55,57 @@ class ContainerParser
      * The constructor
      * You have to initialize the Parser with an array of lexed tokens.
      *
+     * When `$preFiltered` is false (the default, used for the top level parser
+     * and for explicit token slices) the tokens are copied into a fresh
+     * sequentially keyed array with comments and whitespaces stripped.
+     *
+     * When `$preFiltered` is true the given `$tokens` are shared as-is and the
+     * parser only operates on the window `[$start, $end)`. Because the buffer
+     * is never mutated this stays a copy-on-write reference (no array copy),
+     * which is what makes child parsing linear instead of quadratic.
+     *
      * @param array<T>             $tokens
+     * @param int                  $start
+     * @param int|null             $end
+     * @param bool                 $preFiltered
      * @return void
      */
-    public function __construct(array $tokens)
+    public function __construct(array $tokens, int $start = 0, ?int $end = null, bool $preFiltered = false)
     {
-        foreach ($tokens as $key => $token) 
+        if ($preFiltered)
         {
-            // remove all comments and whitespaces
-            if ($token->getType() === T::TOKEN_COMMENT || $token->getType() === T::TOKEN_SPACE) 
-            {
-                unset($tokens[$key]);
-            }
+            // share the already filtered buffer without copying it
+            $this->tokens = $tokens;
         }
+        else
+        {
+            // filter comments and whitespaces into a fresh sequentially keyed
+            // array. Building a new array (instead of unset + array_values)
+            // normalizes the keys in a single pass.
+            $filtered = [];
+            foreach ($tokens as $token)
+            {
+                $type = $token->getType();
+                if ($type !== T::TOKEN_COMMENT && $type !== T::TOKEN_SPACE)
+                {
+                    $filtered[] = $token;
+                }
+            }
+
+            $this->tokens = $filtered;
+        }
+
+        $this->startIndex = $start;
+        $this->index = $start;
+        $this->tokenCount = $end ?? count($this->tokens);
 
         // prepare the parser
         $this->prepare();
-
-        // set the initial tokens
-        $this->setTokens($tokens);
     }
 
     /**
      * Set the tokens of the current parser
-     * 
+     *
      * @param array<T>             $tokens
      * @return void
      */
@@ -80,6 +118,7 @@ class ContainerParser
         $this->tokenCount = count($this->tokens);
 
         // reset the index
+        $this->startIndex = 0;
         $this->index = 0;
     }
 
@@ -121,7 +160,7 @@ class ContainerParser
      */
     public function getParsedTokensCount() : int
     {
-        return $this->getIndex();
+        return $this->index - $this->startIndex;
     }
 
     /**
@@ -334,10 +373,16 @@ class ContainerParser
     {
         if (is_null($tokens))
         {
-            $tokens = $this->getRemainingTokens(); 
+            // spawn the child over a window of our shared (already filtered)
+            // token buffer instead of copying the remaining tokens. Thanks to
+            // copy-on-write this shares the buffer without duplicating it.
+            $parser = new $parserClassName($this->tokens, $this->index, $this->tokenCount, true);
+        }
+        else
+        {
+            $parser = new $parserClassName($tokens);
         }
 
-        $parser = new $parserClassName($tokens);
         $node = $parser->parse();
 
         // Update the current index based on the work of the child parser.

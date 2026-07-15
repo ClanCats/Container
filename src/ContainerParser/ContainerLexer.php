@@ -61,49 +61,49 @@ class ContainerLexer
     protected array $tokenMap = 
     [
         // numbers
-        "/^[+\-]?([0-9]*[.])?[0-9]+/" => T::TOKEN_NUMBER,
+        "/\G[+\-]?([0-9]*[.])?[0-9]+/" => T::TOKEN_NUMBER,
 
         // bool
-        "/^(true)/" => T::TOKEN_BOOL_TRUE,
-        "/^(false)/" => T::TOKEN_BOOL_FALSE,
+        "/\G(true)/" => T::TOKEN_BOOL_TRUE,
+        "/\G(false)/" => T::TOKEN_BOOL_FALSE,
 
         // null
-        "/^(null)/" => T::TOKEN_NULL,
+        "/\G(null)/" => T::TOKEN_NULL,
 
         // container objects
-        "/^(@[\w\-\/\.]+)/" => T::TOKEN_DEPENDENCY,
-        "/^(:[\w\-\/\.]+)/" => T::TOKEN_PARAMETER,
+        "/\G(@[\w\-\/\.]+)/" => T::TOKEN_DEPENDENCY,
+        "/\G(:[\w\-\/\.]+)/" => T::TOKEN_PARAMETER,
 
         // comments
-        "/^\/\/.*/" => T::TOKEN_COMMENT,
-        "/^#.*/" => T::TOKEN_COMMENT,
-        "/^\/\*(?:.|[\r\n])*?\*\//" => T::TOKEN_COMMENT,
+        "/\G\/\/.*/" => T::TOKEN_COMMENT,
+        "/\G#.*/" => T::TOKEN_COMMENT,
+        "/\G\/\*(?:.|[\r\n])*?\*\//" => T::TOKEN_COMMENT,
 
         // markup
-        "/^(\r\n|\n|\r)/" => T::TOKEN_LINE,
-        "/^(\s)/" => T::TOKEN_SPACE,        
+        "/\G(\r\n|\n|\r)/" => T::TOKEN_LINE,
+        "/\G(\s)/" => T::TOKEN_SPACE,
 
         // keywords
-        "/^(use )/" => T::TOKEN_USE,
-        "/^(import )/" => T::TOKEN_IMPORT,
-        "/^(override )/" => T::TOKEN_OVERRIDE,
+        "/\G(use )/" => T::TOKEN_USE,
+        "/\G(import )/" => T::TOKEN_IMPORT,
+        "/\G(override )/" => T::TOKEN_OVERRIDE,
 
         // scope
-        "/^(\()/" => T::TOKEN_BRACE_OPEN,
-        "/^(\))/" => T::TOKEN_BRACE_CLOSE,
-        "/^(\{)/" => T::TOKEN_SCOPE_OPEN,
-        "/^(\})/" => T::TOKEN_SCOPE_CLOSE,
-        
+        "/\G(\()/" => T::TOKEN_BRACE_OPEN,
+        "/\G(\))/" => T::TOKEN_BRACE_CLOSE,
+        "/\G(\{)/" => T::TOKEN_SCOPE_OPEN,
+        "/\G(\})/" => T::TOKEN_SCOPE_CLOSE,
+
         // syntax
-        "/^(\:)/" => T::TOKEN_ASSIGN,
-        "/^(\-)/" => T::TOKEN_MINUS,
-        "/^(\=)/" => T::TOKEN_EQUAL,
-        "/^(\,)/" => T::TOKEN_SEPERATOR,
-        "/^(\?)/" => T::TOKEN_OPTIONAL,
+        "/\G(\:)/" => T::TOKEN_ASSIGN,
+        "/\G(\-)/" => T::TOKEN_MINUS,
+        "/\G(\=)/" => T::TOKEN_EQUAL,
+        "/\G(\,)/" => T::TOKEN_SEPERATOR,
+        "/\G(\?)/" => T::TOKEN_OPTIONAL,
 
         // ids
-        "/^([\w\-\/\\\\.]+)::class/" => T::TOKEN_CLASS_NAME,
-        "/^([\w\-\/\\\\.]+)/" => T::TOKEN_IDENTIFIER,
+        "/\G([\w\-\/\\\\.]+)::class/" => T::TOKEN_CLASS_NAME,
+        "/\G([\w\-\/\\\\.]+)/" => T::TOKEN_IDENTIFIER,
     ];
 
     /**
@@ -228,9 +228,12 @@ class ContainerLexer
             return new T($startLine + 1, T::TOKEN_STRING, $string, $this->filename);
         }
 
-        foreach ($this->tokenMap as $regex => $token) 
+        foreach ($this->tokenMap as $regex => $token)
         {
-            if (preg_match($regex, substr($this->code, $this->offset), $matches)) 
+            // match against the full code at the current offset (the patterns
+            // are anchored with \G) instead of copying the remaining code with
+            // substr() on every single attempt.
+            if (preg_match($regex, $this->code, $matches, 0, $this->offset))
             {
                 if ($token === T::TOKEN_LINE) {
                     $this->line++;
@@ -258,19 +261,21 @@ class ContainerLexer
     public function tokens() : array
     {
         $tokens = [];
+        $last = null;
 
-        while ($token = $this->next()) 
+        while ($token = $this->next())
         {
             // skip doublicated linebreaks
             if (
-                $token->getType() === T::TOKEN_LINE && 
-                isset($tokens[count($tokens) - 1]) && 
-                $tokens[count($tokens) - 1]->getType() === T::TOKEN_LINE
+                $token->getType() === T::TOKEN_LINE &&
+                $last !== null &&
+                $last->getType() === T::TOKEN_LINE
             ) {
                 continue;
             }
 
             $tokens[] = $token;
+            $last = $token;
         }
 
         return $tokens;
