@@ -1,10 +1,12 @@
 # Composer Integration
 
-It is possible to import container files from vendor packages through composer.
+When you pull in a Composer package that provides its own services — a mailer, a database layer, a whole bundle — you'd rather not copy its service definitions into your own `.ctn` files by hand. Container files integrate with Composer so that a package can ship its `.ctn` files and you can `import` them by name, just like your own.
+
+This page covers both sides of that: [importing container files](#importing-container-files-from-packages) that a package provides, and [exposing your own](#exposing-container-files-to-composer) when you're the one writing the package.
 
 ## Importing container files from packages
 
-This is done in two steps.
+Wiring this up takes two steps: tell Composer to build a map of the container files your packages provide, then point the namespace at that map.
 
 ### 1. Setup composer.json
 
@@ -20,7 +22,17 @@ First we need to tell composer to generate a container file map of our packages 
 }
 ```
 
-This will generate a `container_map.php` file in your vendor directory.
+Now, every time composer dumps the autoloader (`composer install`, `composer update`, `composer dump-autoload`), it scans every installed package for an `extra.container` entry (see [below](#exposing-container-files-to-composer)) and writes a `container_map.php` file into your vendor directory. That file simply `return`s an array mapping each exposed import name to the absolute path of its `.ctn` file:
+
+```php
+<?php
+$vendorDir = __DIR__ . '/';
+
+return [
+    'acme/mypackage'        => $vendorDir . 'acme/mypackage/package.ctn',
+    'acme/mypackage/config' => $vendorDir . 'acme/mypackage/config.ctn',
+];
+```
 
 ### 2. Setup the container factory.
 
@@ -30,13 +42,17 @@ Tell the container namespace where to look for the generated `container_map.php`
 $namespace->importFromVendor(__DIR__ . '/vendor');
 ```
 
-## Exposing container files to composer 
+::: tip Verify it worked
+Run `composer dump-autoload` and confirm `vendor/container_map.php` exists and lists the packages you expect. If a package is missing, double-check its `extra.container` block. If the file itself is absent, make sure the `post-autoload-dump` script from step 1 is present in the project's own `composer.json`.
+:::
 
-The other way around, when you want to add container files to your library / package.
+## Exposing container files to Composer
 
-The import name of the container files is dependent on your composer package. You will be able to use multiple container files but you have to define the main one.
+Now the other direction: you're writing a library and want the projects that install it to import your services with a single line.
 
-let's think of a package structure as follows:
+A package may expose as many container files as it likes, and their import names are derived from your Composer package name. One of them is the *main* file — the one consumers get when they import the package by its bare name — and you may add any number of additional named files alongside it.
+
+Let's take a package laid out like this:
 
 ```
 config.ctn

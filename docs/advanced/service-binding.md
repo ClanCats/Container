@@ -15,9 +15,22 @@ use ClanCats\Container\{
 };
 ```
 
+## Which bind method?
+
+The container exposes a small family of binding methods. `bind()` is the convenient shortcut that dispatches to the others based on what you pass it; the rest are explicit and occasionally clearer.
+
+| Method | Accepts | Shared? | Returns |
+| --- | --- | --- | --- |
+| `bind($name, $factory, $shared = true)` | `ServiceFactoryInterface`, `Closure`, or class-name string | via 3rd arg (default `true`) | the `ServiceFactory` **only** when given a class-name string |
+| `bindClass($name, $class, $arguments = [], $shared = true)` | class-name string | via 4th arg (default `true`) | the generated `ServiceFactory` |
+| `bindFactoryShared($name, $factory)` | `ServiceFactoryInterface` or `Closure` | always shared | `void` |
+| `bindFactory($name, $factory)` | `ServiceFactoryInterface` or `Closure` | never shared (fresh each `get`) | `void` |
+
+Note the naming: `bindFactory` / `bindFactoryShared` refer to a *service factory object* (a `ServiceFactoryInterface` or `Closure`), and the `Shared` suffix controls whether the result is cached. See [shared vs. factory services](#shared-vs-factory-services) below for what "shared" means.
+
 ## Bind method
 
-The Containers `bind` method acts as a shortcut and supports three different argument types:
+The `bind` method acts as a shortcut and supports three different argument types:
 
  * `ServiceFactoryInterface` instance.
  * `Closure` callback.

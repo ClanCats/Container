@@ -1,6 +1,6 @@
 # Values & Types
 
-Every argument, parameter and metadata entry in a container file is one of a small set of value types. The language supports:
+Wherever a container file expects a value — a [parameter](/container-files/parameters) you set, an [argument](/container-files/services) you pass to a service, an entry inside [metadata](/container-files/metadata) — it's one of a small, familiar set of types. They're the same scalars and arrays you'd write in plain PHP, so there's very little new to learn here; this page is mostly a quick reference for the exact syntax.
 
  * **Strings** — single and double quoted. <br>
    `'hello'` & `"world"`
@@ -15,21 +15,19 @@ Every argument, parameter and metadata entry in a container file is one of a sma
 
 ## Numbers
 
-Container files do not differentiate between different number types because it would be an unnecessary overhead, we forward that job directly to PHP.
+You may write integers, floats and doubles, and you don't need to declare which is which. Container files make no distinction between number types — that would only add overhead — so the value is forwarded straight to PHP, which interprets it just as it would in your own code:
 
 ```ctn
-42 # Int
-42.01 # Float
--42.12345678912345 # Double
+:retries: 42                       # int
+:timeout: 42.01                    # float
+:ratio: -42.12345678912345         # double
 ```
 
-That means that also the floating point precision is handled by PHP. All values are interpreted means large doubles might be stored rounded.
+Because PHP does the interpreting, floating-point precision is PHP's too — a very large or very precise double may be stored rounded, exactly as it would be in plain PHP.
 
 ## Strings
 
-Strings must always be encapsulated with a single `'` or double `"` quote. This serves mainly a comfort purpose when having many quotes inside your string not having to escape them all.
-
-Escaping of special characters works just the usual way. 
+Strings must always be wrapped in single `'` or double `"` quotes. Having both available is mostly a convenience: pick whichever quote your text doesn't contain, and you won't have to escape it. When you do need to escape a character, it works just as you'd expect:
 
 ```ctn
 :say: 'Hello it\'s me!'

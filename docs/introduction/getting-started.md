@@ -1,167 +1,155 @@
-# Getting Started with the ClanCats Container
+# Getting Started
 
-Hey there, this is the more detailed version of the Quick Start found in the [README](https://github.com/ClanCats/Container/blob/master/README.md) file. 
+Welcome! This is the guided, take-your-time companion to the Quick Start in the [README](https://github.com/ClanCats/Container/blob/master/README.md). Together we'll build a small working container from scratch, one piece at a time — so don't worry if not everything clicks straight away. It will by the end.
 
-**If you are not familiar with dependency injection containers read the [Core Concepts](/introduction/core-concepts).**
+By the time we're done you'll have written your first `.ctn` container file, wired up a couple of real PHP classes, and pulled a fully-assembled object back out of the container with a single `get()` call.
 
-## Choosing the implementation
+If dependency injection is new to you, it's worth reading [Core Concepts](/introduction/core-concepts) first, and [Overview](/introduction/overview) gives an at-a-glance picture of how the pieces fit together. And if you haven't installed the package yet, start with [Installation](/introduction/installation) — it's a single `composer require`.
 
-Of course how you implement the service container is completely up to you but you should at least decide if you want to compile the dependency graph or not. It is possible to mix a compiled container with dynamic service definitions but for the love of consistent structuring things, you really should stick with one way.
+[[toc]]
 
-You can read more about different types of implementations here:
+## What we're building
 
- * [Default](/usage/implementations/default)
- * [Dynamic](/usage/implementations/dynamic)
- * [Custom build](/usage/implementations/custom-build)
+We'll wire up a tiny spaceship: an `Engine` service that needs a mechanic, and a `Human` who plays that mechanic. Along the way we'll cover parameters, splitting configuration into its own file, importing it, and finally the services themselves.
 
-Because the main difference between this and any other PHP service container is the meta language I will stick with it for this getting started guide.
-
-## Setup 
-
-Just like in the README the target directory structure will look like this:
+Here's the directory structure we're working toward:
 
 ```
-app.php
-app.ctn # this will be our container file.
-config.ctn # this will be our configuration file.
+app.php       # bootstraps and uses the container
+app.ctn       # our main container file
+config.ctn    # a separate configuration file
 composer.json
-cache/ # make sure this is writable
+cache/        # generated container class lands here — make sure it's writable
 src/
   Human.php
-  SpaceShip.php
   Engine.php
 ```
 
-## Container Factory
+Throughout this guide we'll use the recommended **Default** implementation, which compiles your `.ctn` files into a fast generated PHP class. That's almost always the right choice; if you're curious about the alternatives (dynamic, custom build), see [Choosing an Implementation](/usage/implementations/choosing) — but there's no need to decide anything now.
 
-To construct a container instance we make use of the `ContainerFactory` which will generate a PHP file containing our very own container.
+## Wiring up the container
+
+Before we can write any services, we need a container to put them in. That's the job of the `ContainerFactory`: it takes your `.ctn` files, compiles them into a plain PHP class, and hands you a ready-to-use container instance.
+
+Pop this into `app.php`:
 
 ```php
 $factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
 
 $container = $factory->create('AppContainer', function($builder)
 {
-    // create a new container file namespace and parse our `app.ctn` file.
+    // create a container namespace and parse our `app.ctn` file
     $namespace = new \ClanCats\Container\ContainerNamespace([
         'config' => __DIR__ . '/config.ctn',
     ]);
     $namespace->parse(__DIR__ . '/app.ctn');
 
-    // import the namespace data into the builder
+    // import the parsed definitions into the builder
     $builder->importNamespace($namespace);
 });
 ```
 
-And that's it, we are now able to modify the `app.ctn` file which will build our Container instance.
+And that's it — from here on, whatever we write in `app.ctn` shapes the container we get back.
 
-### Explain
+### What each line does
 
-Not informative enough? I'm sorry let me get a bit more into detail what happens here:
+Let's slow down and walk through that snippet, so nothing feels like magic.
 
 ```php
 $factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
 ```
 
-The container factory has not a lot of functionality its purpose is to write and read the generated PHP class. It supports a _debug mode_ by simply setting the second argument to `true`. In the _debug mode_ the factory will ignore if a built file is already present and rebuild it every time.
+The factory has a single, focused job: to write and read the generated PHP class in the given cache directory. You may switch on its _debug mode_ by passing `true` as the second argument — in debug mode the factory ignores anything it has already built and rebuilds every time, which is exactly what you want while editing `.ctn` files. We'll come back to this at the end.
 
 ```php
 $container = $factory->create('AppContainer', function($builder)
 ```
 
-The `create` method as you probably already guessed is where the container instance is being created. The first argument is the class name. Namespaces are supported so you could also set it to something like `Acme\MainBundle\MainContainer`. As a second parameter, we have a callback where we define what the container should actually contain.
+The `create` method is where the container is actually built. The first argument is the class name to generate; namespaces are supported, so you're free to use something like `Acme\MainBundle\MainContainer`. The second argument is a callback where we describe what the container should contain.
 
-::: tip
-Read more about this in the [Default Implementation](/usage/implementations/default) guide, which covers the container factory and builder.
-:::
-
-```php 
+```php
 $namespace = new \ClanCats\Container\ContainerNamespace([
     'config' => __DIR__ . '/config.ctn',
 ]);
 ```
 
-Okay, so what the hell is a container namespace? 
-Well, look at it as a little application with its own file structure. The container namespace defines this file structure. `config` is not a special key, it's just a name we assign to a file that should be accessible in your container files/scripts.
-
-Now we have to parse the main file.
+So what is a container namespace? Think of it as a little application with its own file structure, which the namespace defines. `config` here isn't a special key — it's simply a name we assign to a file, so we can refer to it later from inside our container files.
 
 ```php
 $namespace->parse(__DIR__ . '/app.ctn');
 ```
 
-All parsed data (services, parameters) is now assigned to our namespace instance.
+Now we parse the main file. All the services and parameters it declares are read and attached to our namespace instance. You can read more in [Container Files › Parsing](/container-files/parsing).
 
-Read more about this in [Container Files › Parsing](/container-files/parsing).
-
-```php 
+```php
 $builder->importNamespace($namespace);
 ```
 
-Finally, we feed our namespace into the builder object.
+Finally, we feed the namespace into the builder, which turns those declarations into the generated container class.
 
 ::: tip
-Before we continue here, you might want to check out the **[Container Files](/container-files/introduction)** documentation. There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
+The [Default Implementation](/usage/implementations/default) guide covers the factory and builder in more depth. There's also a `tmLanguage` grammar available for `.ctn` syntax highlighting in your editor.
 :::
 
-## Parameters
+## Defining your first parameter
 
-Parameters are always prefixed with a `:` character and can be defined in any order. When defined inside of a `ctn` file, they can hold scalar values and arrays. Technically the container has no limitation on what a parameter can contain, you can set a parameter containing anything you want manually with the `setParameter` method.
+With the plumbing in place, let's write something into `app.ctn`. The simplest thing a container file can hold is a **parameter** — a plain configuration value.
 
-Now in the `app.ctn` define some parameter like this:
+Parameters are always prefixed with a `:` and can be defined in any order. Inside a `.ctn` file they may hold scalar values and arrays:
 
 ```ctn
-:firstname: = 'James'
-:lastname: = 'Bond'
+:firstname: 'James'
+:lastname: 'Bond'
 :code: 007
 ```
 
-You can access the parameters of the container anytime:
+You can read a parameter back off the container at any time:
 
 ```php
-echo $container->getParameter('firstname');
+echo $container->getParameter('firstname'); // James
 ```
 
-## Importing 
+::: tip
+The container itself puts no limit on what a parameter can hold — you're free to set a parameter to anything you like from PHP with the `setParameter` method. See [Parameters](/usage/parameters).
+:::
 
-You might have noticed that in the setup there are two `ctn` files mentioned. Let's go on and create the `config.ctn`.
+## Splitting configuration into its own file
 
-Inside the `config.ctn` we define another parameter:
+You may have noticed we told the namespace about *two* `.ctn` files. As an application grows, it's tidy to keep configuration separate from your service definitions. Let's put a parameter in `config.ctn`:
 
 ```ctn
 :missions.available: {
     'Goldeneye',
-    'Goldfinger',    
+    'Goldfinger',
 }
 ```
 
-If we know would try to access `missions.available`, we would get `null`. That's because we need to import our `config.ctn` into our main `app.ctn`. doing so is simple:
+If we tried to read `missions.available` right now, we'd get `null` — because `config.ctn` isn't part of our container yet. We need to **import** it into `app.ctn` first, which is a one-liner:
 
 ```ctn
 import config
 
-:firstname: = 'James'
-:lastname: = 'Bond'
+:firstname: 'James'
+:lastname: 'Bond'
 :code: 007
 ```
 
-Remember where we constructed the container namespace? We defined the name of the `config.ctn` to be simply `config`.
+Remember where we built the namespace? That's where we gave `config.ctn` the name `config` — and `config` is exactly the name we import here.
 
-This particular example (with first name, last name) might seem a bit useless.
-I like to separate configuration from the service definitions, using imports are a neat way to do so.
+On its own this example looks trivial, but the payoff shows up at scale: keeping configuration in its own file, apart from your service definitions, keeps both readable — and imports stitch them neatly back together. There's more on this in [Imports & Overriding](/container-files/imports).
 
-## Service definitions
+## Defining a service
 
+Parameters are the warm-up. The real reason the container exists is to build and wire your objects for you — your **services**.
 
-### Example Setup – Engine
+Before we can define one, we need a class to define. Our first is an `Engine`. It has nothing to do with the container itself; it's just here to give us something real to wire up. It's constructed with a given power and amount of fuel, `throttle` burns fuel to travel a distance, `refuel` tops it back up (but only with a mechanic on board), and `setMechanic` assigns that mechanic.
 
-The first class we are going to create is the engine. This is class has nothing to do with the container itself, it purely acts as a demonstration.
-
-The `src/Engine.php` class is constructed with a given power and an amount of fuel. It can be throttled up for a given amount of time which will return the traveled distance and consume fuel. With the `refuel` method the engine can be, well you probably already guessed it. Also, a mechanic can be assigned to the engine.
+Save this as `src/Engine.php`:
 
 ```php
 class Engine
 {
-    protected $fuel; 
+    protected $fuel;
     protected $power;
     protected $mechanic;
 
@@ -176,7 +164,7 @@ class Engine
 
     public function getFuel() : int {
         return $this->fuel;
-    } 
+    }
 
     public function refuel(int $amount) {
         if ($this->mechanic) $this->fuel += $amount;
@@ -188,36 +176,40 @@ class Engine
 }
 ```
 
-So let's define our engine as a service.
+Now we can declare it as a service in `app.ctn`. Services are prefixed with `@`, followed by the class name and its constructor arguments:
 
-```ctn 
+```ctn
 @hyperdrive: Engine(500, 10000)
 ```
 
-Now we are able to load the hyperdrive engine using the container and test it out.
+That's the whole definition. We can now load the hyperdrive from the container and take it for a spin:
 
 ```php
 $hyperdrive = $container->get('hyperdrive');
 
 echo 'current fuel: ' . $hyperdrive->getFuel() . PHP_EOL; // 10000
-echo 'traveling : ' . $hyperdrive->throttle(5) . PHP_EOL; // 2500
+echo 'traveling: ' . $hyperdrive->throttle(5) . PHP_EOL;  // 2500
 echo 'current fuel: ' . $hyperdrive->getFuel() . PHP_EOL; // 7500
 ```
 
-Often we don't want to hardcode the constructor arguments, that's where parameters come in handy. 
+### Using parameters as arguments
 
-```ctn 
+Often you won't want to hardcode constructor arguments right there in the definition. This is where parameters come in handy — reference one with its leading `:`:
+
+```ctn
 :hyperdrive.power: 500
 :hyperdrive.fuel: 10000
 
 @hyperdrive: Engine(:hyperdrive.power, :hyperdrive.fuel)
 ```
 
-But we still can not refuel our engine without a mechanic. This brings us to the next example.
+The engine behaves exactly as before, but its configuration now lives in named parameters you can tweak in one place. But our engine still can't refuel without a mechanic — which brings us neatly to the next class.
 
-### Example Set Up – Human
+## Injecting one service into another
 
-The second example class will be a Human with only one argument in the constructor which represents the name. 
+Our second class is a `Human` with a single constructor argument, their name, and a job you can set afterwards.
+
+Save this as `src/Human.php`:
 
 ```php
 class Human
@@ -235,28 +227,47 @@ class Human
 }
 ```
 
-I'm a big Firefly fan so excuse all the references. Here comes our mechanic. 
+Here comes our mechanic. Notice the `-` line: that's a **method call**, run on the object right after it's constructed.
 
 ```ctn
 @kaylee: Human('Kaylee Frye')
   - setJob('Mechanic')
 ```
 
-Now we are also able to assign Kaylee as a mechanic to our engine.
+(Yes, the names are a nod to *Firefly* — bear with the references.)
+
+Now for the part that makes a container a container: one service can depend on another. To hand Kaylee to the engine, we reference her service with `@kaylee` — the same `@` prefix we use to declare a service, now used to *point at* one:
 
 ```ctn
 @hyperdrive: Engine(:hyperdrive.power, :hyperdrive.fuel)
   - setMechanic(@kaylee)
 ```
 
-And voila we are able to refuel:
+When you ask for `hyperdrive`, the container sees it needs `kaylee`, builds her first (job and all), and injects her — no wiring by hand. And voilà, we can refuel:
 
 ```php
 $hyperdrive = $container->get('hyperdrive');
 
-$hyperdrive->getFuel();
 $hyperdrive->throttle(5);
 $hyperdrive->refuel(1000);
 echo 'current fuel: ' . $hyperdrive->getFuel() . PHP_EOL; // 8500
 ```
 
+## What just happened
+
+You've just built a real, compiled container. The first time you ran `app.php`, the `ContainerFactory` parsed your `.ctn` files, resolved the dependency graph, and wrote a compiled `AppContainer` class into the `cache/` directory. Every request after that simply includes that generated class — no parsing, near-zero overhead.
+
+There's one catch worth knowing early: because the compiled class is cached, editing your `.ctn` files won't take effect until the cache is rebuilt. While developing, enable **debug mode** (the second argument we mentioned earlier) so every change is picked up automatically:
+
+```php
+$factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache', true);
+```
+
+## Where to go next
+
+You now know enough to start wiring up your own application. When you're ready to go deeper:
+
+ * **[The Container Lifecycle](/usage/lifecycle)** — what compiling actually does, and when each step runs.
+ * **[Container Files](/container-files/introduction)** — the full `.ctn` syntax reference, including [values & types](/container-files/values), [services](/container-files/services), and [metadata & tags](/container-files/metadata).
+ * **[Using the Container](/usage/container)** — the runtime API for retrieving services and parameters.
+ * **[Programmatic API](/advanced/service-binding)** — defining and overriding services from PHP, without a `.ctn` file.

@@ -1,8 +1,10 @@
 # Default Implementation
 
-The recommended implementation is using the container factory, builder and namespace. It will generate an optimized PHP file containing our Container, include it and return an instance.
+For most applications you'll want the fastest possible container, and this is how you get it. The recommended setup combines three pieces — the factory, the builder and a namespace — to generate an optimized PHP class containing your whole service graph, include it, and hand you back a ready instance.
 
-**Make sure your php can write into the given cache directory.**
+The payoff is that the expensive work — parsing your `.ctn` files and resolving the dependency graph — happens once, at build time. Every request after that simply includes a plain generated class, so there's almost nothing left to do at runtime. See [The Container Lifecycle](/usage/lifecycle) for the full picture of what compilation does.
+
+The generated class is written to a cache directory, so make sure the directory you hand to the factory exists and is writable by PHP.
 
 ```php
 $factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
@@ -20,7 +22,7 @@ $container = $factory->create('AppContainer', function($builder)
 
 ## Debug mode
 
-The container factory will not check for changes, it will only rebuild if the cache file is missing. In development always clearing the cache directory can be annoying so there is a debug mode which will ignore the existing cache file and always rebuild.
+The container factory does not watch your files for changes — it only rebuilds when the cache file is missing. That's ideal in production, but during development it means your edits to a `.ctn` file wouldn't take effect until you cleared the cache by hand. To save you that chore, **debug mode** ignores the existing cache file and rebuilds on every call:
 
 ```php
 use \ClanCats\Container\ContainerFactory;
@@ -29,7 +31,7 @@ $factory = new ContainerFactory(__DIR__ . '/cache', true); // second argument tu
 
 ## Container class name
 
-The first argument you pass into the container factories `create` method is the containers name including the namespace.
+The first argument you pass to the factory's `create` method is the container's class name, and you may include a namespace so the generated class lands wherever you like.
 
 ```php
 $container = $factory->create('Acme\DI\AppContainer', function($builder) {});

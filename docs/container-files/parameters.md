@@ -1,6 +1,8 @@
 # Parameters
 
-Parameters are configuration values — hostnames, ports, feature flags, paths — that live alongside your service definitions. A parameter is always prefixed with a `:` character.
+Hardcoding a hostname or a timeout directly into a service definition works — until the same value is needed in two places, or has to change between environments, and you find yourself hunting it down across your files. Parameters give those configuration values a name of their own. You define hostnames, ports, feature flags and paths once, then reference them wherever they're needed.
+
+A parameter is always prefixed with a `:` character:
 
 ```ctn
 :database.hostname: "production.db.example.com"
@@ -16,12 +18,13 @@ The value can be any of the supported [value types](/container-files/values), in
 
 ## Referencing parameters
 
-Anywhere an argument is expected — a constructor argument, a method call argument — you can reference a parameter by prefixing its name with `:`. The container resolves the value at build time.
+Anywhere an argument is expected — a constructor argument, a method call argument — you may reference a parameter by prefixing its name with `:`. The value is resolved at build time and baked into the compiled container, so there's no lookup cost at runtime.
 
 ```ctn
 :database.hostname: 'production.db.example.com'
+:database.port: 7878
 
-@database: Acme\Database(:database.hostname)
+@database: Acme\Database(:database.hostname, :database.port)
 ```
 
-See [Services](/container-files/services) for the full picture on constructor and method arguments, and [Imports & Overriding](/container-files/imports) for replacing a parameter that was already defined.
+Now the database's configuration lives in named values you can read at a glance and change in one place. See [Services](/container-files/services) for the full picture on constructor and method arguments, and [Imports & Overriding](/container-files/imports) for keeping configuration in its own file and replacing a parameter that was already defined.

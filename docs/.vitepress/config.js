@@ -45,6 +45,8 @@ export default defineConfig({
       {
         text: 'Introduction',
         items: [
+          { text: 'Overview', link: '/introduction/overview' },
+          { text: 'Installation', link: '/introduction/installation' },
           { text: 'Getting Started', link: '/introduction/getting-started' },
           { text: 'Core Concepts', link: '/introduction/core-concepts' },
         ],
@@ -52,21 +54,14 @@ export default defineConfig({
       {
         text: 'Usage',
         items: [
-          { text: 'Container', link: '/usage/container' },
+          { text: 'The Container Lifecycle', link: '/usage/lifecycle' },
+          { text: 'Using the Container', link: '/usage/container' },
           { text: 'Parameters', link: '/usage/parameters' },
           { text: 'Services', link: '/usage/services' },
-          {
-            text: 'Implementations',
-            items: [
-              { text: 'Default', link: '/usage/implementations/default' },
-              { text: 'Dynamic', link: '/usage/implementations/dynamic' },
-              { text: 'Custom Build', link: '/usage/implementations/custom-build' },
-            ],
-          },
         ],
       },
       {
-        text: 'CTN Files',
+        text: 'Container Files (.ctn)',
         items: [
           { text: 'Introduction', link: '/container-files/introduction' },
           { text: 'Values & Types', link: '/container-files/values' },
@@ -75,13 +70,27 @@ export default defineConfig({
           { text: 'Metadata & Tags', link: '/container-files/metadata' },
           { text: 'Generics', link: '/container-files/generics' },
           { text: 'Imports & Overriding', link: '/container-files/imports' },
-          { text: 'Parsing', link: '/container-files/parsing' },
-          { text: 'Custom Namespace', link: '/container-files/custom-namespace' },
-          { text: 'Composer Integration', link: '/container-files/composer-integration' },
+          {
+            text: 'Loading & Integration',
+            items: [
+              { text: 'Parsing', link: '/container-files/parsing' },
+              { text: 'Custom Namespace', link: '/container-files/custom-namespace' },
+              { text: 'Composer Integration', link: '/container-files/composer-integration' },
+            ],
+          },
         ],
       },
       {
-        text: 'Advanced',
+        text: 'Implementations',
+        items: [
+          { text: 'Choosing an Implementation', link: '/usage/implementations/choosing' },
+          { text: 'Default', link: '/usage/implementations/default' },
+          { text: 'Dynamic', link: '/usage/implementations/dynamic' },
+          { text: 'Custom Build', link: '/usage/implementations/custom-build' },
+        ],
+      },
+      {
+        text: 'Programmatic API',
         items: [
           { text: 'Service Binding', link: '/advanced/service-binding' },
           { text: 'Service Factories', link: '/advanced/service-factories' },

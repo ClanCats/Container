@@ -1,8 +1,8 @@
 # Service Definitions
 
-A service definition acts as a simple description of a service. But it does not hold container relevant informations like the alias name or if the service will be shared or not.
+A service definition is a plain description of *how* to build one service: its class name, the constructor arguments, and any method calls to make afterwards. It deliberately knows nothing about the container around it — not the name the service is registered under, nor whether it will be shared or rebuilt each time. That separation is what lets the same definition be reused, compiled, or handed to a factory.
 
-This package comes already with an implementation of the `ServiceDefinitionInterface` simply called `ServiceDefinition`.
+You may reach for definitions directly when you want to describe services in PHP rather than in a `.ctn` file — for example when building a container from your own data source. The package ships with a ready implementation of `ServiceDefinitionInterface`, simply called `ServiceDefinition`.
 
 ## Constructor
 
@@ -42,7 +42,7 @@ You can pass additional constructor arguments any time:
 $QA = new ServiceDefinition(QA::class);
 
 $QA
-    ->addRawArgument('The Answer to the Ultimate Question of Life, The Universe, and Everything.');
+    ->addRawArgument('The Answer to the Ultimate Question of Life, The Universe, and Everything.')
     ->addRawArgument(42)
     ->addDependencyArgument('database')
     ->addParameterArgument('priority.default');
@@ -51,7 +51,7 @@ $QA
 Using the `arguments` method you can also pass them as an array.
 
 ```php
-$auth = new ServiceDefinition(MyAuth::class)
+$auth = (new ServiceDefinition(MyAuth::class))
     ->arguments([
         '@repository.users',
         ':auth.secret'
@@ -110,19 +110,19 @@ A service definition can hold method calls that have to be called on constructio
 ```php
 $def = ServiceDefinition::for('\Acme\Session')
     ->calls('setEventDispatcher', ['@event_dispatcher']);
-````
+```
 
 ### Add a method call
 
 [~ PHPDoc](/src/ServiceDefinition.php#addMethodCall)
 
 ```php
-$eventDispatchetArgs = (new ServiceArguments())
-    ->addDependencyArgument('event_dispatcher');
+$eventDispatcherArgs = (new ServiceArguments())
+    ->addDependency('event_dispatcher');
 
 $sessionDefinition = ServiceDefinition::for('\Acme\Session')
-    ->addMethodCall('setEventDispatcher', $eventDispatchetArgs);
-````
+    ->addMethodCall('setEventDispatcher', $eventDispatcherArgs);
+```
 
 ## Interface
 

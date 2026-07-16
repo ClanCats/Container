@@ -1,6 +1,10 @@
 # Service Arguments
 
-There are currently 3 types of service arguments available. 
+Whenever you define a service programmatically, you need to describe what to feed into its constructor and method calls. Some of those values are plain data, some are other services, and some are configuration parameters — and the container has to tell them apart so it can resolve references before handing them over. `ServiceArguments` is the small wrapper that carries that information.
+
+You will rarely construct it by hand; the [service definition](/advanced/service-definitions) and [factory](/advanced/service-factories) helpers build it for you. But understanding the three argument types explains how the container knows a `@` means "another service" and a `:` means "a parameter."
+
+There are three types of service arguments:
 
  1. **Raw arguments**<br>
     Simple scalar data. (`strings`, `numbers`, `booleans`)<br>
@@ -47,9 +51,7 @@ $smtpArguments = new ServiceArguments([
 ]);
 ```
 
-**But what if I need a string that starts with an `@`??**
-
-The construcotr makes use of the `addArgumentsFromArray` method. You are still able to define the arguments directly.
+So what happens if you genuinely need a raw string that *starts* with an `@` or a `:` — a value that only looks like a reference? The array shorthand would misread it as a dependency or parameter. When that happens, skip the shorthand and add the arguments explicitly instead. The constructor is only a convenience over `addArgumentsFromArray`; you are always free to define each argument directly and say exactly what you mean:
 
 ```php
 $onlyRawArgs = (new ServiceArguments())

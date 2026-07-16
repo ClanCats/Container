@@ -1,14 +1,14 @@
-# Core Concepts / Terminology
+# Core Concepts
 
-Just so that we are talking about the same thing, let me explain some keywords that come up all through this documentation and what I mean by them.
+A few words come up again and again throughout this documentation — *service*, *container*, *definition*, *factory*. So that we're always talking about the same thing, let's walk through what each one means. If you already work with dependency injection day to day, feel free to skim; if the terms are new, don't lose heart — a small example makes all of them concrete.
 
 ## A Service
 
-A service is simply a fancy name for a PHP object doing a specific task and can be required at multiple locations in your application. There is absolutely nothing special about it, so why should you care? A service architecture makes you separate your application's functionality into small focused chunks. Because a service should only serve one specific purpose, it is much easier to test and replace if needed. This, when done right, results in an easily maintainable application that scales very well (i'm not talking about performance here) with the complexity of the app.
+A *service* is just a name for a PHP object that does one specific job and may be needed in several places across your application — a logger, a database connection, a mailer. There's nothing special about the object itself, so why bother naming the idea at all?
 
-https://en.wikipedia.org/wiki/Service-oriented_architecture 
+Because thinking in services nudges you to split your application into small, focused pieces. When an object serves a single purpose, it's far easier to test in isolation and to swap out later. Done consistently, this keeps a growing application maintainable as its complexity increases (we're talking about maintainability here, not raw performance). You can read more about the broader idea under [service-oriented architecture](https://en.wikipedia.org/wiki/Service-oriented_architecture).
 
-If this all still sounds like a lot of blah blah, don't worry the following example will help.
+If that still sounds abstract, don't worry — the following example makes it concrete.
 
 ```php
 class Logger 
@@ -19,11 +19,11 @@ class Logger
 }
 ```
 
-The `Logger` above then already classifies as a service, it only serves one purpose and that is to take in log messages and do something with them. To be more specific it will append them into a fix defined file.
+That `Logger` already qualifies as a service: it serves one purpose, taking in log messages and doing something with them — here, appending them to a fixed file.
 
-But wait. What do you do if the situation occurs, when you just want to print out the log messages.  Well, you could take in another parameter something like `public function log(string $message, bool $printMessage) : void` but that just doesn't feel right.. I mean what if you want to add another option to send the message via UDP?
+But what happens the day you want to *print* the messages instead of writing them to that file? You could add another argument — `public function log(string $message, bool $printMessage) : void` — but that doesn't feel right, and it won't scale. What about the day after, when you also want to send messages over UDP?
 
-To solve this in a DI manner we need to make the `Logger` class more stupid:
+The dependency-injection answer is to make the `Logger` know *less*, not more. Let it forward the work to a separate handler:
 
 ```php
 interface LogHandler {
@@ -44,9 +44,9 @@ class Logger
 }
 ```
 
-So our logger doesn't know what to do anymore with the logs, he just forwards them to a handler. This way the API for the logger stays the same no matter how the logs are handled.
+Now the logger no longer decides *how* logs are stored; it simply forwards them to a handler. Its own API stays the same no matter what happens to the messages downstream.
 
-Every service should focus on something really specific. So we can now create multiple handlers for everything we need:
+With each service focused on one specific thing, you're free to write as many handlers as you need. Here's one that prints:
 
 ```php
 class PrintLogHandler implements LogHandler 
@@ -57,7 +57,7 @@ class PrintLogHandler implements LogHandler
 }
 ```
 
-To fulfill the file logger example:
+And here's the file-based one from before, now as a proper handler:
 
 ```php
 class FileLogHandler implements LogHandler 
@@ -74,7 +74,7 @@ class FileLogHandler implements LogHandler
 }
 ```
 
-Putting everything together leaves us with this:
+Wiring it all together by hand looks like this:
 
 ```php
 $fileLogger = new FileLogHandler(__DIR__ . '/var/app.log');
@@ -82,20 +82,20 @@ $logger = new Logger($fileLogger);
 $logger->log('Hello fellow humans.');
 ```
 
-Doesn't feel very convenient right? That brings us to the next point.
+That works, but constructing every object and threading its dependencies through by hand gets tedious fast — and that's exactly the problem the container solves.
 
 ## Service Container
 
-A _Service Container_ or _Dependency Injection Container_ manages your services and their creation. By telling the container which services depend on which other services and parameters, you're building a graph that the service container is able to resolve. Most containers like this one will store the created instance. So the next time the same service is requested it won't be reconstructed. 
+A *service container* — also called a *dependency injection container* — manages your services and their creation for you. You describe which services depend on which other services and parameters, and the container treats that as a graph it knows how to resolve. Like most containers, this one caches each instance it builds, so the next time you ask for the same service you get the one you already have rather than a fresh one.
 
-So in the case of the example above we can bind our logger service to the container once:
+Taking the example above, you describe the logger to the container just once:
 
 ```php
 $container->bindClass('handler.file', FileLogHandler::class, [__DIR__ . '/var/app.log']);
 $container->bindClass('logger', Logger::class, ['@handler.file']);
 ```
 
-And retrieve the logger instance everywhere in your application from your container:
+From then on you retrieve the fully-wired logger anywhere in your application, and the container takes care of building `FileLogHandler` and injecting it for you:
 
 ```php
 $container->get('logger')->log('Hello fellow robots.');
@@ -103,9 +103,9 @@ $container->get('logger')->log('Hello fellow robots.');
 
 ## Service Definition
 
-A service definition acts as a simple description of the service. It does not hold _container_ relevant information like the alias name or if the service will be shared or not.
+A *service definition* is a plain description of a single service. It deliberately leaves out anything the container owns — the name the service is registered under, or whether it's shared — and describes only how to build the object itself.
 
-Usually, the service definition holds the following information:
+A definition usually carries:
 
  * class name
  * constructor arguments
@@ -113,7 +113,7 @@ Usually, the service definition holds the following information:
  * property assignments _(*currently not implemented)_
 
 ```php
-$definition = new ServiceDefinition(FileLogHandler::class)
+$definition = (new ServiceDefinition(FileLogHandler::class))
     ->addRawArgument(__DIR__ . '/var/log/application.log');
 ```
 
@@ -123,10 +123,10 @@ More about [Service Definitions](/advanced/service-definitions)
 
 ## Service Factory
 
-A service factory's job is to create an actual instance of the service. The default service factory extends the `ServiceDefinition` and is therefore able to construct the above definition.
+Where a definition only *describes* a service, a *service factory* actually builds it. The default factory extends `ServiceDefinition`, so it understands everything a definition holds and adds the one thing a definition lacks: a `create()` method that turns the description into a real object.
 
 ```php
-$factory = new ServiceFactory(FileLogHandler::class)
+$factory = (new ServiceFactory(FileLogHandler::class))
     ->addRawArgument(__DIR__ . '/var/log/application.log');
 
 $logger = $factory->create(); // FileLogHandler instance
