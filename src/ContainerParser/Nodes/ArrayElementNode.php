@@ -53,11 +53,29 @@ class ArrayElementNode extends BaseNode
 
     /**
      * Get the elements value
-     * 
+     *
      * @return AssignableNode
      */
-    public function getValue() : AssignableNode 
+    public function getValue() : AssignableNode
     {
         return $this->value;
+    }
+
+    /**
+     * Set the elements value
+     *
+     * @param AssignableNode        $value
+     */
+    public function setValue(AssignableNode $value) : void
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * Deep clone the contained value node.
+     */
+    public function __clone()
+    {
+        $this->value = clone $this->value;
     }
 }

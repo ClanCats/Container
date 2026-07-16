@@ -34,9 +34,31 @@ class ArgumentArrayNode extends BaseNode
     /**
      * Add an AssignableNode as argument to the service definition
      */
-    public function addArgument(AssignableNode $argument): void 
+    public function addArgument(AssignableNode $argument): void
     {
         $this->arguments[] = $argument;
+    }
+
+    /**
+     * Replace the full arguments array
+     *
+     * @param array<AssignableNode>         $arguments
+     */
+    public function setArguments(array $arguments): void
+    {
+        $this->arguments = $arguments;
+    }
+
+    /**
+     * Deep clone the contained argument nodes so a copied node tree can be
+     * mutated (e.g. during generic materialization) without affecting the
+     * original.
+     */
+    public function __clone()
+    {
+        foreach ($this->arguments as $index => $argument) {
+            $this->arguments[$index] = clone $argument;
+        }
     }
 }
 

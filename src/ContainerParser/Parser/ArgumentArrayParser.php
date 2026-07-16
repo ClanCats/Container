@@ -82,6 +82,13 @@ class ArgumentArrayParser extends ContainerParser
 
             $this->addArgumentSafe($node);
         }
+        // a generic type parameter used as `T::class` or as a bare `T`. Checked
+        // before the scalar branch since a `T::class` token is also a value.
+        elseif (($placeholder = $this->tryTypeParameterPlaceholder($token)) !== null)
+        {
+            $this->arguments->addArgument($placeholder);
+            $this->skipToken();
+        }
         // or a simple scalar value
         elseif ($token->isValue())
         {
@@ -89,17 +96,17 @@ class ArgumentArrayParser extends ContainerParser
             $this->skipToken();
         }
         // is it a parameter?
-        elseif ($token->isType(T::TOKEN_PARAMETER)) 
-        {   
+        elseif ($token->isType(T::TOKEN_PARAMETER))
+        {
             $this->addArgumentSafe($this->parseChild(ReferenceParser::class));
         }
         // is a service reference
-        elseif ($token->isType(T::TOKEN_DEPENDENCY)) 
+        elseif ($token->isType(T::TOKEN_DEPENDENCY))
         {
             $this->addArgumentSafe($this->parseChild(ReferenceParser::class));
         }
         // just a linebreak
-        elseif ($token->isType(T::TOKEN_LINE)) 
+        elseif ($token->isType(T::TOKEN_LINE))
         {
             $this->skipToken(); return null;
         }

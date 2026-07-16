@@ -1,0 +1,8 @@
+// materializes generics defined in an imported file
+
+import templates
+
+@engine.weak: @engine.powered<50>
+@engine.strong: @engine.powered<9000>
+
+@producer.acme: @named.producer<'ACME Corp'>

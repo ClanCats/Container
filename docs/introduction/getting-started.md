@@ -2,7 +2,7 @@
 
 Hey there, this is the more detailed version of the Quick Start found in the [README](https://github.com/ClanCats/Container/blob/master/README.md) file. 
 
-**If you are not familiar with dependency injection containers read the [Core Concepts](docs://introduction/core-concepts).**
+**If you are not familiar with dependency injection containers read the [Core Concepts](/introduction/core-concepts).**
 
 ## Choosing the implementation
 
@@ -10,9 +10,9 @@ Of course how you implement the service container is completely up to you but yo
 
 You can read more about different types of implementations here:
 
- * [Default](docs://usage/implementations/default)
- * [Dynamic](docs://usage/implementations/dynamic)
- * [Custom build](docs://usage/implementations/custom-build)
+ * [Default](/usage/implementations/default)
+ * [Dynamic](/usage/implementations/dynamic)
+ * [Custom build](/usage/implementations/custom-build)
 
 Because the main difference between this and any other PHP service container is the meta language I will stick with it for this getting started guide.
 
@@ -70,8 +70,8 @@ $container = $factory->create('AppContainer', function($builder)
 
 The `create` method as you probably already guessed is where the container instance is being created. The first argument is the class name. Namespaces are supported so you could also set it to something like `Acme\MainBundle\MainContainer`. As a second parameter, we have a callback where we define what the container should actually contain.
 
-> Note: Read more about this here: [Container Factory](docs://@todo/) &
-> [Container Builder](docs://@todo/)
+> Note: Read more about this here: **Container Factory** &
+> **Container Builder**
 
 ```php 
 $namespace = new \ClanCats\Container\ContainerNamespace([
@@ -90,7 +90,7 @@ $namespace->parse(__DIR__ . '/app.ctn');
 
 All parsed data (services, parameters) is now assigned to our namespace instance.
 
-Read more about this here: [Container Namespace](docs://@todo/)
+Read more about this here: **Container Namespace**
 
 ```php 
 $builder->importNamespace($namespace);
@@ -98,7 +98,7 @@ $builder->importNamespace($namespace);
 
 Finally, we feed our namespace into the builder object.
 
-> Note: Before we continue here, you might want to check out **[Container File Syntax](docs://container-files/syntax)**. There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
+> Note: Before we continue here, you might want to check out **[Container File Syntax](/container-files/syntax)**. There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
 
 ## Parameters
 

@@ -1,6 +1,6 @@
 # Basic Container usage
 
-As already stated and in the [Getting started](docs://introduction/getting-started) guide, there are multiple ways to construct an instnace of the service container. But in the end it does not really matter if a container is generated using the factory or is created dynamically, the usage / API of the container instance is the same for all of them.
+As already stated and in the [Getting started](/introduction/getting-started) guide, there are multiple ways to construct an instnace of the service container. But in the end it does not really matter if a container is generated using the factory or is created dynamically, the usage / API of the container instance is the same for all of them.
 
 ## Construction and Parameters
 
@@ -34,7 +34,7 @@ You can get a parameter with a fallback value. The fallback value will be return
 $container->getParameter('cron.idle.timeout', 3600);
 ```
 
-[~ PHPDoc](/src/Container.php#getParameter)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 ### Setting a parameter
 
@@ -48,13 +48,13 @@ $container->setParameter('session.cookie.name', 'mysessiontoken');
 $container->setParameter('available.languages', ['de', 'en', 'it', 'fr']);
 ```
 
-[~ PHPDoc](/src/Container.php#setParameter)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 ### Check if parameter exists
 
 Sometimes you just need to know if a parameter exists. If a parameter is null it still exists!
 
-[~ PHPDoc](/src/Container.php#hasParameter)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 ## Getting services / status
 
@@ -88,7 +88,7 @@ try {
 }
 ```
 
-[~ PHPDoc](/src/Container.php#get)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 ### Available services
 
@@ -98,11 +98,11 @@ Working on debugging tools and just need to know what services would be availabl
 echo implode(', ', $container->available());
 ```
 
-[~ PHPDoc](/src/Container.php#available)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 ### Has service
 
-[~ PHPDoc](/src/Container.php#has)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 ### Is service resolved
 
@@ -114,7 +114,7 @@ foreach($container->available() as $serviceKey) {
 }
 ```
 
-[~ PHPDoc](/src/Container.php#isResolved)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 ## Binding / Setting Services
 
@@ -139,7 +139,7 @@ $contanier->bind('enterprise', new ServiceFactory('\\SpaceShip', ['USS Enterpris
 
 In this case the bind method won't return the `ServiceFactory` object because it is already under your control. Note that we pass the service arguments directly to the service factory.
 
-> Note: If the arguments confuse you read: [Service Arguments](docs://advanced/arguments)
+> Note: If the arguments confuse you read: [Service Arguments](/advanced/arguments)
 
 
 **Using a closure:**
@@ -151,9 +151,9 @@ $contanier->bind('enterprise', function($c)
 });
 ```
 
-> Note: This page is just a short usage guide for detailed documentation read [Service Binding](docs://advanced/service-binding)
+> Note: This page is just a short usage guide for detailed documentation read [Service Binding](/advanced/service-binding)
 
-[~ PHPDoc](/src/Container.php#bind)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 ### Set service
 
@@ -165,7 +165,7 @@ $objectISomehowNeedToCreateHere = new Thing();
 $contanier->set('thing', $objectISomehowNeedToCreateHere);
 ```
 
-[~ PHPDoc](/src/Container.php#set)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 ## Releasing / Removing services
 
@@ -177,7 +177,7 @@ This method will remove the in the container stored instance of the service. But
 $container->release('db.connection');
 ```
 
-[~ PHPDoc](/src/Container.php#release)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 ### Remove service
 
@@ -189,6 +189,6 @@ This will if possible release the resolevd instance and remove the service defin
 
 > Note: This will also work for compiled service definitions!
 
-[~ PHPDoc](/src/Container.php#remove)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 

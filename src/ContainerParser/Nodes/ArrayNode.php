@@ -132,5 +132,16 @@ class ArrayNode extends BaseNode implements AssignableNode
 
         return $array;
     }
+
+    /**
+     * Deep clone the contained element nodes. The scalar index bookkeeping
+     * copies by value so it needs no special handling.
+     */
+    public function __clone()
+    {
+        foreach ($this->elements as $index => $element) {
+            $this->elements[$index] = clone $element;
+        }
+    }
 }
 

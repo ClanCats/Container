@@ -34,8 +34,17 @@ class ServiceDefinitionNode extends BaseNode
     protected $className;
 
     /**
+     * When the class name is a generic type parameter this holds the
+     * placeholder instead of `$className`. It is resolved to a concrete class
+     * name string when the generic is materialized.
+     *
+     * @var TypeParameterPlaceholderNode|null
+     */
+    protected ?TypeParameterPlaceholderNode $classNamePlaceholder = null;
+
+    /**
      * The services alias target
-     * 
+     *
      * @var ServiceReferenceNode
      */
     protected ?ServiceReferenceNode $aliasTarget = null;
@@ -130,9 +139,37 @@ class ServiceDefinitionNode extends BaseNode
      * 
      * @param class-string 		$className
      */
-    public function setClassName(string $className): void 
+    public function setClassName(string $className): void
     {
         $this->className = $className;
+    }
+
+    /**
+     * Get the class name placeholder (generic templates only)
+     *
+     * @return TypeParameterPlaceholderNode|null
+     */
+    public function getClassNamePlaceholder() : ?TypeParameterPlaceholderNode
+    {
+        return $this->classNamePlaceholder;
+    }
+
+    /**
+     * Check if the class name is a generic type parameter placeholder
+     */
+    public function hasClassNamePlaceholder() : bool
+    {
+        return !is_null($this->classNamePlaceholder);
+    }
+
+    /**
+     * Set (or clear) the class name placeholder
+     *
+     * @param TypeParameterPlaceholderNode|null     $placeholder
+     */
+    public function setClassNamePlaceholder(?TypeParameterPlaceholderNode $placeholder) : void
+    {
+        $this->classNamePlaceholder = $placeholder;
     }
 
     /**
@@ -289,6 +326,33 @@ class ServiceDefinitionNode extends BaseNode
     public function getMetaDataAssignemnts() : array
     {
         return $this->metaDataAssignments;
+    }
+
+    /**
+     * Deep clone the contained node tree so a generic template can be copied
+     * and mutated per materialization without affecting the stored template.
+     */
+    public function __clone()
+    {
+        if (!is_null($this->arguments)) {
+            $this->arguments = clone $this->arguments;
+        }
+
+        if (!is_null($this->classNamePlaceholder)) {
+            $this->classNamePlaceholder = clone $this->classNamePlaceholder;
+        }
+
+        if (!is_null($this->aliasTarget)) {
+            $this->aliasTarget = clone $this->aliasTarget;
+        }
+
+        foreach ($this->constructionActions as $index => $action) {
+            $this->constructionActions[$index] = clone $action;
+        }
+
+        foreach ($this->metaDataAssignments as $index => $meta) {
+            $this->metaDataAssignments[$index] = clone $meta;
+        }
     }
 }
 

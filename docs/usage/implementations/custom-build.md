@@ -6,7 +6,7 @@ Don't want to use container files but still want to compile / serialize the cont
 
 In this particular example we are going to build our container using a json document.
 
-> Note: Read more about the [Container Builder](docs://@todo/).
+> Note: Read more about the **Container Builder**.
 
 ### Json Service definitions 
 

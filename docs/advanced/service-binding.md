@@ -19,7 +19,7 @@ The Containers `bind` method acts as a shortcut and supports three diffrent argu
  * `Closure` callback.
  * Classname represented as string.
 
-[~ PHPDoc](/src/Container.php#bind)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
 
 ### Bind ServiceFactoryInterface 
 

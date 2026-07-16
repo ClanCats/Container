@@ -101,6 +101,10 @@ class ContainerLexer
         "/\G(\,)/" => T::TOKEN_SEPERATOR,
         "/\G(\?)/" => T::TOKEN_OPTIONAL,
 
+        // generics
+        "/\G(\<)/" => T::TOKEN_GENERIC_OPEN,
+        "/\G(\>)/" => T::TOKEN_GENERIC_CLOSE,
+
         // ids
         "/\G([\w\-\/\\\\.]+)::class/" => T::TOKEN_CLASS_NAME,
         "/\G([\w\-\/\\\\.]+)/" => T::TOKEN_IDENTIFIER,

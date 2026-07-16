@@ -35,8 +35,8 @@ The first argument you pass into the container factories `create` method is the 
 $container = $factory->create('Acme\DI\AppContainer', function($builder) {});
 ```
 
-Read more about this here: [Container Factory](docs://@todo/)
+Read more about this here: **Container Factory**
 
 ## Container namespace
 
-> Note: continue here: [Container Namepsace](docs://@todo/)
+> Note: continue here: **Container Namepsace**

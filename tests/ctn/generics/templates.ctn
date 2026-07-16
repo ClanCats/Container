@@ -1,0 +1,6 @@
+// generic service templates that get imported and materialized elsewhere
+
+@engine.powered<TPower>: ClanCats\Container\Tests\TestServices\Engine
+  - setPower(TPower)
+
+@named.producer<TName>: ClanCats\Container\Tests\TestServices\Producer(TName)

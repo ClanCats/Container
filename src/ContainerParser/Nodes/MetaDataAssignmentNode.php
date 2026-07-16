@@ -120,9 +120,19 @@ class MetaDataAssignmentNode extends BaseNode
      *
      * @param ArrayNode         $data
      */
-    public function setData(ArrayNode $data): void 
+    public function setData(ArrayNode $data): void
     {
         $this->data = $data;
+    }
+
+    /**
+     * Deep clone the contained data node.
+     */
+    public function __clone()
+    {
+        if (!is_null($this->data)) {
+            $this->data = clone $this->data;
+        }
     }
 }
 

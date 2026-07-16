@@ -21,7 +21,7 @@ ServiceArguments::PARAMETER
 
 ## Constructor
 
-[~ PHPDoc](/src/ServiceArguments.php#__construct)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceArguments.php)
 
 The constructor takes in an array, to allow an easier / lazier way to define the arguments:
 
@@ -59,7 +59,7 @@ $onlyRawArgs = (new ServiceArguments())
 
 ### Static constructor
 
-[~ PHPDoc](/src/ServiceArguments.php#from)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceArguments.php)
 
 
 ## Adding Arguments
@@ -72,7 +72,7 @@ $args = (new ServiceArguments())
 	->addRaw(42);
 ```
 
-[~ PHPDoc](/src/ServiceArguments.php#addRaw)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceArguments.php)
 
 ### Dependency
 
@@ -81,7 +81,7 @@ $args = (new ServiceArguments())
 	->addDependency('logger');
 ```
 
-[~ PHPDoc](/src/ServiceArguments.php#addDependency)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceArguments.php)
 
 ### Parameter
 
@@ -90,17 +90,17 @@ $args = (new ServiceArguments())
 	->addParameter('auth_token');
 ```
 
-[~ PHPDoc](/src/ServiceArguments.php#addParameter)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceArguments.php)
 
 ### From array
 
-[~ PHPDoc](/src/ServiceArguments.php#addArgumentsFromArray)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceArguments.php)
 
 ### get all
 
-[~ PHPDoc](/src/ServiceArguments.php#getAll)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceArguments.php)
 
 ## Resolving
 
-[~ PHPDoc](/src/ServiceArguments.php#resolve)
+[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceArguments.php)
 

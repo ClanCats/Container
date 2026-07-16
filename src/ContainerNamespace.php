@@ -17,7 +17,8 @@ use ClanCats\Container\ContainerParser\{
     ContainerLexer,
     ContainerInterpreter,
     Parser\ScopeParser,
-    Nodes\ScopeNode
+    Nodes\ScopeNode,
+    Nodes\GenericDefinitionNode
 };
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
@@ -44,10 +45,17 @@ class ContainerNamespace
 
     /**
      * The container namespaces service defintions
-     * 
+     *
      * @var array<string, ServiceDefinitionInterface>
      */
     protected array $services = [];
+
+    /**
+     * The container namespaces generic definition templates
+     *
+     * @var array<string, GenericDefinitionNode>
+     */
+    protected array $generics = [];
 
     /**
      * An array of service names that should be shared through the container
@@ -229,8 +237,52 @@ class ContainerNamespace
     }
 
     /**
+     * Does the container namespace have a generic with the given name?
+     *
+     * @param string            $name The generic name.
+     * @return bool
+     */
+    public function hasGeneric(string $name) : bool
+    {
+        return array_key_exists($name, $this->generics);
+    }
+
+    /**
+     * Set a generic definition template in the namespace
+     *
+     * @param string                    $name The generic name.
+     * @param GenericDefinitionNode     $generic The generic definition template.
+     * @return void
+     */
+    public function setGeneric(string $name, GenericDefinitionNode $generic) : void
+    {
+        $this->generics[$name] = $generic;
+    }
+
+    /**
+     * Get a generic definition template by name
+     *
+     * @param string            $name The generic name.
+     * @return GenericDefinitionNode
+     */
+    public function getGeneric(string $name) : GenericDefinitionNode
+    {
+        return $this->generics[$name];
+    }
+
+    /**
+     * Get all generic definition templates from the container namespace
+     *
+     * @return array<string, GenericDefinitionNode>
+     */
+    public function getGenerics() : array
+    {
+        return $this->generics;
+    }
+
+    /**
      * Is the given path name binded?
-     * 
+     *
      * @param string            $name The container files path key.
      * @return bool
      */

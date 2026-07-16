@@ -101,6 +101,14 @@ class ArrayParser extends ContainerParser
             );
         }
 
+        // a generic type parameter used as `T::class` or as a bare `T`. Checked
+        // before the scalar branch since a `T::class` token is also a value.
+        elseif (($placeholder = $this->tryTypeParameterPlaceholder($token)) !== null)
+        {
+            $elementValue = $placeholder;
+            $this->skipToken();
+        }
+
         // is a parameter reference
         elseif ($token->isValue())
         {
@@ -108,7 +116,7 @@ class ArrayParser extends ContainerParser
             $this->skipToken();
         }
 
-        elseif ($token->isType(T::TOKEN_PARAMETER)) 
+        elseif ($token->isType(T::TOKEN_PARAMETER))
         {
             $elementValue = $this->parseChild(ReferenceParser::class);
         }
