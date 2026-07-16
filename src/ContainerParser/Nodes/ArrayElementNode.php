@@ -3,7 +3,7 @@
  * ClanCats Container
  *
  * @link      https://github.com/ClanCats/Container/
- * @copyright Copyright (c) 2016-2024 Mario Döring
+ * @copyright Copyright (c) 2016-2026 Mario Döring
  * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
  */
 namespace ClanCats\Container\ContainerParser\Nodes;
@@ -53,11 +53,29 @@ class ArrayElementNode extends BaseNode
 
     /**
      * Get the elements value
-     * 
+     *
      * @return AssignableNode
      */
-    public function getValue() : AssignableNode 
+    public function getValue() : AssignableNode
     {
         return $this->value;
+    }
+
+    /**
+     * Set the elements value
+     *
+     * @param AssignableNode        $value
+     */
+    public function setValue(AssignableNode $value) : void
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * Deep clone the contained value node.
+     */
+    public function __clone()
+    {
+        $this->value = clone $this->value;
     }
 }

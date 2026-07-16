@@ -1,0 +1,383 @@
+/* ============================================================
+   ClanCats docs theme for VitePress
+   Recreates the original clancats.io/container look: light-only,
+   Source Sans Pro headings, small Open Sans body, blue pill inline
+   code, white rounded code blocks, dark navbar.
+   ============================================================ */
+
+/* ---- Web fonts (matches the original Google Fonts) ---- */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Source+Sans+Pro:wght@200;300;400;600&display=swap');
+
+:root {
+  /* ---- Brand ---- */
+  --vp-c-brand-1: #3B92D4;   /* solid: links, colored text */
+  --vp-c-brand-2: #5999FF;   /* hover */
+  --vp-c-brand-3: #3591D7;   /* solid backgrounds (buttons) */
+  --vp-c-brand-soft: rgba(59, 146, 212, 0.14);
+
+  --vp-c-link: #3B92D4;
+  --vp-c-link-hover: #8FC1E6;
+
+  /* ---- Backgrounds ---- */
+  --vp-c-bg: #ffffff;        /* content surface */
+  --vp-c-bg-alt: #f4f4f4;    /* page / sidebar bg */
+  --vp-c-bg-soft: #f5f5f5;
+  --vp-c-bg-elv: #ffffff;
+
+  /* ---- Text ---- */
+  --vp-c-text-1: #333333;
+  --vp-c-text-2: #666666;
+  --vp-c-text-3: #999999;
+
+  /* ---- Borders / dividers ---- */
+  --vp-c-divider: #e9e9e9;
+  --vp-c-border: #dbdbdb;
+  --vp-c-gutter: #efefef;
+
+  /* ---- Fonts ---- */
+  --vp-font-family-base: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --vp-font-family-mono: Menlo, Consolas, Monaco, 'Lucida Console', monospace;
+
+  /* ---- Code blocks (dark, github-dark theme) ---- */
+  --vp-code-block-bg: #24292e;
+  --vp-code-font-size: 12px;
+  --vp-code-line-height: 1.5;
+  --vp-code-color: #e1e4e8;
+
+  /* ---- Custom blocks (callouts): flat Bootstrap-alert look ----
+     Default VitePress tints (rounded, green tip) clash with the flat,
+     blue-brand theme, so border / bg / text are pinned to the alert palette
+     used across the original clancats.io docs. */
+  --vp-custom-block-tip-border: #CDE3F4;
+  --vp-custom-block-tip-bg: #E2EFF9;
+  --vp-custom-block-tip-text: #2C6899;
+  --vp-custom-block-tip-code-bg: #ffffff;
+
+  --vp-custom-block-info-border: #e0e0e0;
+  --vp-custom-block-info-bg: #f5f5f5;
+  --vp-custom-block-info-text: #555555;
+
+  --vp-custom-block-warning-border: #FAEBCC;
+  --vp-custom-block-warning-bg: #FCF8E3;
+  --vp-custom-block-warning-text: #8A6D3B;
+
+  --vp-custom-block-danger-border: #EBCCD1;
+  --vp-custom-block-danger-bg: #F2DEDE;
+  --vp-custom-block-danger-text: #A94442;
+
+  /* ---- Home hero (if you use a landing page) ---- */
+  --vp-home-hero-name-color: #3B92D4;
+
+  /* ---- Navbar height (original header was 50px) ---- */
+  --vp-nav-height: 50px;
+}
+
+/* ---- Headings: light Source Sans Pro look ---- */
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3,
+.vp-doc h4,
+.VPNavBarTitle .title {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+.vp-doc h1 { font-weight: 400; font-size: 36px; text-transform: uppercase; }
+.vp-doc h2 { font-weight: 300; font-size: 30px; border-top: none; padding-top: 24px; }
+.vp-doc h3 { font-weight: 400; font-size: 24px; margin: 26px 0 13px; }
+
+/* ---- Body: small text, generous line-height (matches original 13px / 1.9) ---- */
+.vp-doc {
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+/* ---- Inline code: signature blue pill ---- */
+.vp-doc :not(pre) > code {
+  color: #3B92D4;
+  background-color: #E2EFF9;
+  border: 1px solid #CDE3F4;
+  border-radius: 100px;
+  padding: 1px 8px;
+  font-size: 12px;
+}
+
+/* ---- Code blocks: dark bg, rounded ---- */
+.vp-doc div[class*='language-'] {
+  background-color: #24292e;
+  border: 1px solid #24292e;
+  border-radius: 5px;
+}
+.vp-doc div[class*='language-'] code {
+  color: #e1e4e8;
+}
+
+/* ---- Links ---- */
+.vp-doc a {
+  color: var(--vp-c-link);
+  text-decoration: none;
+  font-weight: 400;
+}
+.vp-doc a:hover {
+  color: var(--vp-c-link-hover);
+}
+
+/* ---- Sidebar: uppercase section labels + brand active item ---- */
+.VPSidebarItem.level-0 > .item > .text {
+  text-transform: uppercase;
+  color: #adadad;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+.VPSidebarItem.is-active > .item .text {
+  color: #3B92D4;
+}
+
+/* Faint vertical rule running down through the pill bullets. */
+.VPSidebarItem:not(.level-0) {
+  position: relative;
+}
+.VPSidebarItem:not(.level-0)::before {
+  content: '';
+  position: absolute;
+  right: 6px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #efefef;
+}
+
+/* Signature pill bullet: an 8px ring to the right of each nav item that
+   turns brand-blue on hover/active (recreates the original sidebar). */
+.VPSidebarItem:not(.level-0) > .item {
+  position: relative;
+  padding-right: 22px;
+}
+.VPSidebarItem:not(.level-0) > .item::after {
+  content: '';
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid #dbdbdb;
+  background-color: transparent;
+  transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+.VPSidebarItem:not(.level-0) > .item:hover::after {
+  border-color: #3B92D4;
+}
+.VPSidebarItem.is-active > .item::after {
+  border-color: #3B92D4;
+  background-color: #3B92D4;
+}
+
+/* ---- Recreate the dark navbar feel ----
+   On pages with a sidebar, VitePress splits the navbar into a `.title`
+   block and a `.content` block, each painted with --vp-nav-bg-color.
+   Override the variable (not just .VPNavBar) so the bar stays dark on
+   every page, then null out the divider borders between the blocks. */
+:root {
+  --vp-nav-bg-color: #3E3E3E;
+}
+.VPNavBar,
+.VPNavBar.has-sidebar .title,
+.VPNavBar.has-sidebar .content,
+.VPNavBar.has-sidebar .content-body {
+  background-color: #3E3E3E;
+  background-image: url('./noize.png');
+  background-repeat: repeat;
+  background-size: auto 75px;
+}
+.VPNavBar.has-sidebar .title,
+.VPNavBar.has-sidebar .content {
+  border-bottom-color: transparent;
+}
+.VPNavBar .VPNavBarTitle .title {
+  color: #ffffff;
+}
+
+/* The logo is a dark-on-transparent PNG; invert it so it reads on the
+   dark navbar. */
+.VPNavBar .VPNavBarTitle .logo {
+  filter: invert(1) brightness(1.8);
+}
+
+/* Main nav links: dimmed by default, white on hover/active, with a
+   brand-blue underline accent on the active item (matches the original). */
+.VPNavBar .VPNavBarMenuLink,
+.VPNavBar .VPNavBarMenuGroup .text {
+  color: #cccccc;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color 0.3s ease-in-out;
+}
+/* Full-height link so the active accent border sits flush at the very top
+   of the header bar. */
+.VPNavBar .VPNavBarMenuLink {
+  display: flex;
+  align-items: center;
+  height: var(--vp-nav-height);
+  border-top: 2px solid transparent;
+}
+.VPNavBar .VPNavBarMenuLink:hover,
+.VPNavBar .VPNavBarMenuLink.active,
+.VPNavBar .VPNavBarMenuGroup:hover .text {
+  color: #ffffff;
+}
+.VPNavBar .VPNavBarMenuLink.active {
+  border-top: 2px solid #3B92D4;
+  box-shadow: inset 0 10px 10px -10px rgba(53, 145, 215, 0.8);
+}
+
+/* Search button: shrink to fit the 50px bar and vertically center it. */
+.VPNavBar .VPNavBarSearch {
+  align-items: center;
+}
+.VPNavBar .DocSearch-Button {
+  height: 32px;
+  margin: 0;
+}
+
+/* Hamburger + social icons stay light on the dark bar. */
+.VPNavBar .VPSocialLink,
+.VPNavBar .VPNavBarHamburger .top,
+.VPNavBar .VPNavBarHamburger .middle,
+.VPNavBar .VPNavBarHamburger .bottom {
+  color: #cccccc;
+}
+.VPNavBar .VPNavBarHamburger .top,
+.VPNavBar .VPNavBarHamburger .middle,
+.VPNavBar .VPNavBarHamburger .bottom {
+  background-color: #cccccc;
+}
+
+/* ---- Custom blocks (callouts): flat alert box, not the rounded VitePress pill.
+   Squares off to a 5px radius like the code blocks and gives the auto title the
+   same small uppercase treatment as the section headings. */
+.vp-doc .custom-block {
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.vp-doc .custom-block .custom-block-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+.vp-doc .custom-block a {
+  color: inherit;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------------
+   PHPDoc method blocks (generated by ../phpdoc.js).
+
+   A two-tab card — "Method" and "Arguments / Return". The tabs are driven
+   purely by two hidden radio inputs and `:checked ~` sibling selectors, so the
+   block needs no client-side JavaScript and renders identically under SSR.
+   --------------------------------------------------------------------------- */
+.functioninfo {
+  margin: 24px 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* The radios only carry state; they are never shown. */
+.functioninfo .fi-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.functioninfo .fi-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+}
+.functioninfo .fi-tab {
+  padding: 10px 18px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--vp-c-text-2);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.functioninfo .fi-tab:hover {
+  color: #3b92d4;
+}
+
+/* Active-tab highlight, keyed off which radio is checked. */
+.functioninfo .fi-radio-m:checked ~ .fi-tabs .fi-tab-m,
+.functioninfo .fi-radio-a:checked ~ .fi-tabs .fi-tab-a {
+  color: #3b92d4;
+  border-bottom-color: #3b92d4;
+  background: var(--vp-c-bg);
+}
+
+/* Panes: hidden by default, shown when their radio is checked. */
+.functioninfo .fi-pane {
+  display: none;
+  padding: 18px 20px;
+}
+.functioninfo .fi-radio-m:checked ~ .fi-pane-m,
+.functioninfo .fi-radio-a:checked ~ .fi-pane-a {
+  display: block;
+}
+
+.functioninfo h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--vp-c-text-2);
+}
+.functioninfo .fi-pane-m > p:first-child {
+  margin-top: 0;
+}
+/* The generated signature reuses VitePress' code block styling; just tighten it. */
+.functioninfo .fi-pane-m div[class*='language-'],
+.functioninfo .fi-pane-m pre {
+  margin: 8px 0 0;
+}
+.functioninfo h4 + h4 {
+  margin-top: 18px;
+}
+
+.functioninfo .fi-table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 14px;
+  display: table;
+}
+.functioninfo .fi-table th,
+.functioninfo .fi-table td {
+  border: 1px solid var(--vp-c-divider);
+  padding: 7px 10px;
+  text-align: left;
+}
+.functioninfo .fi-table th {
+  background: var(--vp-c-bg-soft);
+  font-weight: 600;
+}
+.functioninfo .fi-table tbody tr:nth-child(odd) {
+  background: var(--vp-c-bg-soft);
+}
+.functioninfo .fi-type,
+.functioninfo .fi-var {
+  font-family: var(--vp-font-family-mono);
+  font-size: 13px;
+  color: #3b92d4;
+  white-space: nowrap;
+}

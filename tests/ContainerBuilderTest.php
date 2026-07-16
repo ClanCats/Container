@@ -252,6 +252,26 @@ class ContainerBuilderTest extends \PHPUnit\Framework\TestCase
 ))", $builder->generate());
     }
 
+    public function testGenerateArgumentsCodeEscapesQuotedNames()
+    {
+        // referenced service / parameter names containing a single quote must be
+        // escaped in the generated code, otherwise the produced PHP is a syntax
+        // error. (Registered service names are validated separately, so only
+        // referenced names — resolved dynamically at runtime — reach this path.)
+        $builder = new ContainerBuilder('TestContainer');
+        $builder->add('foo', 'Test', ["@baz's", ":param's"]);
+        // "baz's" is left undefined -> falls through to the $this->get() branch
+
+        $code = $builder->generate();
+
+        // the generated PHP must be syntactically valid (throws \ParseError otherwise)
+        $this->assertIsArray(token_get_all($code, TOKEN_PARSE));
+
+        // and the names must be escaped via var_export, not raw-interpolated
+        $this->assertStringContainsStringProxy("\$this->get(" . var_export("baz's", true) . ")", $code);
+        $this->assertStringContainsStringProxy("\$this->getParameter(" . var_export("param's", true) . ")", $code);
+    }
+
     /**
      * @todo optimize this test...
      */

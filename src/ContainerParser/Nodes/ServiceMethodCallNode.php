@@ -3,7 +3,7 @@
  * ClanCats Container
  *
  * @link      https://github.com/ClanCats/Container/
- * @copyright Copyright (c) 2016-2024 Mario Döring
+ * @copyright Copyright (c) 2016-2026 Mario Döring
  * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
  */
 namespace ClanCats\Container\ContainerParser\Nodes;
@@ -119,9 +119,19 @@ class ServiceMethodCallNode extends BaseNode implements ConstructionActionNode
      *
      * @param ArgumentArrayNode         $arguments
      */
-    public function setArguments(ArgumentArrayNode $arguments): void 
+    public function setArguments(ArgumentArrayNode $arguments): void
     {
         $this->arguments = $arguments;
+    }
+
+    /**
+     * Deep clone the contained arguments node.
+     */
+    public function __clone()
+    {
+        if (!is_null($this->arguments)) {
+            $this->arguments = clone $this->arguments;
+        }
     }
 }
 

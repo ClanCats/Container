@@ -3,7 +3,7 @@
  * ClanCats Container
  *
  * @link      https://github.com/ClanCats/Container/
- * @copyright Copyright (c) 2016-2024 Mario Döring
+ * @copyright Copyright (c) 2016-2026 Mario Döring
  * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
  */
 namespace ClanCats\Container\ContainerParser\Parser;
@@ -101,13 +101,22 @@ class ArrayParser extends ContainerParser
             );
         }
 
-        // is a parameter reference 
-        elseif ($token->isValue()) 
+        // a generic type parameter used as `T::class` or as a bare `T`. Checked
+        // before the scalar branch since a `T::class` token is also a value.
+        elseif (($placeholder = $this->tryTypeParameterPlaceholder($token)) !== null)
         {
-            $elementValue = ValueNode::fromToken($token);
+            $elementValue = $placeholder;
+            $this->skipToken();
         }
 
-        elseif ($token->isType(T::TOKEN_PARAMETER)) 
+        // is a parameter reference
+        elseif ($token->isValue())
+        {
+            $elementValue = ValueNode::fromToken($token);
+            $this->skipToken();
+        }
+
+        elseif ($token->isType(T::TOKEN_PARAMETER))
         {
             $elementValue = $this->parseChild(ReferenceParser::class);
         }
@@ -140,9 +149,6 @@ class ArrayParser extends ContainerParser
         } else {
             $this->array->push($elementValue);
         }
-
-        // skip the value token
-        $this->skipToken();
 
         // now ther might follow a seperator indicating another argument
         if (!$this->parserIsDone() && $this->currentToken()->isType(T::TOKEN_SEPERATOR)) 

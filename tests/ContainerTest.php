@@ -434,6 +434,21 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['tags', 'routing'], $container->getMetaDataKeys('car'));
     }
 
+    public function testGetMetaDataKeysWithoutMetaData() : void
+    {
+        $container = new Container();
+
+        $container->bind('car', function($c)
+        {
+            return new Car($c->get('engine'));
+        });
+
+        // a service that has no linked metadata must return an empty array,
+        // not null (the return type is `array`)
+        $this->assertEquals([], $container->getMetaDataKeys('car'));
+        $this->assertEquals([], $container->getMetaDataKeys('unknown'));
+    }
+
     public function testServiceNamesWithMetaData() : void
     {
         $container = new Container();

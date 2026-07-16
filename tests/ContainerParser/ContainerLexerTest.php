@@ -105,6 +105,32 @@ class ContainerLexerTest extends LexerTestCase
         CODE, [T::TOKEN_PARAMETER, T::TOKEN_ASSIGN, T::TOKEN_SPACE, T::TOKEN_STRING]);
     }
 
+    public function testMultilineStringReportsStartLine()
+    {
+        // a quoted string spanning several source lines must be tagged with the
+        // line it STARTS on, not the line it ends on (regression: the scanner
+        // incremented the line counter mid-string and reported the end line)
+        $code = ":before: 'a'\n:doc: 'line one\nline two\nline three'\n:after: 'b'";
+        $tokens = $this->tokensFromCode($code);
+
+        $multiline = null;
+        foreach ($tokens as $token) {
+            if ($token->getType() === T::TOKEN_STRING && strpos($token->getValue(), "\n") !== false) {
+                $multiline = $token;
+                break;
+            }
+        }
+
+        $this->assertNotNull($multiline, 'multiline string token not found');
+        // the string opens on source line 2
+        $this->assertEquals(2, $multiline->getLine());
+
+        // tokens after the multiline string still report their real source line
+        $after = $this->findParameterToken($tokens, ':after');
+        $this->assertNotNull($after);
+        $this->assertEquals($this->expectedLineOf($code, ':after'), $after->getLine());
+    }
+
     public function testHeredocStrings()
     {
         // regular multiline strings collapse repeated whitespace / indentation
@@ -263,15 +289,50 @@ class ContainerLexerTest extends LexerTestCase
     {
         // the closing tag must be preceded by its own newline (i.e. sit alone on
         // its own line); a heredoc with no blank body line before an adjacent
-        // closing tag is therefore not recognised as a heredoc at all, and the
-        // literal "<" falls through to the normal tokenizer and fails predictably
-        // rather than silently producing a corrupted token stream.
-        //
-        // this is positioned starting on line 2 (not line 1) to avoid a separate,
-        // pre-existing, unrelated off-by-one in ContainerLexerException's line
-        // reporting for errors on the very first source line.
-        $this->expectException(\ClanCats\Container\Exceptions\ContainerLexerException::class);
-        $this->tokensFromCode(":before: 'a'\n<<<EOT\nEOT");
+        // closing tag is therefore not recognised as a heredoc at all. Since the
+        // introduction of generics the "<" is a valid token (TOKEN_GENERIC_OPEN),
+        // so the leftover "<<<" no longer fails at the lexer but lexes into three
+        // generic-open tokens. The resulting - meaningless - stream is instead
+        // rejected predictably by the parser rather than silently accepted.
+        $this->assertTokenTypes(":before: 'a'\n<<<EOT\nEOT", [
+            T::TOKEN_PARAMETER,
+            T::TOKEN_ASSIGN,
+            T::TOKEN_SPACE,
+            T::TOKEN_STRING,
+            T::TOKEN_LINE,
+            T::TOKEN_GENERIC_OPEN,
+            T::TOKEN_GENERIC_OPEN,
+            T::TOKEN_GENERIC_OPEN,
+            T::TOKEN_IDENTIFIER,
+            T::TOKEN_LINE,
+            T::TOKEN_IDENTIFIER,
+        ]);
+    }
+
+    public function testGenericAngleBracketTokens()
+    {
+        // a bare pair of angle brackets
+        $this->assertTokenTypes("<>", [
+            T::TOKEN_GENERIC_OPEN,
+            T::TOKEN_GENERIC_CLOSE,
+        ]);
+
+        // a generic definition header: @name<T>:
+        $this->assertTokenTypes('@repository<T>:', [
+            T::TOKEN_DEPENDENCY,
+            T::TOKEN_GENERIC_OPEN,
+            T::TOKEN_IDENTIFIER,
+            T::TOKEN_GENERIC_CLOSE,
+            T::TOKEN_ASSIGN,
+        ]);
+
+        // the dependency name stops before the "<" and the dotted name stays whole
+        $this->assertTokenTypes('@engine.powered<TPower>', [
+            T::TOKEN_DEPENDENCY,
+            T::TOKEN_GENERIC_OPEN,
+            T::TOKEN_IDENTIFIER,
+            T::TOKEN_GENERIC_CLOSE,
+        ]);
     }
 
     public function testScalarNumber()
@@ -367,7 +428,7 @@ class ContainerLexerTest extends LexerTestCase
     public function testComments()
     {
         $this->assertTokenTypes("// :foo", [T::TOKEN_COMMENT]);
-        $this->assertTokenTypes("# :foo", [T::TOKEN_COMMENT]);
+        $this->assertTokenTypes("# :foo", [T::TOKEN_COMMENT]);
         $this->assertTokenTypes("/* true */", [T::TOKEN_COMMENT]);
         $this->assertTokenTypes("/* foo \n\n\n bar */", [T::TOKEN_COMMENT]);
     }

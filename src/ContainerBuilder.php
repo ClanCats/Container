@@ -3,7 +3,7 @@
  * ClanCats Container
  *
  * @link      https://github.com/ClanCats/Container/
- * @copyright Copyright (c) 2016-2024 Mario Döring
+ * @copyright Copyright (c) 2016-2026 Mario Döring
  * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
  */
 namespace ClanCats\Container;
@@ -418,19 +418,20 @@ class ContainerBuilder
                     // already been resolved.
                     else
                     {
-                        $buffer[] = "\$this->resolvedSharedServices['$argumentValue'] ?? \$this->resolvedSharedServices['$argumentValue'] = " . $resolverMethodCall;
+                        $exportedName = var_export($argumentValue, true);
+                        $buffer[] = "\$this->resolvedSharedServices[$exportedName] ?? \$this->resolvedSharedServices[$exportedName] = " . $resolverMethodCall;
                     }   
                 }
                 // if the dependency is not defined inside the container builder
                 // it might be added dynamically later. So we just access the containers `get` method.
                 else
                 {
-                    $buffer[] = "\$this->get('$argumentValue')";
+                    $buffer[] = "\$this->get(" . var_export($argumentValue, true) . ")";
                 }
             }
             elseif ($argumentType === ServiceArguments::PARAMETER)
             {
-                $buffer[] = "\$this->getParameter('$argumentValue')";
+                $buffer[] = "\$this->getParameter(" . var_export($argumentValue, true) . ")";
             }
             elseif ($argumentType === ServiceArguments::RAW)
             {

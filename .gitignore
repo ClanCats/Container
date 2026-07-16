@@ -3,4 +3,10 @@ composer.lock
 /vendor/
 /coverage/
 /var/
+/cache/
 .phpunit.result.cache
+
+# Node / VitePress
+/node_modules/
+docs/.vitepress/dist/
+docs/.vitepress/cache/

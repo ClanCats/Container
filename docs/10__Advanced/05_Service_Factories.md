@@ -1,3 +1,0 @@
-# Service Factories
-
-coming soon

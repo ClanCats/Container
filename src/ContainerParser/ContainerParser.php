@@ -3,18 +3,19 @@
  * ClanCats Container
  *
  * @link      https://github.com/ClanCats/Container/
- * @copyright Copyright (c) 2016-2024 Mario Döring
+ * @copyright Copyright (c) 2016-2026 Mario Döring
  * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
  */
 namespace ClanCats\Container\ContainerParser;
 
 use ClanCats\Container\{
     Exceptions\ContainerParserException,
-    
+
     // Alias the token as T
     ContainerParser\Token as T,
-    
-    ContainerParser\Nodes\BaseNode as Node
+
+    ContainerParser\Nodes\BaseNode as Node,
+    ContainerParser\Nodes\TypeParameterPlaceholderNode
 };
 
 class ContainerParser
@@ -27,6 +28,15 @@ class ContainerParser
     protected array $tokens = [];
 
     /**
+     * The index at which parsing started. This is `0` for a top level parser
+     * but may be a positive offset when a child parser shares its parents
+     * token buffer through a window (see `parseChild`).
+     *
+     * @var int
+     */
+    protected int $startIndex = 0;
+
+    /**
      * The current index while parsing trough the tokens
      *
      * @var int
@@ -34,40 +44,81 @@ class ContainerParser
     protected int $index = 0;
 
     /**
-     * The number of tokens to parse
+     * The exclusive end bound of the tokens to parse. Together with
+     * `$startIndex` this describes the window `[startIndex, tokenCount)` a
+     * (child) parser is responsible for inside the shared token buffer.
      *
      * @var int
      */
     protected int $tokenCount = 0;
 
     /**
+     * The set of generic type parameter names in scope, keyed by name. It is
+     * empty for all normal parsing and only populated while a generic body is
+     * parsed (see `ServiceDefinitionParser::parseGenericDefinition`). Child
+     * parsers inherit it through `parseChild` so the leaf parsers can recognize
+     * a type parameter used as an argument, a `::class` constant or a class
+     * name and emit a `TypeParameterPlaceholderNode` for it.
+     *
+     * @var array<string, bool>
+     */
+    protected array $typeParameterContext = [];
+
+    /**
      * The constructor
      * You have to initialize the Parser with an array of lexed tokens.
      *
+     * When `$preFiltered` is false (the default, used for the top level parser
+     * and for explicit token slices) the tokens are copied into a fresh
+     * sequentially keyed array with comments and whitespaces stripped.
+     *
+     * When `$preFiltered` is true the given `$tokens` are shared as-is and the
+     * parser only operates on the window `[$start, $end)`. Because the buffer
+     * is never mutated this stays a copy-on-write reference (no array copy),
+     * which is what makes child parsing linear instead of quadratic.
+     *
      * @param array<T>             $tokens
+     * @param int                  $start
+     * @param int|null             $end
+     * @param bool                 $preFiltered
      * @return void
      */
-    public function __construct(array $tokens)
+    public function __construct(array $tokens, int $start = 0, ?int $end = null, bool $preFiltered = false)
     {
-        foreach ($tokens as $key => $token) 
+        if ($preFiltered)
         {
-            // remove all comments and whitespaces
-            if ($token->getType() === T::TOKEN_COMMENT || $token->getType() === T::TOKEN_SPACE) 
-            {
-                unset($tokens[$key]);
-            }
+            // share the already filtered buffer without copying it
+            $this->tokens = $tokens;
         }
+        else
+        {
+            // filter comments and whitespaces into a fresh sequentially keyed
+            // array. Building a new array (instead of unset + array_values)
+            // normalizes the keys in a single pass.
+            $filtered = [];
+            foreach ($tokens as $token)
+            {
+                $type = $token->getType();
+                if ($type !== T::TOKEN_COMMENT && $type !== T::TOKEN_SPACE)
+                {
+                    $filtered[] = $token;
+                }
+            }
+
+            $this->tokens = $filtered;
+        }
+
+        $this->startIndex = $start;
+        $this->index = $start;
+        $this->tokenCount = $end ?? count($this->tokens);
 
         // prepare the parser
         $this->prepare();
-
-        // set the initial tokens
-        $this->setTokens($tokens);
     }
 
     /**
      * Set the tokens of the current parser
-     * 
+     *
      * @param array<T>             $tokens
      * @return void
      */
@@ -80,6 +131,7 @@ class ContainerParser
         $this->tokenCount = count($this->tokens);
 
         // reset the index
+        $this->startIndex = 0;
         $this->index = 0;
     }
 
@@ -121,7 +173,70 @@ class ContainerParser
      */
     public function getParsedTokensCount() : int
     {
-        return $this->getIndex();
+        return $this->index - $this->startIndex;
+    }
+
+    /**
+     * Get the generic type parameter context
+     *
+     * @return array<string, bool>
+     */
+    public function getTypeParameterContext() : array
+    {
+        return $this->typeParameterContext;
+    }
+
+    /**
+     * Set the generic type parameter context
+     *
+     * @param array<string, bool>       $context
+     * @return void
+     */
+    public function setTypeParameterContext(array $context) : void
+    {
+        $this->typeParameterContext = $context;
+    }
+
+    /**
+     * Check if the given name is a generic type parameter in the current
+     * context. Always false outside of a generic body.
+     *
+     * @param string        $name
+     * @return bool
+     */
+    protected function isTypeParameter(string $name) : bool
+    {
+        return isset($this->typeParameterContext[$name]);
+    }
+
+    /**
+     * Try to interpret the given token as a use of a generic type parameter and
+     * return the matching placeholder node. Returns null when the token is not a
+     * type parameter — which is always the case outside a generic body, so leaf
+     * parsers can call this unconditionally.
+     *
+     * A `T::class` token keeps its class constant flag so that a class name type
+     * argument substituted for it later stays wrapped in `::class` (see
+     * `GenericTemplateExpander`).
+     *
+     * @param T     $token
+     * @return TypeParameterPlaceholderNode|null
+     */
+    protected function tryTypeParameterPlaceholder(T $token) : ?TypeParameterPlaceholderNode
+    {
+        if ($token->isType(T::TOKEN_CLASS_NAME))
+        {
+            $name = ltrim($token->getValue(), '\\');
+
+            return $this->isTypeParameter($name) ? new TypeParameterPlaceholderNode($name, true) : null;
+        }
+
+        if ($token->isType(T::TOKEN_IDENTIFIER) && $this->isTypeParameter($token->getValue()))
+        {
+            return new TypeParameterPlaceholderNode($token->getValue(), false);
+        }
+
+        return null;
     }
 
     /**
@@ -318,7 +433,7 @@ class ContainerParser
     protected function errorParsing(string $message) : ContainerParserException
     {
         $token = $this->currentToken();
-        return new ContainerParserException($message . '" given at line ' . $token->getLine() . ' in file ' . $token->getFilename());
+        return new ContainerParserException($message . ' given at line ' . $token->getLine() . ' in file ' . $token->getFilename());
     }
 
     /**
@@ -334,10 +449,21 @@ class ContainerParser
     {
         if (is_null($tokens))
         {
-            $tokens = $this->getRemainingTokens(); 
+            // spawn the child over a window of our shared (already filtered)
+            // token buffer instead of copying the remaining tokens. Thanks to
+            // copy-on-write this shares the buffer without duplicating it.
+            $parser = new $parserClassName($this->tokens, $this->index, $this->tokenCount, true);
+        }
+        else
+        {
+            $parser = new $parserClassName($tokens);
         }
 
-        $parser = new $parserClassName($tokens);
+        // propagate the generic type parameter context so leaf parsers spawned
+        // while parsing a generic body can recognize type parameters. It is
+        // empty for all normal parsing, so this is a no-op there.
+        $parser->setTypeParameterContext($this->typeParameterContext);
+
         $node = $parser->parse();
 
         // Update the current index based on the work of the child parser.

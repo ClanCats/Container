@@ -3,7 +3,7 @@
  * ClanCats Container
  *
  * @link      https://github.com/ClanCats/Container/
- * @copyright Copyright (c) 2016-2024 Mario Döring
+ * @copyright Copyright (c) 2016-2026 Mario Döring
  * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
  */
 namespace ClanCats\Container\ContainerParser\Parser;
@@ -34,19 +34,27 @@ class ReferenceParser extends ContainerParser
         $name = substr($name, 1);
 
         // is parameter reference
-        if ($token->isType(T::TOKEN_PARAMETER)) 
+        if ($token->isType(T::TOKEN_PARAMETER))
         {
+            // consume the reference token so we honor the
+            // parseChild / getParsedTokensCount contract
+            $this->skipToken();
+
             return new ParameterReferenceNode($name);
         }
 
         // is dependency reference
-        elseif ($token->isType(T::TOKEN_DEPENDENCY)) 
+        elseif ($token->isType(T::TOKEN_DEPENDENCY))
         {
+            // consume the reference token so we honor the
+            // parseChild / getParsedTokensCount contract
+            $this->skipToken();
+
             return new ServiceReferenceNode($name);
         }
 
         // anything else?
-        else 
+        else
         {
             throw $this->errorUnexpectedToken($token);
         }

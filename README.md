@@ -1,4 +1,4 @@
-<p align="center"><a href="http://clancats.io/container/master/" target="_blank">
+<p align="center"><a href="https://clancats.github.io/Container/" target="_blank">
     <img width="100px" src="http://clancats.io/assets/media/img/logo/container.png">
 </a></p>
 
@@ -89,11 +89,11 @@ https://github.com/ClanCats/container-tmLanguage
 
 ## Documentation 💡
 
-The full documentation can be found on [clancats.io](https://clancats.io/container/master/introduction/getting-started)
+The full documentation can be found on [clancats.github.io/Container](https://clancats.github.io/Container/introduction/getting-started)
 
 ## Quick Start ⚡️
 
-Following is just a rough example, a much more detailed and explained guide can be found here: [Getting Started](https://clancats.io/container/master/introduction/getting-started)
+Following is just a rough example, a much more detailed and explained guide can be found here: [Getting Started](https://clancats.github.io/Container/introduction/getting-started)
 
 ### Setup 
 
@@ -147,7 +147,7 @@ class SpaceShip
 
 A container file allows you to bind your services & parameters using a simple meta-language. 
 
-> Note: This feature is entirely optional if you prefer binding your services in PHP itself read: [Service Binding](https://clancats.io/container/master/advanced/service-binding)
+> Note: This feature is entirely optional if you prefer binding your services in PHP itself read: [Service Binding](https://clancats.github.io/Container/advanced/service-binding)
 
 Create a new file called `app.ctn` in your applications root folder. 
 
@@ -642,13 +642,13 @@ app/
   # Most configuration parameters go here
   config.ctn
 
-  # Command line commands are defined here
+  # Command line commands are defined here
   commands.ctn
 
   # Application routes (HTTP), actions and controllers 
   routes.ctn
 
-  # General application services. Depending on the size of 
+  # General application services. Depending on the size of 
   # the project we split the services into more files to keep
   # things organized. 
   services.ctn

@@ -3,7 +3,7 @@
  * ClanCats Container
  *
  * @link      https://github.com/ClanCats/Container/
- * @copyright Copyright (c) 2016-2024 Mario Döring
+ * @copyright Copyright (c) 2016-2026 Mario Döring
  * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
  */
 namespace ClanCats\Container\ContainerParser\Nodes;
@@ -31,6 +31,14 @@ class ArrayNode extends BaseNode implements AssignableNode
     private int $index = 0;
 
     /**
+     * Set of integer keys already used by elements, kept so `push()` can find
+     * the next free spot in O(1) amortized instead of scanning all elements.
+     *
+     * @var array<int, bool>
+     */
+    private array $usedIntKeys = [];
+
+    /**
      * Get array elements
      * 
      * @return array<ArrayElementNode>
@@ -50,6 +58,17 @@ class ArrayNode extends BaseNode implements AssignableNode
     public function addElement(ArrayElementNode $element) : void
     {
         $this->elements[] = $element;
+
+        // remember integer keys so push() can skip already used spots without
+        // rescanning all elements. Integer-like string keys are normalized the
+        // same way PHP coerces native array keys (e.g. "3" => 3) so a later
+        // push() never collides with them.
+        $key = $element->getKey();
+        if (is_int($key)) {
+            $this->usedIntKeys[$key] = true;
+        } elseif (is_string($key) && (string)(int)$key === $key) {
+            $this->usedIntKeys[(int)$key] = true;
+        }
     }
 
     /**
@@ -78,7 +97,7 @@ class ArrayNode extends BaseNode implements AssignableNode
     public function push(AssignableNode $value) : void
     {
         // count the index up to find a free spot
-        while ($this->has($this->index)) {
+        while (isset($this->usedIntKeys[$this->index])) {
             $this->index++;
         }
 
@@ -112,6 +131,17 @@ class ArrayNode extends BaseNode implements AssignableNode
         }
 
         return $array;
+    }
+
+    /**
+     * Deep clone the contained element nodes. The scalar index bookkeeping
+     * copies by value so it needs no special handling.
+     */
+    public function __clone()
+    {
+        foreach ($this->elements as $index => $element) {
+            $this->elements[$index] = clone $element;
+        }
     }
 }
 

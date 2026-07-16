@@ -3,7 +3,7 @@
  * ClanCats Container
  *
  * @link      https://github.com/ClanCats/Container/
- * @copyright Copyright (c) 2016-2024 Mario Döring
+ * @copyright Copyright (c) 2016-2026 Mario Döring
  * @license   https://github.com/ClanCats/Container/blob/master/LICENSE (MIT License)
  */
 namespace ClanCats\Container\ContainerParser;
@@ -33,7 +33,9 @@ use ClanCats\Container\ContainerParser\Nodes\{
     ServiceReferenceNode,
     ServiceMethodCallNode,
     MetaDataAssignmentNode,
-    ArgumentArrayNode
+    ArgumentArrayNode,
+    GenericDefinitionNode,
+    GenericMaterializationNode
 };
 
 class ContainerInterpreter
@@ -74,11 +76,19 @@ class ContainerInterpreter
             {
                 $this->handleParameterDefinition($node);
             }
+            elseif ($node instanceof GenericDefinitionNode)
+            {
+                $this->handleGenericDefinition($node);
+            }
+            elseif ($node instanceof GenericMaterializationNode)
+            {
+                $this->handleGenericMaterialization($node);
+            }
             elseif ($node instanceof ServiceDefinitionNode)
             {
                 $this->handleServiceDefinition($node);
             }
-    		else 
+    		else
     		{
     			throw new ContainerInterpreterException("Unexpected node in scope found.");
     		}
@@ -289,6 +299,57 @@ class ContainerInterpreter
 
         // add the node to the namespace
         $this->namespace->setService($definition->getName(), $service);
+    }
+
+    /**
+     * Handle a generic definition by registering its template in the namespace.
+     * Generics are never turned into services themselves.
+     *
+     * @param GenericDefinitionNode     $definition
+     * @return void
+     */
+    public function handleGenericDefinition(GenericDefinitionNode $definition)
+    {
+        if ($this->namespace->hasGeneric($definition->getName()) && $definition->isOverride() === false)
+        {
+            throw new ContainerInterpreterException("A generic named \"{$definition->getName()}\" is already defined, you can prefix the definition with \"override\" to get around this error.");
+        }
+
+        $this->namespace->setGeneric($definition->getName(), $definition);
+    }
+
+    /**
+     * Handle a generic materialization by expanding the generics parsed
+     * template into a concrete service definition. The expander deep clones the
+     * template and substitutes the supplied type arguments for the type
+     * parameter placeholders — no re-lexing or re-parsing takes place.
+     *
+     * @param GenericMaterializationNode        $materialization
+     * @return void
+     */
+    public function handleGenericMaterialization(GenericMaterializationNode $materialization)
+    {
+        if (!$this->namespace->hasGeneric($materialization->getGenericName()))
+        {
+            throw new ContainerInterpreterException("Trying to materialize the unknown generic \"{$materialization->getGenericName()}\" for service \"{$materialization->getName()}\". Generics must be defined before they are used.");
+        }
+
+        $generic = $this->namespace->getGeneric($materialization->getGenericName());
+
+        $parameterCount = count($generic->getTypeParameters());
+        $argumentCount = count($materialization->getTypeArguments());
+
+        if ($parameterCount !== $argumentCount)
+        {
+            throw new ContainerInterpreterException(sprintf(
+                "The generic \"%s\" expects %d type argument(s) but %d were given for service \"%s\".",
+                $materialization->getGenericName(), $parameterCount, $argumentCount, $materialization->getName()
+            ));
+        }
+
+        $definitionNode = (new GenericTemplateExpander())->expand($generic, $materialization);
+
+        $this->handleServiceDefinition($definitionNode);
     }
 }
 

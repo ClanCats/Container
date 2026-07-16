@@ -1,0 +1,153 @@
+# Service Definitions
+
+A service definition is a plain description of *how* to build one service: its class name, the constructor arguments, and any method calls to make afterwards. It deliberately knows nothing about the container around it — not the name the service is registered under, nor whether it will be shared or rebuilt each time. That separation is what lets the same definition be reused, compiled, or handed to a factory.
+
+You may reach for definitions directly when you want to describe services in PHP rather than in a `.ctn` file — for example when building a container from your own data source. The package ships with a ready implementation of `ServiceDefinitionInterface`, simply called `ServiceDefinition`.
+
+## Constructor
+
+[~ PHPDoc](/src/ServiceDefinition.php#__construct)
+
+Create a new service definition:
+
+```php
+use ClanCats\Container\ServiceDefinition;
+
+$logger = new ServiceDefinition(MyLogger::class);
+```
+
+You can also directly pass the constructor arguments as an array:
+
+```php
+$logger = new ServiceDefinition(MyLogger::class, ['@some_dependency', ':some_parameter', 42]);
+```
+
+Keep in mind when passing arguments as an array prefixing a string with `@` will be interpreted as a dependency and `:` as parameter. This applies everywhere arguments are defined as array. [Service Arguments](/advanced/arguments)
+
+### Static factory
+
+There is also a static method to construct new service definition instance allowing a more expressive syntax.
+
+[~ PHPDoc](/src/ServiceDefinition.php#for)
+
+### Construct from array
+
+[~ PHPDoc](/src/ServiceDefinition.php#fromArray)
+
+## Constructor Arguments
+
+You can pass additional constructor arguments any time:
+
+```php
+$QA = new ServiceDefinition(QA::class);
+
+$QA
+    ->addRawArgument('The Answer to the Ultimate Question of Life, The Universe, and Everything.')
+    ->addRawArgument(42)
+    ->addDependencyArgument('database')
+    ->addParameterArgument('priority.default');
+```
+
+Using the `arguments` method you can also pass them as an array.
+
+```php
+$auth = (new ServiceDefinition(MyAuth::class))
+    ->arguments([
+        '@repository.users',
+        ':auth.secret'
+    ]);
+```
+
+### Add raw argument
+
+[~ PHPDoc](/src/ServiceDefinition.php#addRawArgument)
+
+```php
+$def = ServiceDefinition::for('\Acme\SqlConnection')
+    ->addRawArgument('localhost')
+    ->addRawArgument('root')
+    ->addRawArgument('pleaseDontUseRoot');
+```
+
+### Add dependency argument
+
+[~ PHPDoc](/src/ServiceDefinition.php#addDependencyArgument)
+
+```php
+$def = ServiceDefinition::for('\Acme\Blog\PostRepository')
+    ->addDependencyArgument('db.connection');
+```
+
+### Add parameter argument
+
+[~ PHPDoc](/src/ServiceDefinition.php#addParameterArgument)
+
+```php
+$def = ServiceDefinition::for('\Acme\Session')
+    ->addParameterArgument('session.secret');
+```
+
+### Get all arguments
+
+[~ PHPDoc](/src/ServiceDefinition.php#getArguments)
+
+```php
+$definition->getArguments(); // ServiceArguments instance
+```
+
+### Get service class name
+
+[~ PHPDoc](/src/ServiceDefinition.php#getClassName)
+
+## Method Calls
+
+A service definition can hold method calls that have to be called on construction, these can set dependencies, parameters or raw values just like the constructor arguments.
+
+### Add a method call (with array)
+
+[~ PHPDoc](/src/ServiceDefinition.php#calls)
+
+```php
+$def = ServiceDefinition::for('\Acme\Session')
+    ->calls('setEventDispatcher', ['@event_dispatcher']);
+```
+
+### Add a method call
+
+[~ PHPDoc](/src/ServiceDefinition.php#addMethodCall)
+
+```php
+$eventDispatcherArgs = (new ServiceArguments())
+    ->addDependency('event_dispatcher');
+
+$sessionDefinition = ServiceDefinition::for('\Acme\Session')
+    ->addMethodCall('setEventDispatcher', $eventDispatcherArgs);
+```
+
+## Interface
+
+Any class that will be used as a service definition must implement the `ServiceDefinitionInterface` which requires the following methods:
+
+#### Return the service class name
+
+```php
+public function getClassName() : string;
+```
+
+---
+
+#### Return the constructor arguments object
+
+```php
+public function getArguments() : ServiceArguments;
+```
+
+---
+
+#### Return the registered method calls
+
+```php
+public function getMethodCalls() : array;
+```
+
+The format of the returned array should look like `[string => ServiceArguments]`.
