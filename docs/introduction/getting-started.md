@@ -70,8 +70,9 @@ $container = $factory->create('AppContainer', function($builder)
 
 The `create` method as you probably already guessed is where the container instance is being created. The first argument is the class name. Namespaces are supported so you could also set it to something like `Acme\MainBundle\MainContainer`. As a second parameter, we have a callback where we define what the container should actually contain.
 
-> Note: Read more about this here: **Container Factory** &
-> **Container Builder**
+::: tip
+Read more about this here: **Container Factory** & **Container Builder**
+:::
 
 ```php 
 $namespace = new \ClanCats\Container\ContainerNamespace([
@@ -98,7 +99,9 @@ $builder->importNamespace($namespace);
 
 Finally, we feed our namespace into the builder object.
 
-> Note: Before we continue here, you might want to check out **[Container File Syntax](/container-files/syntax)**. There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
+::: tip
+Before we continue here, you might want to check out the **[Container Files](/container-files/introduction)** documentation. There is also a `tmLanguage` available for syntax highlighting support of `ctn` files.
+:::
 
 ## Parameters
 

@@ -10,8 +10,8 @@ hero:
       text: Get Started
       link: /introduction/getting-started
     - theme: alt
-      text: Container File Syntax
-      link: /container-files/syntax
+      text: Container Files
+      link: /container-files/introduction
     - theme: alt
       text: View on GitHub
       link: https://github.com/ClanCats/Container

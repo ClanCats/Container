@@ -19,13 +19,15 @@ The Containers `bind` method acts as a shortcut and supports three diffrent argu
  * `Closure` callback.
  * Classname represented as string.
 
-[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/Container.php)
+[~ PHPDoc](/src/Container.php#bind)
 
 ### Bind ServiceFactoryInterface 
 
 The `ServiceFactoryInterface` demnads only a `create` method to retrieve the expected service. This package comes with a prebuild `ServiceFactory` class allowing you to construct a service from a `ServiceDefinition` or basically by his classname.
 
-> Note: Check [Service Factories](service-factories) for more.
+::: tip
+Check [Service Factories](service-factories) for more.
+:::
 
 ```php
 $sessionFactory = new ServiceFactory('\\Acme\\Session', ['@session.provider.mysql']);

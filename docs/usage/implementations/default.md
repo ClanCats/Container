@@ -27,7 +27,7 @@ use \ClanCats\Container\ContainerFactory;
 $factory = new ContainerFactory(__DIR__ . '/cache', true); // second argument turns debug mode on
 ```
 
-## Container class name
+## Container class name
 
 The first argument you pass into the container factories `create` method is the containers name including the namespace.
 
@@ -39,4 +39,6 @@ Read more about this here: **Container Factory**
 
 ## Container namespace
 
-> Note: continue here: **Container Namepsace**
+::: tip
+continue here: **Container Namepsace**
+:::

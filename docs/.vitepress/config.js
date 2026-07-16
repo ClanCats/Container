@@ -1,4 +1,6 @@
 import { defineConfig } from 'vitepress'
+import phpDocPlugin from './phpdoc.js'
+import { ctnGrammar } from './ctn.tmLanguage.js'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -16,10 +18,17 @@ export default defineConfig({
   ignoreDeadLinks: false,
 
   markdown: {
-    // `.ctn` container files have no dedicated highlighter grammar; YAML is the
-    // closest match for the `key: value` / `#` comment style.
-    languageAlias: {
-      ctn: 'yaml',
+    // Dark syntax highlighting theme, even though the site chrome is light.
+    theme: 'github-dark',
+
+    // `.ctn` container files use a dedicated TextMate grammar that mirrors the
+    // official VSCode extension (see ./ctn.tmLanguage.js).
+    languages: [ctnGrammar],
+
+    // `[~ PHPDoc](/src/File.php#method)` directives become tabbed method blocks
+    // generated from the referenced PHP source (see ./phpdoc.js).
+    config: (md) => {
+      md.use(phpDocPlugin)
     },
   },
 
@@ -28,7 +37,7 @@ export default defineConfig({
 
     nav: [
       { text: 'Getting Started', link: '/introduction/getting-started' },
-      { text: 'Container Files', link: '/container-files/syntax' },
+      { text: 'CTN Files', link: '/container-files/introduction' },
       { text: 'Packagist', link: 'https://packagist.org/packages/clancats/container' },
     ],
 
@@ -57,6 +66,21 @@ export default defineConfig({
         ],
       },
       {
+        text: 'CTN Files',
+        items: [
+          { text: 'Introduction', link: '/container-files/introduction' },
+          { text: 'Values & Types', link: '/container-files/values' },
+          { text: 'Parameters', link: '/container-files/parameters' },
+          { text: 'Services', link: '/container-files/services' },
+          { text: 'Metadata & Tags', link: '/container-files/metadata' },
+          { text: 'Generics', link: '/container-files/generics' },
+          { text: 'Imports & Overriding', link: '/container-files/imports' },
+          { text: 'Parsing', link: '/container-files/parsing' },
+          { text: 'Custom Namespace', link: '/container-files/custom-namespace' },
+          { text: 'Composer Integration', link: '/container-files/composer-integration' },
+        ],
+      },
+      {
         text: 'Advanced',
         items: [
           { text: 'Service Binding', link: '/advanced/service-binding' },
@@ -71,15 +95,6 @@ export default defineConfig({
               { text: 'Custom Service Provider', link: '/advanced/service-providers/custom-service-provider' },
             ],
           },
-        ],
-      },
-      {
-        text: 'Container Files',
-        items: [
-          { text: 'Syntax', link: '/container-files/syntax' },
-          { text: 'Parsing', link: '/container-files/parsing' },
-          { text: 'Composer Integration', link: '/container-files/composer-integration' },
-          { text: 'Custom Namespace', link: '/container-files/custom-namespace' },
         ],
       },
     ],

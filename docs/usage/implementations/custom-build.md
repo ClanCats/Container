@@ -6,9 +6,11 @@ Don't want to use container files but still want to compile / serialize the cont
 
 In this particular example we are going to build our container using a json document.
 
-> Note: Read more about the **Container Builder**.
+::: tip
+Read more about the **Container Builder**.
+:::
 
-### Json Service definitions 
+### Json Service definitions 
 
 As a first step we are going to create the json file that will define our services.
 

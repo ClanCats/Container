@@ -6,7 +6,7 @@ This package comes already with an implementation of the `ServiceDefinitionInter
 
 ## Constructor
 
-[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceDefinition.php)
+[~ PHPDoc](/src/ServiceDefinition.php#__construct)
 
 Create a new service definition:
 
@@ -28,13 +28,13 @@ Keep in mind when passing arguments as an array prefixing a string with `@` will
 
 There is also a static method to construct new service definition instance allowing a more expressive syntax.
 
-[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceDefinition.php)
+[~ PHPDoc](/src/ServiceDefinition.php#for)
 
 ### Construct from array
 
-[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceDefinition.php)
+[~ PHPDoc](/src/ServiceDefinition.php#fromArray)
 
-## Constructor Arguments
+## Constructor Arguments
 
 You can pass additional constructor arguments any time:
 
@@ -60,7 +60,7 @@ $auth = new ServiceDefinition(MyAuth::class)
 
 ### Add raw argument
 
-[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceDefinition.php)
+[~ PHPDoc](/src/ServiceDefinition.php#addRawArgument)
 
 ```php
 $def = ServiceDefinition::for('\Acme\SqlConnection')
@@ -71,7 +71,7 @@ $def = ServiceDefinition::for('\Acme\SqlConnection')
 
 ### Add dependency argument
 
-[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceDefinition.php)
+[~ PHPDoc](/src/ServiceDefinition.php#addDependencyArgument)
 
 ```php
 $def = ServiceDefinition::for('\Acme\Blog\PostRepository')
@@ -80,7 +80,7 @@ $def = ServiceDefinition::for('\Acme\Blog\PostRepository')
 
 ### Add parameter argument
 
-[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceDefinition.php)
+[~ PHPDoc](/src/ServiceDefinition.php#addParameterArgument)
 
 ```php
 $def = ServiceDefinition::for('\Acme\Session')
@@ -89,7 +89,7 @@ $def = ServiceDefinition::for('\Acme\Session')
 
 ### Get all arguments
 
-[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceDefinition.php)
+[~ PHPDoc](/src/ServiceDefinition.php#getArguments)
 
 ```php
 $definition->getArguments(); // ServiceArguments instance
@@ -97,7 +97,7 @@ $definition->getArguments(); // ServiceArguments instance
 
 ### Get service class name
 
-[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceDefinition.php)
+[~ PHPDoc](/src/ServiceDefinition.php#getClassName)
 
 ## Method Calls
 
@@ -105,7 +105,7 @@ A service definition can hold method calls that have to be called on constructio
 
 ### Add a method call (with array)
 
-[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceDefinition.php)
+[~ PHPDoc](/src/ServiceDefinition.php#calls)
 
 ```php
 $def = ServiceDefinition::for('\Acme\Session')
@@ -114,7 +114,7 @@ $def = ServiceDefinition::for('\Acme\Session')
 
 ### Add a method call
 
-[~ PHPDoc](https://github.com/ClanCats/Container/blob/master/src/ServiceDefinition.php)
+[~ PHPDoc](/src/ServiceDefinition.php#addMethodCall)
 
 ```php
 $eventDispatchetArgs = (new ServiceArguments())

@@ -428,7 +428,7 @@ class ContainerLexerTest extends LexerTestCase
     public function testComments()
     {
         $this->assertTokenTypes("// :foo", [T::TOKEN_COMMENT]);
-        $this->assertTokenTypes("# :foo", [T::TOKEN_COMMENT]);
+        $this->assertTokenTypes("# :foo", [T::TOKEN_COMMENT]);
         $this->assertTokenTypes("/* true */", [T::TOKEN_COMMENT]);
         $this->assertTokenTypes("/* foo \n\n\n bar */", [T::TOKEN_COMMENT]);
     }

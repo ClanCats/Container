@@ -6,7 +6,7 @@ It is possible to import container files from vendor packages through composer.
 
 This is done in two steps.
 
-### 1. Setup composer.json
+### 1. Setup composer.json
 
 First we need to tell composer to generate a container file map of our pacakages everytime we dump the autoloader:
 
@@ -66,12 +66,12 @@ Inside the `composer.json` file we need to define what container files are avail
 So inside a project that requires `acme/mypackage` and imports the vendor map we can import the main container file of `acme/mypackage` like this:
 
 
-```yml
+```ctn
 import acme/mypackage
 ```
 
 The config container file can be imported like so:
 
-```
+```ctn
 import acme/mypackage/config
 ```
