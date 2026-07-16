@@ -33,7 +33,7 @@ Now we can create a new `ContainerFactory` that will load the json data and forw
 // create 
 $factory = new \ClanCats\Container\ContainerFactory(__DIR__ . '/cache');
 
-$container = $factory->create('JsonContainer', function($builder) use($services)
+$container = $factory->create('JsonContainer', function($builder)
 {
 	// load the services from the json file into an array.
 	$services = json_decode(trim(file_get_contents(__DIR__ . '/myservices.json')), true);

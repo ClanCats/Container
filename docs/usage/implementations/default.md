@@ -1,6 +1,6 @@
 # Default Implementation
 
-The recommended implementation is using the container factory, builder and namespace. It will genreate an optimized PHP file containing our Container, include it and return an instnace.
+The recommended implementation is using the container factory, builder and namespace. It will generate an optimized PHP file containing our Container, include it and return an instance.
 
 **Make sure your php can write into the given cache directory.**
 
@@ -35,10 +35,10 @@ The first argument you pass into the container factories `create` method is the 
 $container = $factory->create('Acme\DI\AppContainer', function($builder) {});
 ```
 
-Read more about this here: **Container Factory**
+Read more about building containers in the [Getting started](/introduction/getting-started) guide.
 
 ## Container namespace
 
 ::: tip
-continue here: **Container Namepsace**
+Continue with [Container Files › Parsing](/container-files/parsing) to learn how a `ContainerNamespace` loads and imports `.ctn` files.
 :::

@@ -118,7 +118,7 @@ $definition = new ServiceDefinition(FileLogHandler::class)
 ```
 
 ::: tip
-More about [Serivce Definitions](/advanced/service-definitions)
+More about [Service Definitions](/advanced/service-definitions)
 :::
 
 ## Service Factory
@@ -133,7 +133,7 @@ $logger = $factory->create(); // FileLogHandler instance
 ```
 
 ::: tip
-More about [Serivce Facatories](/advanced/service-factories)
+More about [Service Factories](/advanced/service-factories)
 :::
 
 

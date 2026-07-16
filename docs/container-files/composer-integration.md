@@ -8,7 +8,7 @@ This is done in two steps.
 
 ### 1. Setup composer.json
 
-First we need to tell composer to generate a container file map of our pacakages everytime we dump the autoloader:
+First we need to tell composer to generate a container file map of our packages every time we dump the autoloader:
 
 ```json
 {
@@ -32,9 +32,9 @@ $namespace->importFromVendor(__DIR__ . '/vendor');
 
 ## Exposing container files to composer 
 
-The otherway around, when you want to add container files to your library / pacakage.
+The other way around, when you want to add container files to your library / package.
 
-The import name of the container files is dependet on your composer package. You will be able to use multiple container files but you have to define the main one.
+The import name of the container files is dependent on your composer package. You will be able to use multiple container files but you have to define the main one.
 
 let's think of a package structure as follows:
 
@@ -53,7 +53,7 @@ Inside the `composer.json` file we need to define what container files are avail
 	"name": "acme/mypackage",
     "extra": {
         "container": {
-            "@main": "package.ctn"
+            "@main": "package.ctn",
             "config": "config.ctn"
         }
     }
@@ -61,7 +61,7 @@ Inside the `composer.json` file we need to define what container files are avail
 
 ```
 
-`@main` simply indicates our main container file which will recieve the import name of the package itself.
+`@main` simply indicates our main container file which will receive the import name of the package itself.
 
 So inside a project that requires `acme/mypackage` and imports the vendor map we can import the main container file of `acme/mypackage` like this:
 

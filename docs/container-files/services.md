@@ -87,6 +87,8 @@ A service can be aliased to another service by pointing the definition at an exi
 @pipeline.queue: @queue.redis
 ```
 
+Aliases are handy when you want a stable, intention-revealing name (`@pipeline.queue`) that different parts of your app depend on, while keeping the freedom to swap the concrete implementation behind it in one place.
+
 ::: tip
 Add [metadata / tags](/container-files/metadata) to any service to look it up by tag at runtime, or replace an existing definition with [`override`](/container-files/imports#overriding).
 :::

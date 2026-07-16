@@ -71,7 +71,7 @@ $container = $factory->create('AppContainer', function($builder)
 The `create` method as you probably already guessed is where the container instance is being created. The first argument is the class name. Namespaces are supported so you could also set it to something like `Acme\MainBundle\MainContainer`. As a second parameter, we have a callback where we define what the container should actually contain.
 
 ::: tip
-Read more about this here: **Container Factory** & **Container Builder**
+Read more about this in the [Default Implementation](/usage/implementations/default) guide, which covers the container factory and builder.
 :::
 
 ```php 
@@ -91,7 +91,7 @@ $namespace->parse(__DIR__ . '/app.ctn');
 
 All parsed data (services, parameters) is now assigned to our namespace instance.
 
-Read more about this here: **Container Namespace**
+Read more about this in [Container Files › Parsing](/container-files/parsing).
 
 ```php 
 $builder->importNamespace($namespace);
@@ -105,7 +105,7 @@ Before we continue here, you might want to check out the **[Container Files](/co
 
 ## Parameters
 
-Parameters are always prefixed with a `:` character and can be defined in any order. When defined inside of a `ctn` file, they can hold scalar values and arrays. Technically the container has no limitation on what a parameter can contain, you can set a parameter containing anything you want manually with the `setParamter` method.
+Parameters are always prefixed with a `:` character and can be defined in any order. When defined inside of a `ctn` file, they can hold scalar values and arrays. Technically the container has no limitation on what a parameter can contain, you can set a parameter containing anything you want manually with the `setParameter` method.
 
 Now in the `app.ctn` define some parameter like this:
 

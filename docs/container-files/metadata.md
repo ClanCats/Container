@@ -31,4 +31,4 @@ The elements inside a metadata definition can have named keys:
 
 ## Looking up tagged services
 
-At runtime the container can return all services carrying a given metadata key, which is how you collect, for example, every controller that declared a `route`. See the runtime [Services](/usage/services) documentation for the lookup API.
+At runtime the container can return all services carrying a given metadata key, which is how you collect, for example, every controller that declared a `route`. See [Looking up services by metadata](/usage/services#looking-up-services-by-metadata-tags) for the runtime lookup API.
