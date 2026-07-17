@@ -7,8 +7,8 @@ export default defineConfig({
   title: 'CC Container',
   description: 'A PHP Service Container featuring a simple meta-language with fast and compilable dependency injection.',
 
-  // GitHub Pages project site is served from /Container/
-  base: '/Container/',
+  // Served from the custom domain container.clancats.io at the root.
+  base: '/',
 
   // The original clancats.io theme is light-only; lock the site to light
   // and remove the dark-mode toggle.
