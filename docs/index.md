@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: ClanCats Container
+  name: CC Container
   text: Fast, compilable PHP dependency injection.
   tagline: A PHP Service Container featuring a simple meta-language with fast and compilable dependency injection. Requires PHP >= 7.4.
   actions:

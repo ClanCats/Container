@@ -4,7 +4,7 @@ import { ctnGrammar } from './ctn.tmLanguage.js'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: 'ClanCats Container',
+  title: 'CC Container',
   description: 'A PHP Service Container featuring a simple meta-language with fast and compilable dependency injection.',
 
   // GitHub Pages project site is served from /Container/

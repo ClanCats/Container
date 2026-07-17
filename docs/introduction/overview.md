@@ -1,6 +1,6 @@
 # Overview
 
-ClanCats Container is a zero-dependency PHP IoC / service container (PHP ≥ 7.4). Its distinguishing feature is a small meta-language — **container files** (`.ctn`) — for declaring your services, parameters and configuration, plus the ability to **compile** those definitions into a plain generated PHP class for near-zero runtime overhead.
+CC Container is a zero-dependency PHP IoC / service container (PHP ≥ 7.4). Its distinguishing feature is a small meta-language — **container files** (`.ctn`) — for declaring your services, parameters and configuration, plus the ability to **compile** those definitions into a plain generated PHP class for near-zero runtime overhead.
 
 If the words _service_, _container_ or _dependency injection_ don't mean much to you yet, start with [Core Concepts](/introduction/core-concepts). If you just want to get something running, jump to [Getting Started](/introduction/getting-started).
 
